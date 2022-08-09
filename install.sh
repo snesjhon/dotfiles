@@ -14,3 +14,6 @@ if [ $SPIN ]; then
 
   ln -sf /home/spin/dotfiles/nvim /home/spin/.config/nvim
 fi
+
+
+
