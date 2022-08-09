@@ -1,3 +1,3 @@
 require("snesjhon.set")
-require("snesjhon.packer")
+require("snesjhon.plugins")
 require("snesjhon.keymap")
