@@ -20,6 +20,9 @@ if [ $SPIN ]; then
   install_packer
   install_language_servers
 
+  nvim --headless \
+   -c 'autocmd User PackerComplete quitall' -c 'PackerSync' &> /dev/null
+
   ln -sf /home/spin/dotfiles/nvim /home/spin/.config/nvim
 fi
 
