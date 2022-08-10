@@ -28,13 +28,19 @@ install_packer(){
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim &> /dev/null
 }
 
+install_dependencies(){
+  install_fzf
+  install_packer
+  install_stow
+  install_language_servers
+}
+
 stow_dirs() {
   stow -d ~/dotfiles nvim
 }
 
 if [ $SPIN ]; then
-  install_fzf
-  install_language_servers
+  install_dependencies
   stow_dirs
   install_packer
 fi
