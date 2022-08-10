@@ -11,4 +11,8 @@ return require('packer').startup(function(use)
     'kyazdani42/nvim-web-devicons'
   }}
 
+  use {'junegunn/fzf', dir = '~/.fzf', run = './install --all'}
+  use 'junegunn/fzf.vim'
+
+
 end)

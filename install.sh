@@ -1,5 +1,13 @@
 #!/usr/bin/env zsh
 
+install_fzf() {
+  if ! command -v fzf &> /dev/null; then
+    echo "\n  -- installing fzf -- \n"
+
+    sudo apt-get install -y fzf
+  fi
+}
+
 install_language_servers() {
   echo "\n -- installing language servers -- \n"
   npm i -g typescript typescript-language-server
@@ -13,6 +21,7 @@ install_packer(){
 }
 
 if [ $SPIN ]; then
+  install_fzf
   install_language_servers
 
   # link configs into vim
