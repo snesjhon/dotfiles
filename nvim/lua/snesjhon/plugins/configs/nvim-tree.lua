@@ -1,7 +1,3 @@
-require("github-theme").setup({
-    theme_style = "light"
-})
-
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   view = {
@@ -21,4 +17,3 @@ preserve_window_proportions = true
     dotfiles = true,
   },
 })
-print('plugins installed')
