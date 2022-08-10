@@ -23,20 +23,20 @@ install_stow() {
   fi
 }
 
-install_packer(){
-    git clone --depth 1 https://github.com/wbthomason/packer.nvim\
- ~/.local/share/nvim/site/pack/packer/start/packer.nvim &> /dev/null
-}
 
 install_dependencies(){
   install_fzf
-  install_packer
   install_stow
   install_language_servers
 }
 
 stow_dirs() {
   stow -d ~/dotfiles nvim
+}
+
+install_packer(){
+  git clone --depth 1 https://github.com/wbthomason/packer.nvim \
+    ~/.local/share/nvim/site/pack/packer/start/packer.nvim &> /dev/null
 }
 
 if [ $SPIN ]; then
