@@ -15,18 +15,27 @@ install_language_servers() {
   npm i -g graphql-language-service-cli
 }
 
+install_stow() {
+  if ! command -v stow &> /dev/null; then
+    echo "\n  -- installing stow -- \n"
+
+    sudo apt-get install -y stow
+  fi
+}
+
 install_packer(){
     git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim &> /dev/null
 }
 
+stow_dirs() {
+  stow -d ~/dotfiles nvim
+}
+
 if [ $SPIN ]; then
   install_fzf
   install_language_servers
-
-  # link configs into vim
-  ln -sf /home/spin/dotfiles/nvim /home/spin/.config/nvim
-
+  stow_dirs
   install_packer
 fi
 
