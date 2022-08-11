@@ -37,6 +37,10 @@ stow_dirs() {
 install_packer(){
   git clone --depth 1 https://github.com/wbthomason/packer.nvim \
     ~/.local/share/nvim/site/pack/packer/start/packer.nvim &> /dev/null
+  
+  echo "\n -- installing packer plugins -- \n"
+  nvim --headless \
+  -c 'autocmd User PackerComplete quitall' -c 'PackerSync' &> /dev/null
 }
 
 if [ $SPIN ]; then
