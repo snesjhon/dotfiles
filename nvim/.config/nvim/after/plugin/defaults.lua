@@ -6,7 +6,11 @@ vim.keymap.set('n', '<leader>ee', require("nvim-tree").toggle, { desc = "[E]xplo
 
 -- Terminal Colors
 vim.opt.termguicolors = true
-vim.cmd [[colorscheme github_light]]
+-- vim.cmd [[colorscheme github_light]]
 
 -- keymaps
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
+vim.keymap.set('n', '<leader>x', ':bd<CR>')
+
+vim.o.cmdheight  = 1
+vim.o.cmdwinheight = 2
