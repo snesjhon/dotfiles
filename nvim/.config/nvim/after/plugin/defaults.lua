@@ -6,7 +6,6 @@ vim.keymap.set('n', '<leader>ee', require("nvim-tree").toggle, { desc = "[E]xplo
 
 -- Terminal Colors
 vim.opt.termguicolors = true
--- vim.cmd [[colorscheme github_light]]
 
 -- keymaps
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
