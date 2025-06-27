@@ -1,9 +1,5 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Inserts a blank line between shell prompts
-# add_newline = false
-# command_timeout = 3600
-
 [git_status]
 disabled = true
 
@@ -17,4 +13,13 @@ disabled = true
 disabled = true
 
 [nix_shell]
+disabled = true
+
+[rust]
+disabled = true
+
+[buf]
+disabled = true
+
+[python]
 disabled = true

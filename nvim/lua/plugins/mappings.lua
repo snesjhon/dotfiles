@@ -1,24 +1,3 @@
--- local Terminal = require("toggleterm.terminal").Terminal
--- local lazygit = Terminal:new {
---   -- cmd = "Claude",
---   -- dir = "gi",
---   direction = "tab",
---   hidden = true,
---   count = 5,
---   -- float_opts = {
---   --   border = "double",
---   -- },
---   -- function to run on opening the terminal
---   on_open = function(term)
---     vim.cmd "startinsert!"
---     -- vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
---   end,
---   -- function to run on closing the terminal
---   on_close = function(term) vim.cmd "startinsert!" end,
--- }
---
--- function Lazygit_toggle() lazygit:toggle() end
-
 return {
   {
     "AstroNvim/astrocore",
@@ -49,20 +28,6 @@ return {
           ["<S-j>"] = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Next buffer" },
           ["<S-k>"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Previous buffer" },
           -- TERMINAL
-          -- ["<Leader>tv"] = { "<Cmd>ToggleTerm size=100 direction=vertical<CR>", desc = "ToggleTerm vertical split" },
-          -- ["<Leader>tc"] = { "<Cmd>TermExec cmd='Claude' direction=tab<CR>" },
-          -- ["<Leader>tc"] = { "<Cmd>lua Lazygit_toggle()<CR>" },
-          --   function()
-          --     require("toggleterm.terminal").Terminal
-          --       :new({
-          --         cmd = "Claude",
-          --         direction = "tab",
-          --         hidden = true,
-          --       })
-          --       :toggle()
-          --   end,
-          --   desc = "ClaudeCode",
-          -- },
           ["<Leader>tc"] = { function() vim.cmd "tabnew | terminal claude" end, desc = "Open Claude in new tab" },
           -- VIM
           ["vv"] = { "<S-v>", desc = "Visual Select" },
