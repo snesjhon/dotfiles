@@ -2,3 +2,4 @@
 
 - nvim
 - starship
+- wezterm
