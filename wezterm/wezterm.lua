@@ -31,6 +31,14 @@ end
 config.color_scheme = scheme_for_appearance(get_appearance())
 
 config.window_decorations = "RESIZE"
-config.font = wezterm.font("FiraCode Nerd Font")
+config.font = wezterm.font("Hack Nerd Font")
+
+config.keys = {
+	{
+		key = "P",
+		mods = "CTRL",
+		action = wezterm.action.DisableDefaultAssignment,
+	},
+}
 
 return config

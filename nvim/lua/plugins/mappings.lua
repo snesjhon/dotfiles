@@ -9,7 +9,8 @@ return {
           ["<C-j>"] = false,
         },
         t = {
-          ["<esc><esc>"] = { "<C-\\><C-n>", desc = "Exit terminal mode" },
+          ["<C-S-P>"] = { "<C-\\><C-n>", desc = "Exit terminal mode" },
+          ["<S-CR>"] = { "\n", desc = "Terminal New Line" },
         },
         n = {
           -- Removing AstroDefaults
@@ -29,6 +30,22 @@ return {
           ["<S-k>"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Previous buffer" },
           -- TERMINAL
           ["<Leader>tc"] = { function() vim.cmd "tabnew | terminal claude" end, desc = "Open Claude in new tab" },
+          ["<Leader>tt"] = { function() vim.cmd "tabnew | terminal" end, desc = "Open Terminal in new tab" },
+          ["<Leader>tl"] = {
+            function()
+              local Terminal = require("toggleterm.terminal").Terminal
+              local term = Terminal:new {
+                direction = "vertical",
+                size = 40,
+                on_open = function()
+                  vim.cmd "wincmd H"
+                  vim.cmd "vertical resize 40"
+                end,
+              }
+              term:toggle()
+            end,
+            desc = "Toggle Left vertical terminal",
+          },
           -- VIM
           ["vv"] = { "<S-v>", desc = "Visual Select" },
           -- GIT
