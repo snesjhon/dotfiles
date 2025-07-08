@@ -9,16 +9,14 @@ local config = wezterm.config_builder()
 config.initial_cols = 120
 config.initial_rows = 28
 
+-- FORMAT
+config.window_decorations = "RESIZE"
+config.font = wezterm.font("FiraCode Nerd Font", { weight = "Medium" })
+config.line_height = 1.2
 config.font_size = 15
 
+-- COLORS
 config.color_schemes = colors
-
-local function get_appearance()
-	if wezterm.gui then
-		return wezterm.gui.get_appearance()
-	end
-	return "Dark"
-end
 
 local function scheme_for_appearance(appearance)
 	if appearance:find("Dark") then
@@ -28,16 +26,51 @@ local function scheme_for_appearance(appearance)
 	end
 end
 
-config.color_scheme = scheme_for_appearance(get_appearance())
+-- Dark Mode Toggle
+wezterm.on("window-config-reloaded", function(window)
+	local overrides = window:get_config_overrides() or {}
+	local appearance = window:get_appearance()
+	local scheme = scheme_for_appearance(appearance)
+	if overrides.color_scheme ~= scheme then
+		overrides.color_scheme = scheme
+		window:set_config_overrides(overrides)
+	end
+end)
 
-config.window_decorations = "RESIZE"
-config.font = wezterm.font("Hack Nerd Font")
+-- CURSOR
+-- disable blinking cursor within terminal instances
+config.default_cursor_style = "SteadyBlock"
+config.cursor_blink_ease_in = "Constant"
+config.cursor_blink_ease_out = "Constant"
+config.cursor_blink_rate = 0
 
+-- TAB
+wezterm.on("format-tab-title", function(tab)
+	local cwd = tab.active_pane.current_working_dir
+	if cwd then
+		local path = cwd.file_path or cwd
+		local basename = path:match("([^/]+)/?$") or path
+		return basename
+	end
+	return tab.tab_title
+end)
+
+config.window_frame = {
+	font = wezterm.font("FiraCode", { weight = "Medium" }),
+	font_size = 14.0,
+}
+
+-- KEYS
 config.keys = {
 	{
 		key = "P",
 		mods = "CTRL",
 		action = wezterm.action.DisableDefaultAssignment,
+	},
+	{
+		key = "I",
+		mods = "CTRL",
+		action = wezterm.action.ActivateCommandPalette,
 	},
 }
 

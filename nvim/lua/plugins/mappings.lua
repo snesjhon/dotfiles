@@ -12,6 +12,12 @@ return {
           ["<C-S-P>"] = { "<C-\\><C-n>", desc = "Exit terminal mode" },
           ["<S-CR>"] = { "\n", desc = "Terminal New Line" },
         },
+        v = {
+          ["<leader>ll"] = {
+            ":<C-u>let @+ = expand('%') . ':' . line(\"'<\") . '-' . line(\"'>\") <CR>",
+            desc = "Copy file path with line range",
+          },
+        },
         n = {
           -- Removing AstroDefaults
           ["<Leader>w"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
