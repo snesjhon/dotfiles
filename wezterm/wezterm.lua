@@ -63,14 +63,24 @@ config.window_frame = {
 -- KEYS
 config.keys = {
 	{
-		key = "P",
-		mods = "CTRL",
-		action = wezterm.action.DisableDefaultAssignment,
-	},
-	{
 		key = "I",
 		mods = "CTRL",
 		action = wezterm.action.ActivateCommandPalette,
+	},
+	{
+		-- ActiveCopyMode within wezterm unless we're in nvim mode
+		key = "P",
+		mods = "CTRL",
+		action = wezterm.action_callback(function(window, pane)
+			local process_name = string.gsub(pane:get_foreground_process_name(), "(.*/)(.*)", "%2")
+			if process_name == "nvim" or process_name == "vim" then
+				-- Neovim is running, pass the key through
+				window:perform_action({ SendKey = { key = "P", mods = "CTRL" } }, pane)
+			else
+				-- Neovim is not running, activate copy mode
+				window:perform_action(wezterm.action.ActivateCopyMode, pane)
+			end
+		end),
 	},
 }
 

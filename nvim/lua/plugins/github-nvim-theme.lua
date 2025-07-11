@@ -1,6 +1,5 @@
 return {
   "projekt0n/github-nvim-theme",
-  lazy = true,
   name = "github-nvim-theme",
   config = function()
     require("github-theme").setup {
