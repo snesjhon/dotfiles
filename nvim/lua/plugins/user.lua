@@ -3,6 +3,22 @@ return {
   -- Remove Astro Defaults
   { "nvim-neo-tree/neo-tree.nvim", enabled = false },
   {
+    "shortcuts/no-neck-pain.nvim",
+    version = "*",
+    lazy = false,
+    opts = {
+      width = 119,
+      autocmds = {
+        skipEnteringNoNeckPainBuffer = true,
+      },
+      integrations = {
+        dashboard = {
+          enabled = true,
+        },
+      },
+    },
+  },
+  {
     "mrjones2014/smart-splits.nvim",
     opts = {
       mappings = {},
