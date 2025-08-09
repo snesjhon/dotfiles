@@ -2,4 +2,5 @@
 
 - nvim
 - starship
-- wezterm
+- tmux
+- zsh
