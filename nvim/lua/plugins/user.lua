@@ -5,9 +5,6 @@ return {
   {
     "f-person/auto-dark-mode.nvim",
     opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
       set_dark_mode = function()
         vim.api.nvim_set_option_value("background", "dark", {})
         vim.cmd "colorscheme github_dark_default"
@@ -28,20 +25,20 @@ return {
       width = 119,
       autocmds = {
         skipEnteringNoNeckPainBuffer = true,
+        enableOnVimEnter = true,
       },
       integrations = {
         dashboard = {
           enabled = true,
         },
       },
+      buffers = {
+        wo = {
+          fillchars = "eob: ",
+        },
+      },
     },
   },
-  -- {
-  --   "mrjones2014/smart-splits.nvim",
-  --   opts = {
-  --     mappings = {},
-  --   },
-  -- },
   -- super fun way of moving through code
   {
     "folke/flash.nvim",
@@ -72,38 +69,3 @@ return {
     },
   },
 }
-
--- -- customize dashboard options
--- {
---   "folke/snacks.nvim",
---   opts = {
---     dashboard = {
---       preset = {
---         header = table.concat({
---           " █████  ███████ ████████ ██████   ██████ ",
---           "██   ██ ██         ██    ██   ██ ██    ██",
---           "███████ ███████    ██    ██████  ██    ██",
---           "██   ██      ██    ██    ██   ██ ██    ██",
---           "██   ██ ███████    ██    ██   ██  ██████ ",
---           "",
---           "███    ██ ██    ██ ██ ███    ███",
---           "████   ██ ██    ██ ██ ████  ████",
---           "██ ██  ██ ██    ██ ██ ██ ████ ██",
---           "██  ██ ██  ██  ██  ██ ██  ██  ██",
---           "██   ████   ████   ██ ██      ██",
---         }, "\n"),
---       },
---     },
---   },
--- },
---
--- -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
--- {
---   "L3MON4D3/LuaSnip",
---   config = function(plugin, opts)
---     require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
---     -- add more custom luasnip configuration such as filetype extend or custom snippets
---     local luasnip = require "luasnip"
---     luasnip.filetype_extend("javascript", { "javascriptreact" })
---   end,
--- },
