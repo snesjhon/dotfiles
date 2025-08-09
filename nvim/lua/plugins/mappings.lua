@@ -9,13 +9,6 @@ return {
           ["<S-CR>"] = { "\n", desc = "Terminal New Line" },
         },
         v = {
-          -- ["<leader>ll"] = {
-          --   ":<C-u>let @+ = expand('%') . ':' . line(\"'<\") . '-' . line(\"'>\") <CR>",
-          --   desc = "Copy file path with line range",
-          -- },
-          -- vim.keymap.set({"n", "x" }, "<leader>gY", function()
-          --   Snacks.gitbrowse({ open = function(url) vim.fn.setreg("+", url) end, notify = false })
-          -- end, { desc = "Git Browse (copy)" })
           ["<leader>gi"] = {
             function()
               require("snacks").gitbrowse {
@@ -49,9 +42,6 @@ return {
             ":<C-u>let @+ = expand('%') <CR>",
             desc = "Copy file path",
           },
-          -- FUN!
-          ["<Leader>k"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>s"] = { "<Cmd>w<CR>" },
           -- EXPLORER
           ["<Leader>j"] = {
             function()
@@ -64,10 +54,9 @@ return {
             end,
             desc = "Toggle Explorer",
           },
-          -- ["<Leader>j"] = {
-          --   function() require("snacks").explorer() end,
-          --   desc = "Toggle Explorer",
-          -- },
+          -- FUN!
+          ["<Leader>k"] = { "<Cmd>NoNeckPain<CR>" },
+          ["<Leader>s"] = { "<Cmd>w<CR>" },
         },
       },
     },
