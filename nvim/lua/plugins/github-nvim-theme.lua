@@ -13,6 +13,8 @@ return {
           DiffAdd = { fg = "NONE", bg = "#DAFBE1" },
           DiffChange = { fg = "NONE", bg = "#FFEBE9" },
           DiffText = { fg = "NONE", bg = "#FFCECB" },
+          DiagnosticHint = { fg = "fg0" },
+          DiagnosticVirtualTextHint = { fg = "fg0" },
         },
       },
     }

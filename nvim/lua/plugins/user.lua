@@ -3,6 +3,13 @@ return {
   -- Remove Astro Defaults
   { "nvim-neo-tree/neo-tree.nvim", enabled = false },
   {
+    "akinsho/toggleterm.nvim",
+    cmd = { "ToggleTerm", "TermExec" },
+    opts = {
+      direction = "float",
+    },
+  },
+  {
     "f-person/auto-dark-mode.nvim",
     opts = {
       set_dark_mode = function()
@@ -58,7 +65,7 @@ return {
     },
     keys = {
       { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      -- { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
       { "r", mode = { "o" }, function() require("flash").remote() end, desc = "Remote Flash" },
       {
         "R",
