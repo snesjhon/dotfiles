@@ -1,5 +1,10 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# not entirely sureg
+
+[git_branch]
+format = '[$symbol$branch(:$remote_branch)]($style)[$worktree]($style) '
+
 [git_status]
 disabled = true
 

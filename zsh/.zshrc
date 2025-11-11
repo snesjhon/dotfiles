@@ -1,4 +1,5 @@
 # Based on josean's dotfiles: https://github.com/josean-dev/dev-environment-files/blob/main/.zshrc
+EDITOR=nvim
 HISTFILE=$HOME/.zhistory
 SAVEHIST=1000
 HISTSIZE=999
@@ -7,6 +8,7 @@ setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_verify
 setopt NO_BEEP
+setopt IGNORE_EOF
 
 # HOMEBREW
 [[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
