@@ -1,12 +1,11 @@
 return {
   {
     "AstroNvim/astrocore",
-    ---@type AstroCoreOpts
+    --- @type AstroCoreOpts
     opts = {
       mappings = {
         t = {
           ["<C-\\>"] = { "<C-\\><C-n>", desc = "Exit terminal mode" },
-          ["<S-CR>"] = { "\n", desc = "Terminal New Line" },
         },
         v = {
           ["<leader>gi"] = {
@@ -21,14 +20,19 @@ return {
         },
         n = {
           -- WINDOWS
-          ["<A-S-k>"] = { function() require("smart-splits").resize_up() end, desc = "Resize split up" },
-          ["<A-S-j>"] = { function() require("smart-splits").resize_down() end, desc = "Resize split down" },
-          ["<A-S-h>"] = { function() require("smart-splits").resize_left() end, desc = "Resize split left" },
-          ["<A-S-l>"] = { function() require("smart-splits").resize_right() end, desc = "Resize split right" },
+          ["<LocalLeader>l"] = { function() require("smart-splits").resize_left(30) end, desc = "Resize split left" },
+          ["<LocalLeader>;"] = { function() require("smart-splits").resize_right(30) end, desc = "Resize split right" },
           -- BUFFERS
           ["<S-j>"] = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Next buffer" },
           ["<S-k>"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Previous buffer" },
           ["<Leader>w"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
+          -- SPLITS
+          ["<Leader>\\"] = {
+            "<Cmd>vsplit<CR>",
+          },
+          ["<Leader>|"] = {
+            "<Cmd>split<CR>",
+          },
           ["<Leader>b\\"] = {
             function()
               require("astroui.status.heirline").buffer_picker(function(bufnr)

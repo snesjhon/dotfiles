@@ -32,12 +32,8 @@ return {
   {
     "coder/claudecode.nvim",
     dependencies = { "folke/snacks.nvim" },
-    opts = {
-      terminal_cmd = "/Users/jhonatansalazar/.nvm/versions/node/v22.18.0/bin/claude", -- Point to local installation
-    },
     config = true,
     keys = {
-      { "<leader>a", nil, desc = "AI/Claude Code" },
       { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
       { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
       { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
@@ -119,7 +115,6 @@ return {
     },
     keys = {
       { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      -- { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
       { "r", mode = { "o" }, function() require("flash").remote() end, desc = "Remote Flash" },
       {
         "R",
@@ -127,6 +122,12 @@ return {
         function() require("flash").treesitter_search() end,
         desc = "Treesitter Search",
       },
+    },
+  },
+  {
+    "kawre/leetcode.nvim",
+    opts = {
+      lang = "typescript",
     },
   },
 }

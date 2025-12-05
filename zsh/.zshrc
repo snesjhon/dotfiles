@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/Users/snesjhon/.zsh/completions:"* ]]; then export FPATH="/Users/snesjhon/.zsh/completions:$FPATH"; fi
 # Based on josean's dotfiles: https://github.com/josean-dev/dev-environment-files/blob/main/.zshrc
 export EDITOR=nvim
 export VISUAL=nvim
@@ -40,3 +42,7 @@ bindkey -M menuselect '^M' .accept-line
 bindkey '^[[A' history-beginning-search-backward
 bindkey '^[[B' history-beginning-search-forward
 export PATH="$HOME/.local/bin:$PATH"
+. "/Users/snesjhon/.deno/env"
+# Initialize zsh completions (added by deno install script)
+autoload -Uz compinit
+compinit
