@@ -33,31 +33,10 @@ return {
           ["<Leader>|"] = {
             "<Cmd>split<CR>",
           },
-          ["<Leader>b\\"] = {
-            function()
-              require("astroui.status.heirline").buffer_picker(function(bufnr)
-                vim.cmd.vsplit()
-                vim.api.nvim_win_set_buf(0, bufnr)
-              end)
-            end,
-            desc = "Switch",
-          },
-          ["<Leader>b|"] = {
-            function()
-              require("astroui.status.heirline").buffer_picker(function(bufnr)
-                vim.cmd.split()
-                vim.api.nvim_win_set_buf(0, bufnr)
-              end)
-            end,
-            desc = "Switch2",
-          },
           -- VIM
           ["vv"] = { "<S-v>", desc = "Visual Select" },
-          -- PICKERS
-          ["<Leader>fe"] = {
-            function() require("snacks").picker.highlights() end,
-            desc = "highlight",
-          },
+          ["<S-h>"] = { "^", desc = "Beginning of line" },
+          ["<S-l>"] = { "$", desc = "End of line" },
           ["grs"] = {
             function() require("snacks").picker.lsp_references() end,
             desc = "Search references",

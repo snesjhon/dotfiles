@@ -9,6 +9,18 @@ return {
           client.server_capabilities.documentRangeFormattingProvider = false
         end,
       },
+      basedpyright = {
+        settings = {
+          basedpyright = {
+            analysis = {
+              diagnosticSeverityOverrides = {
+                reportUnusedImport = "none",
+                reportWildcardImportFromLibrary = "none",
+              },
+            },
+          },
+        },
+      },
     },
   },
 }

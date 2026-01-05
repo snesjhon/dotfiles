@@ -1,0 +1,17 @@
+font-size = 16
+font-thicken = true
+font-thicken-strength = 0
+font-family = "psudoFont Liga Mono"
+adjust-cell-height = 9
+theme = "light:Github Light Default, dark:Github Dark Default"
+macos-icon = "blueprint"
+mouse-hide-while-typing = "true"
+cursor-opacity = "0.8"
+cursor-color = "cell-foreground"
+cursor-invert-fg-bg = true
+title = " "
+macos-titlebar-style = "transparent"
+macos-window-buttons = "hidden"
+macos-titlebar-proxy-icon = "hidden"
+minimum-contrast = 1.5
+
