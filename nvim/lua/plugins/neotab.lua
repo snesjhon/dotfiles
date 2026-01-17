@@ -16,6 +16,13 @@ return {
         { open = "`", close = "`" },
         { open = "<", close = ">" },
       },
+      smart_punctuators = {
+        enabled = true,
+        semicolon = {
+          enabled = true,
+          ft = { "javascript", "typescript" },
+        },
+      },
     },
   },
 }

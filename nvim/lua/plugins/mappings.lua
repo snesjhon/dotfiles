@@ -17,6 +17,8 @@ return {
             end,
             desc = "Git Browse (copy)",
           },
+          ["<S-h>"] = { "^", desc = "Beginning of line" },
+          ["<S-l>"] = { "$", desc = "End of line" },
         },
         n = {
           -- WINDOWS
