@@ -31,20 +31,14 @@ create_zen() {
 
     SIDE_WIDTH=$((TOTAL_MARGIN / 2))
 
-    tmux split-window -hdt "$CURRENT_PANE" "cat"
-    tmux split-window -hbdt "$CURRENT_PANE" "cat"
+    # Create left spacer pane (before current)
+    tmux split-window -hb -t "$CURRENT_PANE" -l "$SIDE_WIDTH" "cat"
 
-    tmux select-layout even-horizontal
-    tmux resize-pane -t "$CURRENT_PANE" -x "$CENTER_WIDTH"
+    # Create right spacer pane (after current)
+    tmux split-window -h -t "$CURRENT_PANE" -l "$SIDE_WIDTH" "cat"
 
-    for pane in $(tmux list-panes -F '#{pane_id}'); do
-        if [ "$pane" != "$CURRENT_PANE" ]; then
-            pane_command=$(tmux display-message -p -t "$pane" '#{pane_current_command}')
-            if [ "$pane_command" = "cat" ]; then
-                tmux resize-pane -t "$pane" -x "$SIDE_WIDTH"
-            fi
-        fi
-    done
+    # Refocus on the center pane
+    tmux select-pane -t "$CURRENT_PANE"
 }
 
 destroy_zen() {

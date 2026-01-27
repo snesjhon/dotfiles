@@ -4,9 +4,6 @@ return {
     --- @type AstroCoreOpts
     opts = {
       mappings = {
-        t = {
-          ["<C-\\>"] = { "<C-\\><C-n>", desc = "Exit terminal mode" },
-        },
         v = {
           ["<leader>gi"] = {
             function()
