@@ -1,0 +1,35 @@
+# Homebrew Bundle - All packages and apps
+# Usage: brew bundle install
+
+# Taps
+tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
+
+# Core CLI Tools
+brew "bash"
+brew "zsh"
+brew "zsh-autocomplete"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
+
+# Development Tools
+brew "neovim"
+brew "tmux"
+brew "fzf"
+brew "ripgrep"
+brew "tree-sitter"
+brew "gh"              # GitHub CLI
+brew "node"
+brew "nvm"
+
+# Terminal Enhancement
+brew "starship"        # Prompt
+
+# GUI Applications
+cask "ghostty"
+cask "google-chrome"
+cask "iterm2"
+cask "monitorcontrol"
+
+# Fonts
+cask "font-symbols-only-nerd-font"

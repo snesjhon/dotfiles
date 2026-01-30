@@ -3,7 +3,21 @@ name: leet-mental
 description: Generate mental model study guides for LeetCode problems with strong analogies
 ---
 
-# Project Preferences for Leetcode
+# Mental Model Building for LeetCode Problems
+
+## Purpose
+This skill creates mental model study guides that help understand algorithm concepts through **a single, powerful analogy**.
+
+**What this skill does:**
+- Builds deep understanding of the problem and solution approach
+- Explains the "why" behind algorithmic choices
+- Creates memorable mental models using real-world analogies
+
+**What this skill does NOT do:**
+- Analyze or debug existing code
+- Fix bugs in implementations
+- Review or critique current solutions
+- Compare multiple solution approaches
 
 ## Study Guides Location
 - Always create study guide directories in `/Users/snesjhon/Developer/snesjhon/ysk/study-guides/`
@@ -11,10 +25,12 @@ description: Generate mental model study guides for LeetCode problems with stron
 - Use the format: `/Users/snesjhon/Developer/snesjhon/ysk/study-guides/[problem-number]-[problem-name]/`
 
 ## Required Workflow
-1. Create mental-model.md with mermaid charts for visualizations
-2. **MUST validate all mermaid charts** using the validation script
-3. Fix any validation errors before considering the file complete
-4. Never ship a mental model with unvalidated or broken mermaid charts
+1. Choose ONE powerful analogy and commit to it
+2. Build the case for why this analogy fits perfectly
+3. Create mental-model.md using only that analogy throughout
+4. Use mermaid charts for visualizations
+5. **MUST validate all mermaid charts** using the validation script
+6. Fix any validation errors before considering the file complete
 
 **Validation command:**
 ```bash
@@ -23,68 +39,135 @@ description: Generate mental model study guides for LeetCode problems with stron
 
 ---
 
-## Creating Mental Model Files
+## Core Principles
 
-### Core Principles
+1. **Choose ONE analogy and commit** - Select a single real-world metaphor and use it consistently
+2. **Defend your analogy choice** - Explain why this specific analogy maps perfectly to the problem
+3. **Stay in the analogy** - Never break character; keep all explanations using analogy terms
+4. **Build from ground up** - Start with the simplest case, show the pattern emerging
+5. **Focus on intuition, not math** - Avoid formulas and equations until after understanding
+6. **Use clear visualizations** - Leverage mermaid charts and tables
+7. **Explain every piece** - Never assume understanding of any component
 
-1. **Start with an analogy** - Use real-world metaphors that make the abstract concrete
-2. **Build from ground up** - Start with the simplest case, show the pattern emerging
-3. **Focus on intuition, not math** - Avoid formulas and equations until after understanding
-4. **Use clear visualizations** - Prefer tables and simple diagrams over text explanations
-5. **Explain every piece** - Never assume understanding of any component
+## Why Defend the Analogy?
+
+**A strong mental model requires justification.**
+
+Don't just pick an analogy - prove it's the right one. Address:
+- **Perfect mapping:** Show how every algorithm concept has a natural real-world parallel
+- **Edge case clarity:** Demonstrate that weird edge cases make sense in your analogy
+- **Natural constraints:** Show that algorithm rules/limitations mirror real-world physics
+- **Aha moment:** Explain what insight becomes obvious through this lens
+
+**Example defense:**
+> "The odometer analogy works perfectly for subarray sums because:
+> - Running sum = total miles driven (only goes forward)
+> - Subarray = segment between two checkpoints
+> - Negative numbers = going backward (odometer decreases)
+> - Finding target sum = finding exact distance traveled between checkpoints
+> - Why use a hashmap? Because you keep a logbook of every checkpoint!"
+
+The defense makes the choice feel inevitable, not arbitrary.
 
 ### Structure Template
 
 ```markdown
 # [Problem Name] - Mental Model
 
-## The [Strong Analogy] Analogy
+## The [Single Analogy Name] Analogy
 
-[Real-world metaphor that maps directly to the algorithm]
-- Component A in algorithm = Thing X in real world
-- Component B in algorithm = Thing Y in real world
+[Opening statement: "Understanding this problem is like..."]
+
+### Why This Analogy Works
+
+**The core insight:** [One sentence explaining the key parallel]
+
+**Perfect mappings:**
+- Algorithm concept A → Real-world element X
+- Algorithm concept B → Real-world element Y
+- Algorithm operation C → Real-world action Z
+
+**Why this analogy and not others:**
+[Defend why this specific analogy is superior to alternatives]
+- Rules/constraints map naturally
+- Edge cases make intuitive sense
+- The "aha moment" becomes obvious
 
 ## Building from the Ground Up
 
 ### The Simplest Case: [minimal example]
 
-[Trace through with actual values, showing each step]
+[Trace through using ONLY analogy terms, with concrete values]
+[Show each step as it happens in the analogy]
 
 ### Adding Complexity: [slightly larger example]
 
-[Show how the pattern scales, what changes]
+[Stay in analogy - show how the pattern scales]
+[What changes? Why does it still work?]
 
 ## What Just Happened?
 
-[Reflect on the insight discovered, not just mechanics]
+[Reflect on the insight discovered through the analogy]
+[Why does this approach make sense in analogy terms?]
 
 ## Why [Key Component] Works This Way
 
-[Explain the "why" behind design decisions with concrete examples]
-
-## Why Not [Alternative Approach]?
-
-[Compare to simpler/obvious approaches with concrete numbers]
+[Explain design decisions entirely through the analogy]
+[Concrete examples using analogy vocabulary]
 
 ## Common Misconceptions
 
 ### ❌ "[Wrong assumption]"
-[Why it's wrong with concrete example]
+Why it's wrong: [Counterexample in analogy terms]
 
 ### ✅ "[Correct understanding]"
-[Why it's right]
+Why it's right: [Concrete example in analogy terms]
 
 ## Try It Yourself
 
-[Hands-on exercise for the reader to trace]
+[Hands-on exercise using analogy vocabulary]
+Given: [concrete scenario in analogy]
+Predict: [expected outcome]
 
 ## The Algorithm in Plain English
 
-[Step-by-step without code, using analogy terms]
+**Using our [analogy] framework:**
+1. Start with [analogy term]
+2. For each [analogy element], perform [analogy action]
+3. Check if [analogy condition]
+4. Update [analogy state]
+5. Return [analogy result]
+
+[Never leave the analogy - every step should make sense in real-world terms]
 
 ## Complete Solution
 
-[Actual code with comments referencing the analogy]
+```typescript
+function solveProblem(input: number[]): number {
+    // Variable names reflect the analogy
+    const analogyStorage = new Map<number, number>();
+    let analogyState = 0;
+
+    for (const element of input) {
+        // Comments use analogy vocabulary
+        // "In our analogy, this is like..."
+        analogyState += element;
+
+        const targetCondition = analogyState - k;
+        if (analogyStorage.has(targetCondition)) {
+            // Found in analogy terms
+        }
+
+        analogyStorage.set(analogyState,
+            (analogyStorage.get(analogyState) || 0) + 1);
+    }
+
+    return result;
+}
+```
+
+**Tracing the analogy:**
+[Walk through the code entirely using analogy vocabulary]
 ```
 
 ### Visualization Guidelines
@@ -207,24 +290,43 @@ you look in your logbook for when the odometer read 70.
 The segment between 70 and 100 is exactly 30 miles!
 ```
 
-### Analogies That Work Well
+### Choosing Your Single Analogy
+
+**CRITICAL: Pick ONE analogy and commit to it completely.**
+
+Don't mix analogies. Don't switch metaphors mid-explanation. The power comes from consistency.
+
+#### Proven Analogies by Problem Type
 
 **Subarray Sum Problems:**
-- Odometer/checkpoint journey (running sums as cumulative distances)
-- Bank account balance (deposits/withdrawals)
+- **Odometer journey** (running sums = cumulative distances traveled)
+  - Why it works: Segments between checkpoints = subarrays
+  - Natural fit for prefix sums, looking back at previous readings
+- Alternative: Bank account balance (but less visual)
 
 **Tree Problems:**
-- Mountain climbing (going up/down)
-- Organization hierarchy (parent/child relationships)
-- Family tree (ancestors/descendants)
+- **Mountain climbing** (going up to children, down to parent)
+  - Why it works: Height/altitude maps to depth, peaks = leaves
+  - Natural fit for DFS, path concepts
+- Alternatives: Family tree, org chart (but less dynamic)
 
 **Backtracking:**
-- Exploring a maze (try paths, backtrack from dead ends)
-- Building something step-by-step with rules
+- **Maze exploration** (try paths, hit walls, backtrack)
+  - Why it works: Dead ends = invalid states, retracing steps = backtracking
+  - Natural fit for constraint checking, state restoration
+- Alternative: Building with rules (but less about exploration)
 
 **Graph Problems:**
-- Social network (people as nodes, friendships as edges)
-- City map (cities as nodes, roads as edges)
+- **City/road map** (cities = nodes, roads = edges)
+  - Why it works: Distance, connectivity, paths all intuitive
+  - Natural fit for BFS/DFS, shortest path
+- Alternative: Social network (but less spatial)
+
+**Selection criteria:**
+- Does every algorithm concept have a natural real-world parallel?
+- Do edge cases make sense in the analogy?
+- Will someone remember this analogy weeks later?
+- Can you explain the entire solution without leaving the analogy?
 
 ### Variable Naming in Solutions
 
@@ -250,21 +352,35 @@ const target = sum - k;
 
 Before considering a mental model complete, verify:
 
-1. **Can you explain it without code?** Walk through an example verbally
-2. **Does it answer "why"?** Not just "what" or "how"
-3. **Can you predict behavior?** Given new inputs, can you trace the outcome
-4. **Does it handle edge cases?** Explain why base cases exist
-5. **Is it memorable?** Will you remember the analogy days later
+1. **Single analogy test:** Did you stay in ONE analogy throughout?
+2. **Can you explain it without code?** Walk through entirely using analogy terms
+3. **Does it answer "why"?** Not just "what" or "how"
+4. **Can you predict behavior?** Given new inputs, trace outcome in analogy terms
+5. **Does it handle edge cases?** Explain why base cases exist using the analogy
+6. **Is it memorable?** Will you remember the analogy days/weeks later?
+7. **No code analysis?** Did you avoid debugging or reviewing existing code?
+8. **Analogy justification:** Did you defend WHY this analogy is the right choice?
+
+**The ultimate test:** Can someone read this once and solve similar problems by thinking in terms of your analogy?
 
 ### What to Avoid
 
-- ❌ Starting with "The algorithm does X"
-- ❌ Using mathematical notation before intuition
-- ❌ Comparing multiple approaches upfront (do this after understanding one)
-- ❌ Assuming knowledge of data structures (explain why hashmap vs array)
+**Never do these:**
+- ❌ Analyzing or debugging existing code implementations
+- ❌ Fixing bugs in current solutions
+- ❌ Reviewing code quality or suggesting refactors
+- ❌ Mixing multiple analogies or switching metaphors mid-explanation
+- ❌ Starting with "The algorithm does X" instead of analogy
+- ❌ Breaking out of the analogy to use technical terms
+- ❌ Using mathematical notation before building intuition
+- ❌ Comparing multiple solution approaches (focus on understanding ONE way)
+- ❌ Assuming knowledge of data structures (explain why through analogy)
 - ❌ Skipping the "why this exists" for each component
 - ❌ Using confusing phrasing like "subtract an old running total"
 - ❌ Missing the progression from simple to complex examples
+- ❌ Generic variable names (use analogy-based names always)
+
+**Remember:** This is about building understanding, not analyzing code.
 
 ### Reference Examples
 
