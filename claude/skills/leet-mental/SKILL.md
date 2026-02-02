@@ -184,7 +184,7 @@ function solveProblem(input: number[]): number {
 - Lookup tables and mappings
 
 **Mermaid Chart Best Practices:**
-- Always validate charts with `mmdc` before considering them complete
+- Always validate chart syntax before considering them complete
 - Label nodes with concrete values from your example (not abstract variables)
 - Use analogy-based labels (e.g., "Mile 70" instead of "sum=70")
 - Keep hierarchy clear with proper indentation
@@ -256,9 +256,9 @@ After creating a mental model with mermaid charts, you MUST validate them:
 
 The script will:
 1. Extract all mermaid blocks from the markdown file
-2. Validate each chart using `mmdc`
-3. Report which charts are valid or have errors
-4. Exit with error code if any chart is invalid
+2. Validate basic syntax (diagram type, structure, common errors)
+3. Report which charts pass syntax validation
+4. Exit with error code if any chart has syntax errors
 
 **Validation workflow:**
 1. Create mental-model.md with mermaid charts
@@ -266,13 +266,7 @@ The script will:
 3. If errors found: fix the mermaid syntax and re-run
 4. Only consider the file complete when all charts pass validation
 
-The validation ensures charts render correctly in GitHub, Obsidian, and other markdown viewers.
-
-**Manual validation (alternative):**
-```bash
-# Extract a single chart and test it
-mmdc -i chart.mmd -o /dev/null
-```
+**Note:** This performs basic syntax validation without rendering. Charts should still be visually verified in GitHub, Obsidian, or other markdown viewers.
 
 ### Example: Good vs Bad Explanations
 

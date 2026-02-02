@@ -98,8 +98,8 @@ return {
             desc = "Toggle Explorer",
           },
           -- FUN!
-          ["<Leader>k"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>s"] = { "<Cmd>w<CR>" },
+          ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
+          ["<Leader>k"] = { "<Cmd>w<CR>" },
         },
       },
     },

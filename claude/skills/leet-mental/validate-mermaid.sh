@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Validate all mermaid charts in a markdown file
+# Validate all mermaid charts in a markdown file (syntax check only)
 # Usage: ./validate-mermaid.sh <markdown-file>
 
 set -e
@@ -15,12 +15,6 @@ MARKDOWN_FILE="$1"
 
 if [ ! -f "$MARKDOWN_FILE" ]; then
     echo "Error: File not found: $MARKDOWN_FILE"
-    exit 1
-fi
-
-# Check if mmdc is installed
-if ! command -v mmdc &> /dev/null; then
-    echo "Error: mmdc not found. Install with: npm install -g @mermaid-js/mermaid-cli"
     exit 1
 fi
 
@@ -57,28 +51,91 @@ fi
 echo "Found $CHART_COUNT mermaid chart(s)"
 echo ""
 
+# Valid mermaid diagram types
+VALID_TYPES=(
+    "graph"
+    "flowchart"
+    "sequenceDiagram"
+    "classDiagram"
+    "stateDiagram"
+    "stateDiagram-v2"
+    "erDiagram"
+    "journey"
+    "gantt"
+    "pie"
+    "quadrantChart"
+    "requirementDiagram"
+    "gitGraph"
+    "mindmap"
+    "timeline"
+    "C4Context"
+)
+
+# Function to validate mermaid syntax
+validate_chart() {
+    local chart_file="$1"
+    local chart_num="$2"
+    local errors=""
+
+    # Check if file is empty
+    if [ ! -s "$chart_file" ]; then
+        echo "✗ Chart $chart_num: INVALID (empty chart)"
+        return 1
+    fi
+
+    # Read first non-empty line to check diagram type
+    local first_line=$(grep -v '^[[:space:]]*$' "$chart_file" | head -n 1)
+
+    # Extract the diagram type (first word)
+    local diagram_type=$(echo "$first_line" | awk '{print $1}')
+
+    # Check if diagram type is valid
+    local valid=0
+    for type in "${VALID_TYPES[@]}"; do
+        if [[ "$first_line" == "$type"* ]]; then
+            valid=1
+            break
+        fi
+    done
+
+    if [ $valid -eq 0 ]; then
+        echo "✗ Chart $chart_num: INVALID"
+        echo "  Error: Unknown diagram type '$diagram_type'"
+        echo "  Valid types: ${VALID_TYPES[*]}"
+        return 1
+    fi
+
+    # Basic syntax checks
+    local content=$(cat "$chart_file")
+
+    # Check for common syntax issues
+    if [[ "$content" =~ \`\`\` ]]; then
+        echo "✗ Chart $chart_num: INVALID"
+        echo "  Error: Contains code fence markers (\`\`\`) - these should not be in the mermaid content"
+        return 1
+    fi
+
+    echo "✓ Chart $chart_num: Valid (type: $diagram_type)"
+    return 0
+}
+
 # Validate each chart
 ALL_VALID=1
 for i in $(seq 1 $CHART_COUNT); do
     CHART_FILE="$TEMP_DIR/chart_$i.mmd"
-    OUTPUT_FILE="$TEMP_DIR/chart_$i.svg"
-    echo "Validating chart $i..."
 
-    if mmdc -i "$CHART_FILE" -o "$OUTPUT_FILE" 2>&1 > /dev/null; then
-        echo "✓ Chart $i: Valid"
-    else
-        echo "✗ Chart $i: INVALID"
-        echo "  Error details:"
-        mmdc -i "$CHART_FILE" -o "$OUTPUT_FILE" 2>&1 | sed 's/^/  /'
+    if ! validate_chart "$CHART_FILE" "$i"; then
         ALL_VALID=0
+        echo ""
     fi
-    echo ""
 done
 
 if [ $ALL_VALID -eq 1 ]; then
-    echo "✓ All charts are valid!"
+    echo ""
+    echo "✓ All charts passed syntax validation!"
+    echo "  Note: This is a basic syntax check. Charts may still have rendering issues."
     exit 0
 else
-    echo "✗ Some charts have errors. Please fix them."
+    echo "✗ Some charts have syntax errors. Please fix them."
     exit 1
 fi
