@@ -97,6 +97,11 @@ return {
             end,
             desc = "Toggle Explorer",
           },
+          -- TERMINAL
+          ["<F7>"] = {
+            function() require("snacks").terminal() end,
+            desc = "Toggle Terminal",
+          },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
           ["<Leader>k"] = { "<Cmd>w<CR>" },

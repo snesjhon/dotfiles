@@ -48,6 +48,7 @@ This skill creates mental model study guides that help understand algorithm conc
 5. **Focus on intuition, not math** - Avoid formulas and equations until after understanding
 6. **Use clear visualizations** - Leverage mermaid charts and tables
 7. **Explain every piece** - Never assume understanding of any component
+8. **⭐ BUILD CODE INCREMENTALLY** - Each analogy concept must map to a code snippet. Build the algorithm piece by piece as you explain the analogy, not all at once at the end
 
 ## Why Defend the Analogy?
 
@@ -68,6 +69,111 @@ Don't just pick an analogy - prove it's the right one. Address:
 > - Why use a hashmap? Because you keep a logbook of every checkpoint!"
 
 The defense makes the choice feel inevitable, not arbitrary.
+
+## Building Code Through the Analogy
+
+**CRITICAL: The analogy should progressively build the code, not exist separately from it.**
+
+### Why This Matters
+
+Analogies are powerful, but without tying them to actual code constructs, they remain abstract. The goal is to show:
+1. **Analogy concept** → **Specific code logic**
+2. **Incrementally build** the algorithm as you explain
+3. **Each section adds code** that corresponds to the analogy being explained
+
+### The Wrong Way
+
+❌ **Separate analogy from code:**
+```
+## The Analogy
+[Long analogy explanation]
+
+## Complete Solution
+[Dump entire algorithm here]
+```
+
+This forces the reader to make the connection themselves. Many won't.
+
+### The Right Way
+
+✅ **Interleave analogy with code building:**
+
+```markdown
+## Setting Up the Quality Control Station
+
+In our factory, we need two things:
+- **Storage position**: Where we'll place the next good item
+- **Inspector**: Who walks the line checking items
+
+**In code, this means:**
+```typescript
+let storageSlot = 0;  // Next position for good items
+// Inspector = our loop variable (shown next)
+```
+
+## The Inspector Walks the Line
+
+The inspector examines each item on the belt, one by one, from start to finish.
+
+**In code:**
+```typescript
+let storageSlot = 0;
+
+for (let inspector = 0; inspector < nums.length; inspector++) {
+    // Inspector is now at position 'inspector'
+    // What should they do? (explained next...)
+}
+```
+
+## Checking Each Item
+
+When the inspector finds a good item (not defective), they place it at the storage position and advance the counter.
+
+**In code:**
+```typescript
+let storageSlot = 0;
+
+for (let inspector = 0; inspector < nums.length; inspector++) {
+    const currentItem = nums[inspector];
+
+    if (currentItem !== val) {  // Good item!
+        nums[storageSlot] = currentItem;  // Place it
+        storageSlot++;                     // Advance storage
+    }
+    // If defective, skip (do nothing)
+}
+```
+
+## Reporting Results
+
+After inspecting every item, the storage counter tells us how many good items we have.
+
+**Final code:**
+```typescript
+function removeElement(nums: number[], val: number): number {
+    let storageSlot = 0;
+
+    for (let inspector = 0; inspector < nums.length; inspector++) {
+        if (nums[inspector] !== val) {
+            nums[storageSlot] = nums[inspector];
+            storageSlot++;
+        }
+    }
+
+    return storageSlot;  // Count of good items
+}
+```
+```
+
+### The Pattern
+
+Each section should follow this pattern:
+1. **Analogy concept** - "The inspector walks the line"
+2. **Why it matters** - "We need to check every item once"
+3. **Code mapping** - Show the code that implements this concept
+4. **Progressive building** - Add to previous code, don't start from scratch
+
+By the end, the reader has seen the algorithm built piece by piece, with each piece justified by the analogy.
 
 ### Structure Template
 
@@ -93,81 +199,97 @@ The defense makes the choice feel inevitable, not arbitrary.
 - Edge cases make intuitive sense
 - The "aha moment" becomes obvious
 
-## Building from the Ground Up
+## Building the Algorithm Step-by-Step
 
-### The Simplest Case: [minimal example]
+### Step 1: [First Analogy Concept]
 
-[Trace through using ONLY analogy terms, with concrete values]
-[Show each step as it happens in the analogy]
+**The analogy:**
+[Explain the concept in analogy terms]
 
-### Adding Complexity: [slightly larger example]
+**What this means in code:**
+```typescript
+// Show just this piece
+let variable = initialValue;
+```
 
-[Stay in analogy - show how the pattern scales]
-[What changes? Why does it still work?]
+**Why:** [Connect the code to the analogy]
 
-## What Just Happened?
+### Step 2: [Second Analogy Concept]
 
-[Reflect on the insight discovered through the analogy]
-[Why does this approach make sense in analogy terms?]
+**The analogy:**
+[Next concept - builds on previous]
 
-## Why [Key Component] Works This Way
+**Adding to our code:**
+```typescript
+let variable = initialValue;
 
-[Explain design decisions entirely through the analogy]
-[Concrete examples using analogy vocabulary]
+for (let i = 0; i < input.length; i++) {
+    // This loop represents [analogy concept]
+}
+```
+
+**Why:** [Explain the connection]
+
+### Step 3: [Third Analogy Concept]
+
+**The analogy:**
+[What happens inside the main operation]
+
+**The logic:**
+```typescript
+let variable = initialValue;
+
+for (let i = 0; i < input.length; i++) {
+    if (condition) {  // In our analogy: [what this check means]
+        // Take action
+    }
+}
+```
+
+**Why:** [Connect to analogy]
+
+### Step 4: [Final Piece]
+
+**The analogy:**
+[How we know we're done, what to return]
+
+**Complete algorithm:**
+```typescript
+function solveProblem(input: number[]): number {
+    let variable = initialValue;
+
+    for (let i = 0; i < input.length; i++) {
+        if (condition) {
+            // Action
+        }
+    }
+
+    return variable;  // In analogy: [what this represents]
+}
+```
+
+## Tracing Through an Example
+
+[Use a concrete example, show:
+1. Analogy state at each step
+2. Corresponding code state
+3. How they mirror each other]
 
 ## Common Misconceptions
 
 ### ❌ "[Wrong assumption]"
-Why it's wrong: [Counterexample in analogy terms]
+Why it's wrong: [Counterexample in analogy AND code]
 
 ### ✅ "[Correct understanding]"
-Why it's right: [Concrete example in analogy terms]
+Why it's right: [Concrete example showing analogy and code alignment]
 
 ## Try It Yourself
 
-[Hands-on exercise using analogy vocabulary]
-Given: [concrete scenario in analogy]
-Predict: [expected outcome]
-
-## The Algorithm in Plain English
-
-**Using our [analogy] framework:**
-1. Start with [analogy term]
-2. For each [analogy element], perform [analogy action]
-3. Check if [analogy condition]
-4. Update [analogy state]
-5. Return [analogy result]
-
-[Never leave the analogy - every step should make sense in real-world terms]
-
-## Complete Solution
-
-```typescript
-function solveProblem(input: number[]): number {
-    // Variable names reflect the analogy
-    const analogyStorage = new Map<number, number>();
-    let analogyState = 0;
-
-    for (const element of input) {
-        // Comments use analogy vocabulary
-        // "In our analogy, this is like..."
-        analogyState += element;
-
-        const targetCondition = analogyState - k;
-        if (analogyStorage.has(targetCondition)) {
-            // Found in analogy terms
-        }
-
-        analogyStorage.set(analogyState,
-            (analogyStorage.get(analogyState) || 0) + 1);
-    }
-
-    return result;
-}
-```
-
-**Tracing the analogy:**
-[Walk through the code entirely using analogy vocabulary]
+[Exercise with:
+1. Input in analogy terms
+2. Expected analogy steps
+3. What the code does
+4. Expected output]
 ```
 
 ### Visualization Guidelines
@@ -347,15 +469,18 @@ const target = sum - k;
 Before considering a mental model complete, verify:
 
 1. **Single analogy test:** Did you stay in ONE analogy throughout?
-2. **Can you explain it without code?** Walk through entirely using analogy terms
-3. **Does it answer "why"?** Not just "what" or "how"
-4. **Can you predict behavior?** Given new inputs, trace outcome in analogy terms
-5. **Does it handle edge cases?** Explain why base cases exist using the analogy
-6. **Is it memorable?** Will you remember the analogy days/weeks later?
-7. **No code analysis?** Did you avoid debugging or reviewing existing code?
-8. **Analogy justification:** Did you defend WHY this analogy is the right choice?
+2. **Code built incrementally:** Does each section add code that maps to the analogy concept being explained?
+3. **Clear mapping:** Can you point to which analogy concept corresponds to which line of code?
+4. **Progressive understanding:** By reading sequentially, does the algorithm build naturally without jumps?
+5. **Can you explain it without code?** Walk through entirely using analogy terms
+6. **Does it answer "why"?** Not just "what" or "how"
+7. **Can you predict behavior?** Given new inputs, trace outcome in analogy terms
+8. **Does it handle edge cases?** Explain why base cases exist using the analogy
+9. **Is it memorable?** Will you remember the analogy days/weeks later?
+10. **No code analysis?** Did you avoid debugging or reviewing existing code?
+11. **Analogy justification:** Did you defend WHY this analogy is the right choice?
 
-**The ultimate test:** Can someone read this once and solve similar problems by thinking in terms of your analogy?
+**The ultimate test:** Can someone read this once, see how each analogy piece becomes code, and solve similar problems by thinking in terms of your analogy?
 
 ### What to Avoid
 
@@ -373,6 +498,8 @@ Before considering a mental model complete, verify:
 - ❌ Using confusing phrasing like "subtract an old running total"
 - ❌ Missing the progression from simple to complex examples
 - ❌ Generic variable names (use analogy-based names always)
+- ❌ **Dumping complete code at the end instead of building it incrementally**
+- ❌ **Explaining analogy separately from code - they must be interleaved**
 
 **Remember:** This is about building understanding, not analyzing code.
 

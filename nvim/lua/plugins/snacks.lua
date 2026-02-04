@@ -8,6 +8,23 @@ return {
     indent = {
       enabled = false,
     },
+    terminal = {
+      win = {
+        position = "float",
+        backdrop = 80,
+        height = 0.9,
+        width = 0.8,
+        border = "hpad",
+        keys = {
+          term_hide = {
+            "<F7>",
+            function(self) self:hide() end,
+            mode = "t",
+            desc = "Hide Terminal",
+          },
+        },
+      },
+    },
     dashboard = {
       preset = {
         header = [[

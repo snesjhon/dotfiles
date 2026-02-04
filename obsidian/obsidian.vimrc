@@ -11,6 +11,9 @@ nmap <C-i> :forward<CR>
 exmap followLinkUnderCursor obcommand editor:follow-link
 nmap gd :followLinkUnderCursor<CR>
 
+exmap openLinkUnderCursor obcommand editor:open-link-in-new-window
+nmap gx :openLinkUnderCursor<CR>
+
 exmap format obcommand obsidian-plugin-prettier:format-note
 nmap gf :format<CR>
 
