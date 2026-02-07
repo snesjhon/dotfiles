@@ -102,9 +102,33 @@ return {
             function() require("snacks").terminal() end,
             desc = "Toggle Terminal",
           },
+          -- CLAUDE CODE
+          ["<F8>"] = {
+            function()
+              require("snacks").terminal.toggle("claude", {
+                win = {
+                  position = "float",
+                  backdrop = 80,
+                  height = 0.9,
+                  width = 0.8,
+                  border = "hpad",
+                },
+              })
+            end,
+            desc = "Toggle Claude Code",
+          },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
           ["<Leader>k"] = { "<Cmd>w<CR>" },
+        },
+        t = {
+          -- CLAUDE CODE - Hide when in terminal mode
+          ["<F8>"] = {
+            function()
+              require("snacks").terminal.toggle("claude")
+            end,
+            desc = "Hide Claude Code",
+          },
         },
       },
     },

@@ -26,11 +26,13 @@ This skill creates mental model study guides that help understand algorithm conc
 
 ## Required Workflow
 1. Choose ONE powerful analogy and commit to it
-2. Build the case for why this analogy fits perfectly
-3. Create mental-model.md using only that analogy throughout
-4. Use mermaid charts for visualizations
-5. **MUST validate all mermaid charts** using the validation script
-6. Fix any validation errors before considering the file complete
+2. **Phase 1:** Write substantial analogy section explaining the mental model (NO CODE yet)
+3. **Phase 2:** Build the algorithm incrementally, translating analogy concepts to code
+4. Create mental-model.md using only that analogy throughout
+5. Use mermaid charts for visualizations
+6. **MUST validate all mermaid charts** using the validation script
+7. Fix any validation errors before considering the file complete
+8. **DO NOT create README.md or any other summary documents** - only create mental-model.md
 
 **Validation command:**
 ```bash
@@ -42,113 +44,142 @@ This skill creates mental model study guides that help understand algorithm conc
 ## Core Principles
 
 1. **Choose ONE analogy and commit** - Select a single real-world metaphor and use it consistently
-2. **Defend your analogy choice** - Explain why this specific analogy maps perfectly to the problem
+2. **Build the mental model FIRST** - Fully explain the analogy before introducing any code
 3. **Stay in the analogy** - Never break character; keep all explanations using analogy terms
 4. **Build from ground up** - Start with the simplest case, show the pattern emerging
 5. **Focus on intuition, not math** - Avoid formulas and equations until after understanding
 6. **Use clear visualizations** - Leverage mermaid charts and tables
 7. **Explain every piece** - Never assume understanding of any component
-8. **⭐ BUILD CODE INCREMENTALLY** - Each analogy concept must map to a code snippet. Build the algorithm piece by piece as you explain the analogy, not all at once at the end
+8. **⭐ THEN BUILD CODE INCREMENTALLY** - After the mental model is solid, translate each analogy concept to code piece by piece
 
-## Why Defend the Analogy?
+## Two-Phase Approach: Mental Model First, Then Code
 
-**A strong mental model requires justification.**
+**CRITICAL: Build understanding in two distinct phases.**
 
-Don't just pick an analogy - prove it's the right one. Address:
-- **Perfect mapping:** Show how every algorithm concept has a natural real-world parallel
-- **Edge case clarity:** Demonstrate that weird edge cases make sense in your analogy
-- **Natural constraints:** Show that algorithm rules/limitations mirror real-world physics
-- **Aha moment:** Explain what insight becomes obvious through this lens
+### Phase 1: Build the Mental Model (No Code Yet!)
 
-**Example defense:**
-> "The odometer analogy works perfectly for subarray sums because:
-> - Running sum = total miles driven (only goes forward)
-> - Subarray = segment between two checkpoints
-> - Negative numbers = going backward (odometer decreases)
-> - Finding target sum = finding exact distance traveled between checkpoints
-> - Why use a hashmap? Because you keep a logbook of every checkpoint!"
+First, thoroughly explain the analogy in plain English:
+1. **Introduce the analogy** and map concepts
+2. **Walk through the analogy** with concrete examples
+3. **Explain the intuition** behind why it works
+4. **Show the pattern** using the analogy's natural flow
 
-The defense makes the choice feel inevitable, not arbitrary.
+The reader should fully understand the problem through the analogy BEFORE seeing any code.
 
-## Building Code Through the Analogy
+### Phase 2: Translate to Code
 
-**CRITICAL: The analogy should progressively build the code, not exist separately from it.**
+After the mental model is solid, then show the code:
+1. **Analogy concept** → **Specific code logic**
+2. **Incrementally build** the algorithm piece by piece
+3. **Each section adds code** that maps to an analogy concept they already understand
 
 ### Why This Matters
 
-Analogies are powerful, but without tying them to actual code constructs, they remain abstract. The goal is to show:
-1. **Analogy concept** → **Specific code logic**
-2. **Incrementally build** the algorithm as you explain
-3. **Each section adds code** that corresponds to the analogy being explained
+If you jump into code too early, readers don't have the mental framework to understand it. They need to first "see" the solution through the analogy, then learn how to express it in code.
 
 ### The Wrong Way
 
-❌ **Separate analogy from code:**
+❌ **Jumping into code too quickly:**
 ```
-## The Analogy
-[Long analogy explanation]
+## The Factory Analogy
 
-## Complete Solution
-[Dump entire algorithm here]
+In our factory, an inspector checks items on a belt.
+
+## Building the Algorithm
+
+**In code:**
+[Dump code with minimal analogy explanation]
 ```
 
-This forces the reader to make the connection themselves. Many won't.
+This doesn't give the reader time to internalize the mental model before seeing code.
 
 ### The Right Way
 
-✅ **Interleave analogy with code building:**
+✅ **Build mental model first, then translate to code:**
 
 ```markdown
-## Setting Up the Quality Control Station
+## The Factory Quality Control Analogy
 
-In our factory, we need two things:
-- **Storage position**: Where we'll place the next good item
-- **Inspector**: Who walks the line checking items
+Understanding this problem is like a factory quality control process.
 
-**In code, this means:**
-```typescript
-let storageSlot = 0;  // Next position for good items
-// Inspector = our loop variable (shown next)
-```
+## Understanding the Analogy (No Code Yet!)
 
-## The Inspector Walks the Line
+### The Setup
 
-The inspector examines each item on the belt, one by one, from start to finish.
+Imagine a factory production line with items on a conveyor belt. Some items are defective (marked with value `val`), and some are good. We need to compact the belt so all good items are at the front, with defective items removed or pushed to the back.
+
+We have:
+- A **storage position** that tracks where the next good item should go (starts at position 0)
+- An **inspector** who walks the belt from start to finish
+- A **rule**: Good items get placed at the storage position, defective items are skipped
+
+### How It Works
+
+The inspector starts at the beginning of the belt and examines each item one by one. When they find a good item, they place it at the current storage position and advance the storage counter. When they find a defective item, they simply skip it and move to the next item.
+
+The key insight: by using a separate storage position, we can compact items in-place. The storage position is always ≤ the inspector's position, so we never overwrite items we haven't inspected yet.
+
+### Simple Example Through the Analogy
+
+Belt: [3, 2, 2, 3], Remove value: 3
+
+- Inspector at position 0, item 3 (defective) → skip, storage stays at 0
+- Inspector at position 1, item 2 (good) → place at storage position 0, storage now 1
+- Inspector at position 2, item 2 (good) → place at storage position 1, storage now 2
+- Inspector at position 3, item 3 (defective) → skip, storage stays at 2
+
+Final storage count: 2 (we have 2 good items)
+
+Now you understand HOW to solve the problem. Let's translate this to code.
+
+---
+
+## Building the Algorithm Step-by-Step
+
+### Step 1: Setting Up the Storage Position
+
+**In our analogy:** We need a counter to track where the next good item goes.
 
 **In code:**
+```typescript
+let storageSlot = 0;  // Next position for good items
+```
+
+### Step 2: The Inspector Walks the Belt
+
+**In our analogy:** The inspector examines each item from start to finish.
+
+**Adding to our code:**
 ```typescript
 let storageSlot = 0;
 
 for (let inspector = 0; inspector < nums.length; inspector++) {
-    // Inspector is now at position 'inspector'
-    // What should they do? (explained next...)
+    // Inspector is now examining position 'inspector'
 }
 ```
 
-## Checking Each Item
+### Step 3: Checking Each Item
 
-When the inspector finds a good item (not defective), they place it at the storage position and advance the counter.
+**In our analogy:** If item is good, place it at storage position and advance. If defective, skip.
 
-**In code:**
+**The logic:**
 ```typescript
 let storageSlot = 0;
 
 for (let inspector = 0; inspector < nums.length; inspector++) {
-    const currentItem = nums[inspector];
-
-    if (currentItem !== val) {  // Good item!
-        nums[storageSlot] = currentItem;  // Place it
-        storageSlot++;                     // Advance storage
+    if (nums[inspector] !== val) {  // Good item!
+        nums[storageSlot] = nums[inspector];  // Place it
+        storageSlot++;                         // Advance storage
     }
     // If defective, skip (do nothing)
 }
 ```
 
-## Reporting Results
+### Step 4: Return the Count
 
-After inspecting every item, the storage counter tells us how many good items we have.
+**In our analogy:** The storage position tells us how many good items we found.
 
-**Final code:**
+**Complete algorithm:**
 ```typescript
 function removeElement(nums: number[], val: number): number {
     let storageSlot = 0;
@@ -165,15 +196,23 @@ function removeElement(nums: number[], val: number): number {
 ```
 ```
 
-### The Pattern
+### The Two-Phase Pattern
 
-Each section should follow this pattern:
-1. **Analogy concept** - "The inspector walks the line"
-2. **Why it matters** - "We need to check every item once"
-3. **Code mapping** - Show the code that implements this concept
-4. **Progressive building** - Add to previous code, don't start from scratch
+**Phase 1: Build the Mental Model (Analogy Section)**
+1. Setup - What do we have? What are we doing?
+2. Process - How does it work step-by-step?
+3. Intuition - Why does this work?
+4. Example - Walk through using only analogy terms
 
-By the end, the reader has seen the algorithm built piece by piece, with each piece justified by the analogy.
+**Phase 2: Translate to Code (Algorithm Section)**
+1. Each subsection maps to a concept from the analogy
+2. Brief reminder of the analogy concept
+3. Show the code that implements it
+4. Explain the connection
+
+By the end, the reader has:
+1. First understood the problem through the analogy
+2. Then learned how to express that understanding in code
 
 ### Structure Template
 
@@ -182,42 +221,68 @@ By the end, the reader has seen the algorithm built piece by piece, with each pi
 
 ## The [Single Analogy Name] Analogy
 
-[Opening statement: "Understanding this problem is like..."]
+Understanding this problem is like [brief opening analogy statement].
 
-### Why This Analogy Works
-
-**The core insight:** [One sentence explaining the key parallel]
-
-**Perfect mappings:**
+**How the analogy maps to the problem:**
 - Algorithm concept A → Real-world element X
 - Algorithm concept B → Real-world element Y
 - Algorithm operation C → Real-world action Z
 
-**Why this analogy and not others:**
-[Defend why this specific analogy is superior to alternatives]
-- Rules/constraints map naturally
-- Edge cases make intuitive sense
-- The "aha moment" becomes obvious
+## Understanding the Analogy (No Code Yet!)
+
+[This section should be substantial - multiple paragraphs explaining the analogy in plain English]
+
+### The Setup
+
+[Explain the starting state in analogy terms]
+- What do we have?
+- What are we trying to accomplish?
+- What are the constraints?
+
+### How It Works
+
+[Walk through the process using the analogy - 2-4 paragraphs]
+- Step-by-step explanation in analogy terms
+- Why each step makes sense
+- How we make decisions at each point
+
+### Why This Approach
+
+[Explain the intuition - 1-2 paragraphs]
+- Why this approach works
+- What makes it efficient
+- The key insight
+
+### Simple Example Through the Analogy
+
+[Walk through a simple example using ONLY analogy terms]
+- Input in analogy terms
+- Each step in analogy terms
+- Output in analogy terms
+
+Now you understand HOW to solve the problem. Let's translate this to code.
+
+---
 
 ## Building the Algorithm Step-by-Step
 
+Now we'll translate each part of our mental model into code.
+
 ### Step 1: [First Analogy Concept]
 
-**The analogy:**
-[Explain the concept in analogy terms]
+**In our analogy:** [Brief reminder of this concept]
 
-**What this means in code:**
+**In code:**
 ```typescript
 // Show just this piece
 let variable = initialValue;
 ```
 
-**Why:** [Connect the code to the analogy]
+**Why:** [Connect the code to the analogy concept]
 
 ### Step 2: [Second Analogy Concept]
 
-**The analogy:**
-[Next concept - builds on previous]
+**In our analogy:** [Brief reminder]
 
 **Adding to our code:**
 ```typescript
@@ -228,12 +293,11 @@ for (let i = 0; i < input.length; i++) {
 }
 ```
 
-**Why:** [Explain the connection]
+**Why:** [Connection]
 
 ### Step 3: [Third Analogy Concept]
 
-**The analogy:**
-[What happens inside the main operation]
+**In our analogy:** [Brief reminder]
 
 **The logic:**
 ```typescript
@@ -246,12 +310,11 @@ for (let i = 0; i < input.length; i++) {
 }
 ```
 
-**Why:** [Connect to analogy]
+**Why:** [Connection]
 
 ### Step 4: [Final Piece]
 
-**The analogy:**
-[How we know we're done, what to return]
+**In our analogy:** [Brief reminder]
 
 **Complete algorithm:**
 ```typescript
@@ -268,27 +331,30 @@ function solveProblem(input: number[]): number {
 }
 ```
 
+---
+
 ## Tracing Through an Example
 
-[Use a concrete example, show:
-1. Analogy state at each step
-2. Corresponding code state
-3. How they mirror each other]
+[Use the same or similar example from earlier, now showing both analogy and code side-by-side]
+
+**Input:** [concrete values]
+
+[Table or step-by-step showing analogy state and code state together]
 
 ## Common Misconceptions
 
 ### ❌ "[Wrong assumption]"
-Why it's wrong: [Counterexample in analogy AND code]
+Why it's wrong: [Counterexample in analogy terms, then show in code]
 
 ### ✅ "[Correct understanding]"
-Why it's right: [Concrete example showing analogy and code alignment]
+Why it's right: [Example in analogy terms, then show in code]
 
 ## Try It Yourself
 
 [Exercise with:
 1. Input in analogy terms
 2. Expected analogy steps
-3. What the code does
+3. Then what the code does
 4. Expected output]
 ```
 
@@ -468,19 +534,25 @@ const target = sum - k;
 
 Before considering a mental model complete, verify:
 
+**Phase 1: Analogy Section**
 1. **Single analogy test:** Did you stay in ONE analogy throughout?
-2. **Code built incrementally:** Does each section add code that maps to the analogy concept being explained?
-3. **Clear mapping:** Can you point to which analogy concept corresponds to which line of code?
-4. **Progressive understanding:** By reading sequentially, does the algorithm build naturally without jumps?
-5. **Can you explain it without code?** Walk through entirely using analogy terms
-6. **Does it answer "why"?** Not just "what" or "how"
-7. **Can you predict behavior?** Given new inputs, trace outcome in analogy terms
-8. **Does it handle edge cases?** Explain why base cases exist using the analogy
-9. **Is it memorable?** Will you remember the analogy days/weeks later?
-10. **No code analysis?** Did you avoid debugging or reviewing existing code?
-11. **Analogy justification:** Did you defend WHY this analogy is the right choice?
+2. **Substantial explanation:** Does the analogy section have multiple paragraphs explaining the concept WITHOUT code?
+3. **Complete mental model:** Can someone understand the solution approach from the analogy alone?
+4. **Concrete example:** Did you walk through an example using ONLY analogy terms before introducing code?
+5. **Clear intuition:** Does it explain WHY the approach works, not just WHAT it does?
 
-**The ultimate test:** Can someone read this once, see how each analogy piece becomes code, and solve similar problems by thinking in terms of your analogy?
+**Phase 2: Code Section**
+6. **Code built incrementally:** Does each section add code that maps to an analogy concept already explained?
+7. **Clear mapping:** Can you point to which analogy concept corresponds to which line of code?
+8. **Brief reminders:** Does each code section start with a brief reminder of the analogy concept?
+9. **Progressive understanding:** By reading sequentially, does the algorithm build naturally without jumps?
+
+**Overall:**
+10. **Two distinct phases:** Is there a clear separation between "understanding the analogy" and "building the code"?
+11. **Is it memorable?** Will you remember the analogy days/weeks later?
+12. **No code analysis?** Did you avoid debugging or reviewing existing code?
+
+**The ultimate test:** Can someone read the analogy section, fully understand the approach without seeing any code, and then easily follow the code section because they already have the mental model?
 
 ### What to Avoid
 
@@ -488,9 +560,11 @@ Before considering a mental model complete, verify:
 - ❌ Analyzing or debugging existing code implementations
 - ❌ Fixing bugs in current solutions
 - ❌ Reviewing code quality or suggesting refactors
+- ❌ **Jumping into code before the analogy is fully explained**
+- ❌ **Shallow analogy section (needs multiple paragraphs, not just bullet points)**
 - ❌ Mixing multiple analogies or switching metaphors mid-explanation
 - ❌ Starting with "The algorithm does X" instead of analogy
-- ❌ Breaking out of the analogy to use technical terms
+- ❌ Breaking out of the analogy to use technical terms in the analogy section
 - ❌ Using mathematical notation before building intuition
 - ❌ Comparing multiple solution approaches (focus on understanding ONE way)
 - ❌ Assuming knowledge of data structures (explain why through analogy)
@@ -498,10 +572,12 @@ Before considering a mental model complete, verify:
 - ❌ Using confusing phrasing like "subtract an old running total"
 - ❌ Missing the progression from simple to complex examples
 - ❌ Generic variable names (use analogy-based names always)
-- ❌ **Dumping complete code at the end instead of building it incrementally**
-- ❌ **Explaining analogy separately from code - they must be interleaved**
+- ❌ Dumping complete code at the end instead of building it incrementally
+- ❌ **Not having a clear break between "understanding the analogy" and "building the code"**
 
-**Remember:** This is about building understanding, not analyzing code.
+**Remember:**
+- First: Build the mental model through the analogy (NO CODE)
+- Then: Translate that mental model to code piece by piece
 
 ### Reference Examples
 
