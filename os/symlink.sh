@@ -67,11 +67,11 @@ if [ -f "$DOTFILES_DIR/tmux/tmux-zen.sh" ]; then
 fi
 
 # Zsh
-if [ -f "$DOTFILES_DIR/zsh/.zshrc" ]; then
-    create_symlink "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
+if [ -f "$DOTFILES_DIR/zsh/zshrc" ]; then
+    create_symlink "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"
 fi
-if [ -f "$DOTFILES_DIR/zsh/.zprofile" ]; then
-    create_symlink "$DOTFILES_DIR/zsh/.zprofile" "$HOME/.zprofile"
+if [ -f "$DOTFILES_DIR/zsh/zprofile" ]; then
+    create_symlink "$DOTFILES_DIR/zsh/zprofile" "$HOME/.zprofile"
 fi
 
 # Starship
@@ -80,8 +80,8 @@ if [ -f "$DOTFILES_DIR/starship/starship.toml" ]; then
 fi
 
 # Ghostty
-if [ -f "$DOTFILES_DIR/ghostty/config" ]; then
-    create_symlink "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+if [ -f "$DOTFILES_DIR/ghostty/config.toml" ]; then
+    create_symlink "$DOTFILES_DIR/ghostty/config.toml" "$HOME/.config/ghostty/config"
 fi
 
 # Obsidian (vim config)

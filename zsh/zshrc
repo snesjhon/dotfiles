@@ -46,6 +46,8 @@ export PATH="$HOME/.local/bin:$PATH"
 autoload -Uz compinit
 compinit
 
+ZSH_CONFIG_DIR="$HOME/Developer/dotfiles/zsh"
+
 # Source custom functions
 for file in $ZSH_CONFIG_DIR/functions/*.zsh; do
   source "$file"

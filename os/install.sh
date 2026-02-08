@@ -76,7 +76,20 @@ fi
 echo ""
 
 # ============================================
-# 4. Setup Claude Code
+# 4. Install TPM (Tmux Plugin Manager)
+# ============================================
+info "Checking for TPM..."
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    info "Installing TPM..."
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    success "TPM installed"
+else
+    success "TPM already installed"
+fi
+echo ""
+
+# ============================================
+# 5. Setup Claude Code
 # ============================================
 info "Setting up Claude Code..."
 if [ -f "$DOTFILES_DIR/claude/setup.sh" ]; then
@@ -87,7 +100,7 @@ fi
 echo ""
 
 # ============================================
-# 5. Install global npm packages
+# 6. Install global npm packages
 # ============================================
 info "Installing global npm packages..."
 if command -v npm &> /dev/null; then
@@ -99,7 +112,7 @@ fi
 echo ""
 
 # ============================================
-# 6. macOS Settings (optional)
+# 7. macOS Settings (optional)
 # ============================================
 if [ -f "$SCRIPT_DIR/macos.sh" ]; then
     read -p "Apply macOS settings? (y/n) " -n 1 -r
@@ -112,7 +125,7 @@ if [ -f "$SCRIPT_DIR/macos.sh" ]; then
 fi
 
 # ============================================
-# 7. Setup shell
+# 8. Setup shell
 # ============================================
 info "Setting up shell..."
 if ! grep -q "$(which zsh)" /etc/shells; then
