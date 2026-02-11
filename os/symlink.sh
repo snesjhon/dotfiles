@@ -89,9 +89,14 @@ if [ -d "$DOTFILES_DIR/hammerspoon" ]; then
     create_symlink "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
 fi
 
+# Sesh
+if [ -f "$DOTFILES_DIR/sesh/sesh.toml" ]; then
+    create_symlink "$DOTFILES_DIR/sesh/sesh.toml" "$HOME/.config/sesh/sesh.toml"
+fi
+
 # Obsidian (vim config)
-if [ -f "$DOTFILES_DIR/obsidian/.obsidian.vimrc" ]; then
-    create_symlink "$DOTFILES_DIR/obsidian/.obsidian.vimrc" "$HOME/.obsidian.vimrc"
+if [ -f "$DOTFILES_DIR/obsidian/obsidian.vimrc" ]; then
+    create_symlink "$DOTFILES_DIR/obsidian/obsidian.vimrc" "$HOME/Developer/snesjhon/.obsidian.vimrc"
 fi
 
 # Claude Code global settings (if you want to symlink them)

@@ -484,31 +484,29 @@ Don't mix analogies. Don't switch metaphors mid-explanation. The power comes fro
 - **Odometer journey** (running sums = cumulative distances traveled)
   - Why it works: Segments between checkpoints = subarrays
   - Natural fit for prefix sums, looking back at previous readings
-- Alternative: Bank account balance (but less visual)
 
 **Tree Problems:**
 - **Mountain climbing** (going up to children, down to parent)
   - Why it works: Height/altitude maps to depth, peaks = leaves
   - Natural fit for DFS, path concepts
-- Alternatives: Family tree, org chart (but less dynamic)
 
 **Backtracking:**
 - **Maze exploration** (try paths, hit walls, backtrack)
   - Why it works: Dead ends = invalid states, retracing steps = backtracking
   - Natural fit for constraint checking, state restoration
-- Alternative: Building with rules (but less about exploration)
 
 **Graph Problems:**
 - **City/road map** (cities = nodes, roads = edges)
   - Why it works: Distance, connectivity, paths all intuitive
   - Natural fit for BFS/DFS, shortest path
-- Alternative: Social network (but less spatial)
 
 **Selection criteria:**
 - Does every algorithm concept have a natural real-world parallel?
 - Do edge cases make sense in the analogy?
 - Will someone remember this analogy weeks later?
 - Can you explain the entire solution without leaving the analogy?
+
+**Reinforcement rule:** Once you pick the analogy, every example, trace, visualization label, variable name, and misconception must be expressed through that same analogy. Repetition of the analogy across different examples is what makes it stick. The reader should never encounter a second metaphor — if they do, the analogy wasn't strong enough and you should rework it rather than introduce another.
 
 ### Variable Naming in Solutions
 
@@ -535,11 +533,12 @@ const target = sum - k;
 Before considering a mental model complete, verify:
 
 **Phase 1: Analogy Section**
-1. **Single analogy test:** Did you stay in ONE analogy throughout?
-2. **Substantial explanation:** Does the analogy section have multiple paragraphs explaining the concept WITHOUT code?
-3. **Complete mental model:** Can someone understand the solution approach from the analogy alone?
-4. **Concrete example:** Did you walk through an example using ONLY analogy terms before introducing code?
-5. **Clear intuition:** Does it explain WHY the approach works, not just WHAT it does?
+1. **Single analogy test:** Did you stay in ONE analogy throughout — no secondary metaphors, no "it's also like..."?
+2. **Reinforcement test:** Does every example reinforce the same analogy? Each new example should deepen the reader's comfort with the ONE analogy, not introduce fresh comparisons.
+3. **Substantial explanation:** Does the analogy section have multiple paragraphs explaining the concept WITHOUT code?
+4. **Complete mental model:** Can someone understand the solution approach from the analogy alone?
+5. **Concrete example:** Did you walk through an example using ONLY analogy terms before introducing code?
+6. **Clear intuition:** Does it explain WHY the approach works, not just WHAT it does?
 
 **Phase 2: Code Section**
 6. **Code built incrementally:** Does each section add code that maps to an analogy concept already explained?
@@ -563,6 +562,7 @@ Before considering a mental model complete, verify:
 - ❌ **Jumping into code before the analogy is fully explained**
 - ❌ **Shallow analogy section (needs multiple paragraphs, not just bullet points)**
 - ❌ Mixing multiple analogies or switching metaphors mid-explanation
+- ❌ Introducing a second analogy to "clarify" the first — if the first analogy needs help, replace it with a better one
 - ❌ Starting with "The algorithm does X" instead of analogy
 - ❌ Breaking out of the analogy to use technical terms in the analogy section
 - ❌ Using mathematical notation before building intuition

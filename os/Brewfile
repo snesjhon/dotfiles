@@ -19,6 +19,10 @@ brew "node"
 brew "nvm"
 brew "python3"
 
+# Session & Navigation
+brew "sesh"            # Smart tmux session manager
+brew "zoxide"          # Fast directory jumper (used by sesh)
+
 # Terminal Enhancement
 brew "starship"        # Prompt
 
