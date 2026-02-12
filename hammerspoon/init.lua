@@ -8,6 +8,7 @@ local appBindings = {
   { key = "f", app = "Ghostty" },
   { key = "d", app = "Google Chrome" },
   { key = "s", app = "Obsidian" },
+  { key = "a", app = "Music" },
 }
 
 for _, binding in ipairs(appBindings) do
