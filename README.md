@@ -42,33 +42,33 @@ dotfiles/
 
 ```mermaid
 graph LR
-    subgraph Terminal
+    subgraph Terminal["🖥 Terminal"]
         Ghostty --> Tmux
         Tmux --> Zsh
         Tmux --> Neovim
     end
 
-    subgraph Shell
+    subgraph Shell["⚡ Shell"]
         Zsh --> Starship
         Zsh --> Zoxide
         Zsh --> FZF
     end
 
-    subgraph Automation
+    subgraph Automation["🔧 Automation"]
         Hammerspoon --> Ghostty
         Hammerspoon --> Tmux
         Sesh --> Tmux
     end
 
-    subgraph Editors
+    subgraph Editors["✏️ Editors"]
         Neovim --> AstroNvim
         Obsidian --> VimRC
     end
 
-    style Terminal fill:#0d1117,color:#c9d1d9,stroke:#30363d
-    style Shell fill:#161b22,color:#c9d1d9,stroke:#30363d
-    style Automation fill:#161b22,color:#c9d1d9,stroke:#30363d
-    style Editors fill:#0d1117,color:#c9d1d9,stroke:#30363d
+    style Terminal fill:#dafbe1,stroke:#1a7f37,color:#1a7f37
+    style Shell fill:#ddf4ff,stroke:#0969da,color:#0969da
+    style Automation fill:#fff8c5,stroke:#9a6700,color:#9a6700
+    style Editors fill:#ffebe9,stroke:#cf222e,color:#cf222e
 ```
 
 ## Highlights
