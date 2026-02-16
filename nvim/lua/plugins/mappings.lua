@@ -122,6 +122,8 @@ return {
           ["<Leader>k"] = { "<Cmd>w<CR>" },
         },
         t = {
+          -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)
+          ["<S-CR>"] = { "\x1b[13;2u", desc = "Shift+Enter (newline)" },
           -- CLAUDE CODE - Hide when in terminal mode
           ["<F8>"] = {
             function()
