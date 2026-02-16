@@ -151,11 +151,3 @@ obsidian.vimrc  → ~/.obsidian.vimrc
 `font-symbols-only-nerd-font`
 
 </details>
-
----
-
-<p align="center">
-  <img src="https://img.shields.io/badge/vim_keybindings-everywhere-57A143?style=flat-square" alt="vim everywhere" />
-  <img src="https://img.shields.io/badge/theme-github_light%2Fdark-0d1117?style=flat-square" alt="github theme" />
-  <img src="https://img.shields.io/badge/bootstrap-one_command-blue?style=flat-square" alt="one command" />
-</p>
