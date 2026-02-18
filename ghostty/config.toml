@@ -23,3 +23,5 @@ minimum-contrast = 1.5
 
 window-colorspace = "display-p3"
 window-padding-balance = true
+window-decoration = none
+macos-titlebar-style = hidden

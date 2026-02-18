@@ -19,6 +19,8 @@ return {
         },
         n = {
           -- WINDOWS
+          ["<C-h>"] = { function() require("smart-splits").move_cursor_left() end, desc = "Move to left window/pane" },
+          ["<C-l>"] = { function() require("smart-splits").move_cursor_right() end, desc = "Move to right window/pane" },
           ["<LocalLeader>l"] = { function() require("smart-splits").resize_left(30) end, desc = "Resize split left" },
           ["<LocalLeader>;"] = { function() require("smart-splits").resize_right(30) end, desc = "Resize split right" },
           -- BUFFERS
@@ -85,18 +87,8 @@ return {
             ":<C-u>let @+ = expand('%') <CR>",
             desc = "Copy file path",
           },
-          -- EXPLORER
-          ["<Leader>j"] = {
-            function()
-              require("snacks").explorer {
-                layout = {
-                  preset = "vertical",
-                },
-                auto_close = true,
-              }
-            end,
-            desc = "Toggle Explorer",
-          },
+          -- YAZI
+          ["<F6>"] = { function() require("yazi").yazi() end, desc = "Open Yazi" },
           -- TERMINAL
           ["<F7>"] = {
             function() require("snacks").terminal() end,
@@ -119,16 +111,14 @@ return {
           },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>k"] = { "<Cmd>w<CR>" },
+          ["<Leader>s"] = { "<Cmd>w<CR>" },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)
           ["<S-CR>"] = { "\x1b[13;2u", desc = "Shift+Enter (newline)" },
           -- CLAUDE CODE - Hide when in terminal mode
           ["<F8>"] = {
-            function()
-              require("snacks").terminal.toggle("claude")
-            end,
+            function() require("snacks").terminal.toggle "claude" end,
             desc = "Hide Claude Code",
           },
         },

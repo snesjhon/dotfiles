@@ -18,9 +18,11 @@ for _, binding in ipairs(appBindings) do
 end
 
 -- Sesh session hotkeys (focus Ghostty + switch/create tmux session)
+local home = os.getenv("HOME")
 local sessionBindings = {
-	{ key = "e", session = "leetcode" },
-	{ key = "r", session = "dotfiles" },
+	{ key = "e", session = "leetcode", path = home .. "/.local/share/nvim/leetcode" },
+	{ key = "w", session = "dotfiles", path = home .. "/Developer/dotfiles" },
+	{ key = "r", session = "snesjhon", path = home .. "/Developer/snesjhon" },
 }
 
 for _, binding in ipairs(sessionBindings) do
@@ -29,11 +31,12 @@ for _, binding in ipairs(sessionBindings) do
 		hs.timer.doAfter(0.05, function()
 			local tmux = "/opt/homebrew/bin/tmux"
 			local cmd = string.format(
-				"%s has-session -t %s 2>/dev/null || %s new-session -ds %s; %s switch-client -t %s",
+				"%s has-session -t %s 2>/dev/null || %s new-session -ds %s -c %s; %s switch-client -t %s",
 				tmux,
 				binding.session,
 				tmux,
 				binding.session,
+				binding.path,
 				tmux,
 				binding.session
 			)
@@ -44,9 +47,9 @@ end
 
 -- Window management
 local windowBindings = {
-	{ key = "n", unit = { x = 0, y = 0, w = 0.5, h = 1 } }, -- left half
+	{ key = "n", unit = { x = 0, y = 0, w = 0.5, h = 1 } },  -- left half
 	{ key = ".", unit = { x = 0.5, y = 0, w = 0.5, h = 1 } }, -- right half
-	{ key = "m", unit = { x = 0, y = 0, w = 1, h = 1 } }, -- maximize
+	{ key = "m", unit = { x = 0, y = 0, w = 1, h = 1 } },    -- maximize
 }
 
 for _, binding in ipairs(windowBindings) do

@@ -223,11 +223,6 @@ By the end, the reader has:
 
 Understanding this problem is like [brief opening analogy statement].
 
-**How the analogy maps to the problem:**
-- Algorithm concept A → Real-world element X
-- Algorithm concept B → Real-world element Y
-- Algorithm operation C → Real-world action Z
-
 ## Understanding the Analogy (No Code Yet!)
 
 [This section should be substantial - multiple paragraphs explaining the analogy in plain English]
@@ -252,6 +247,12 @@ Understanding this problem is like [brief opening analogy statement].
 - Why this approach works
 - What makes it efficient
 - The key insight
+
+## How I Think Through This
+
+[Paragraph 1 — Plain first-person walkthrough of the algorithm. Start with what the problem is really asking, then explain the core insight that makes the approach work. Name every key variable inline and say what it represents. Walk through what happens at each step — what you set up, what decision you make, and why. Call out the one rule or habit that makes the algorithm correct (e.g. "writing before updating is the key"). End by stating what the final state holds. Use programmatic terms naturally in the prose — variable names, pass directions, data structure names — but never show code. Write it the way you'd talk yourself through it at a whiteboard.]
+
+[Paragraph 2 — Concrete trace through a short example. Open with "Take `[...]`." then narrate each step: name the position, name the variable and its current value, state what operation happens and what the variable becomes. Show the intermediate state after the first pass if there are multiple passes. End with the final output. This should read like a live play-by-play, not a table or a proof.]
 
 ### Simple Example Through the Analogy
 
@@ -532,24 +533,29 @@ const target = sum - k;
 
 Before considering a mental model complete, verify:
 
+**Plain-Language Summary**
+1. **First-person walkthrough:** Does paragraph 1 name key variables inline, call out the core rule, and explain why the approach works — all in plain prose without code?
+2. **Concrete trace:** Does paragraph 2 open with "Take `[...]`.", walk through each step naming variable values, show intermediate state, and end with the final output?
+3. **Self-contained memory aid:** Could you read both paragraphs, close your laptop, and reconstruct the algorithm on a whiteboard?
+
 **Phase 1: Analogy Section**
-1. **Single analogy test:** Did you stay in ONE analogy throughout — no secondary metaphors, no "it's also like..."?
-2. **Reinforcement test:** Does every example reinforce the same analogy? Each new example should deepen the reader's comfort with the ONE analogy, not introduce fresh comparisons.
-3. **Substantial explanation:** Does the analogy section have multiple paragraphs explaining the concept WITHOUT code?
-4. **Complete mental model:** Can someone understand the solution approach from the analogy alone?
-5. **Concrete example:** Did you walk through an example using ONLY analogy terms before introducing code?
-6. **Clear intuition:** Does it explain WHY the approach works, not just WHAT it does?
+4. **Single analogy test:** Did you stay in ONE analogy throughout — no secondary metaphors, no "it's also like..."?
+5. **Reinforcement test:** Does every example reinforce the same analogy? Each new example should deepen the reader's comfort with the ONE analogy, not introduce fresh comparisons.
+6. **Substantial explanation:** Does the analogy section have multiple paragraphs explaining the concept WITHOUT code?
+7. **Complete mental model:** Can someone understand the solution approach from the analogy alone?
+8. **Concrete example:** Did you walk through an example using ONLY analogy terms before introducing code?
+9. **Clear intuition:** Does it explain WHY the approach works, not just WHAT it does?
 
 **Phase 2: Code Section**
-6. **Code built incrementally:** Does each section add code that maps to an analogy concept already explained?
-7. **Clear mapping:** Can you point to which analogy concept corresponds to which line of code?
-8. **Brief reminders:** Does each code section start with a brief reminder of the analogy concept?
-9. **Progressive understanding:** By reading sequentially, does the algorithm build naturally without jumps?
+10. **Code built incrementally:** Does each section add code that maps to an analogy concept already explained?
+11. **Clear mapping:** Can you point to which analogy concept corresponds to which line of code?
+12. **Brief reminders:** Does each code section start with a brief reminder of the analogy concept?
+13. **Progressive understanding:** By reading sequentially, does the algorithm build naturally without jumps?
 
 **Overall:**
-10. **Two distinct phases:** Is there a clear separation between "understanding the analogy" and "building the code"?
-11. **Is it memorable?** Will you remember the analogy days/weeks later?
-12. **No code analysis?** Did you avoid debugging or reviewing existing code?
+14. **Two distinct phases:** Is there a clear separation between "understanding the analogy" and "building the code"?
+15. **Is it memorable?** Will you remember the analogy days/weeks later?
+16. **No code analysis?** Did you avoid debugging or reviewing existing code?
 
 **The ultimate test:** Can someone read the analogy section, fully understand the approach without seeing any code, and then easily follow the code section because they already have the mental model?
 
