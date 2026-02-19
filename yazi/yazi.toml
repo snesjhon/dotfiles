@@ -1,4 +1,4 @@
 [opener]
 edit = [
-  { run = '~/.config/yazi/open-nvim.sh "$@"', desc = "Open in nvim" },
+  { run = 'nvim "$@"', desc = "Open in nvim", block = true },
 ]

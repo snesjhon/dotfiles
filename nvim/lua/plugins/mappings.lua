@@ -111,7 +111,7 @@ return {
           },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>s"] = { "<Cmd>w<CR>" },
+          ["<Leader>k"] = { "<Cmd>w<CR>" },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)
