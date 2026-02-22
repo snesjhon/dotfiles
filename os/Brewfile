@@ -27,9 +27,10 @@ brew "zoxide"          # Fast directory jumper (used by sesh)
 brew "starship"        # Prompt
 
 # GUI Applications
+tap "nikitabobko/tap"
+cask "aerospace"
 cask "ghostty"
 cask "google-chrome"
 cask "iterm2"
 cask "monitorcontrol"
 cask "obsidian"
-cask "hammerspoon"

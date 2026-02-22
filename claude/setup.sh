@@ -45,3 +45,37 @@ echo ""
 
 echo "You can now use these skills from any project:"
 echo "  /leet-mental [problem description]"
+
+# Setup Claude Code custom commands
+echo ""
+echo "Setting up Claude Code custom commands..."
+
+# Create commands directory if it doesn't exist
+mkdir -p ~/.claude/commands
+
+COMMANDS_DIR="$SCRIPT_DIR/commands"
+
+if [ ! -d "$COMMANDS_DIR" ]; then
+  echo "No commands directory found at $COMMANDS_DIR, skipping."
+else
+  for cmd_path in "$COMMANDS_DIR"/*; do
+    if [ -f "$cmd_path" ]; then
+      cmd_name=$(basename "$cmd_path")
+      target="$HOME/.claude/commands/$cmd_name"
+
+      # Remove existing symlink or file
+      if [ -L "$target" ] || [ -e "$target" ]; then
+        echo "Removing existing: $target"
+        rm -f "$target"
+      fi
+
+      # Create symlink
+      ln -sf "$cmd_path" "$target"
+      echo "✓ Linked: $cmd_name"
+    fi
+  done
+
+  echo ""
+  echo "✓ Commands setup complete! Available commands:"
+  ls -1 ~/.claude/commands/
+fi

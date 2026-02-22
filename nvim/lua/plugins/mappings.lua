@@ -62,7 +62,6 @@ return {
                 -- Handle single vs multiple definitions
                 if type(result) == "table" and #result == 1 then
                   -- Single definition: open in horizontal split
-                  -- vim.cmd "split"
                   vim.cmd.vsplit()
                   vim.lsp.util.show_document(result[1], "utf-8", {
                     focus = true,
@@ -77,7 +76,11 @@ return {
             desc = "LSP definitions in horizontal split",
           },
           -- GIT
-          ["gf"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
+          ["gf"] = {
+            function() vim.lsp.buf.format(require("astrolsp").format_opts) end,
+            desc = "Format buffer",
+          },
+          ["<Leader>j"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
           ["gh"] = { function() vim.lsp.buf.hover() end, desc = "Hover Info" },
           ["<Leader>gj"] = { "<Cmd>DiffviewOpen origin/main...HEAD<CR>", desc = "DiffviewOpen" },
           ["<Leader>gq"] = { "<Cmd>DiffviewClose<CR>", desc = "DiffviewClose" },
@@ -111,7 +114,7 @@ return {
           },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>k"] = { "<Cmd>w<CR>" },
+          ["<Leader>h"] = { "<Cmd>w<CR>" },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)

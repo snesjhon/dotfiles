@@ -1,11 +1,14 @@
 return {
   {
     "kawre/leetcode.nvim",
+    ---@type lc.UserConfig
     opts = {
       lang = "typescript",
+      storage = {
+        home = vim.fn.expand("$HOME") .. "/Developer/snesjhon/ysk/leetcode",
+      },
     },
   },
-
   {
     "AstroNvim/astrocore",
     opts = {

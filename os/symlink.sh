@@ -84,9 +84,9 @@ if [ -f "$DOTFILES_DIR/ghostty/config.toml" ]; then
     create_symlink "$DOTFILES_DIR/ghostty/config.toml" "$HOME/.config/ghostty/config"
 fi
 
-# Hammerspoon
-if [ -d "$DOTFILES_DIR/hammerspoon" ]; then
-    create_symlink "$DOTFILES_DIR/hammerspoon" "$HOME/.hammerspoon"
+# AeroSpace
+if [ -f "$DOTFILES_DIR/aerospace/aerospace.toml" ]; then
+    create_symlink "$DOTFILES_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml"
 fi
 
 # Sesh
