@@ -89,11 +89,6 @@ if [ -f "$DOTFILES_DIR/aerospace/aerospace.toml" ]; then
     create_symlink "$DOTFILES_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml"
 fi
 
-# Sesh
-if [ -f "$DOTFILES_DIR/sesh/sesh.toml" ]; then
-    create_symlink "$DOTFILES_DIR/sesh/sesh.toml" "$HOME/.config/sesh/sesh.toml"
-fi
-
 # Obsidian (vim config)
 if [ -f "$DOTFILES_DIR/obsidian/obsidian.vimrc" ]; then
     create_symlink "$DOTFILES_DIR/obsidian/obsidian.vimrc" "$HOME/Developer/snesjhon/.obsidian.vimrc"
@@ -102,12 +97,6 @@ fi
 # Claude Code global settings (if you want to symlink them)
 if [ -f "$DOTFILES_DIR/.claude/CLAUDE.md" ]; then
     create_symlink "$DOTFILES_DIR/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-fi
-
-# Scripts (optional - make them available in PATH)
-if [ -d "$DOTFILES_DIR/scripts" ]; then
-    create_symlink "$DOTFILES_DIR/scripts" "$HOME/.local/bin/custom-scripts"
-    info "Add ~/.local/bin/custom-scripts to your PATH if not already included"
 fi
 
 echo ""

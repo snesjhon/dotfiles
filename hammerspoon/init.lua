@@ -1,2 +1,0 @@
--- Hammerspoon config intentionally empty.
--- All hotkeys moved to AeroSpace (aerospace/aerospace.toml).

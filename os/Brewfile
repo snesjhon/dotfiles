@@ -1,8 +1,6 @@
 # Homebrew Bundle - All packages and apps
 
-
 # Core CLI Tools
-brew "bash"
 brew "zsh"
 brew "zsh-autocomplete"
 brew "zsh-autosuggestions"
@@ -31,6 +29,5 @@ tap "nikitabobko/tap"
 cask "aerospace"
 cask "ghostty"
 cask "google-chrome"
-cask "iterm2"
 cask "monitorcontrol"
 cask "obsidian"

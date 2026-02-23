@@ -27,10 +27,10 @@ The install script handles everything: Homebrew, packages, symlinks, tmux plugin
 ```
 dotfiles/
 ├── nvim/          AstroNvim v5 config with 20+ plugins
-├── tmux/          Terminal multiplexer + session management
+├── tmux/          Terminal multiplexer, session management + scripts
 ├── zsh/           Shell config, vim mode, custom functions
 ├── ghostty/       Terminal emulator (GitHub theme, ligatures)
-├── hammerspoon/   macOS hotkeys & window management
+├── aerospace/     Tiling window manager + app/session hotkeys
 ├── starship/      Minimal cross-shell prompt
 ├── obsidian/      Vim keybindings for Obsidian
 ├── claude/        Custom Claude Code skills (LeetCode prep)
@@ -55,8 +55,8 @@ graph LR
     end
 
     subgraph Automation["🔧 Automation"]
-        Hammerspoon --> Ghostty
-        Hammerspoon --> Tmux
+        AeroSpace --> Workspaces
+        AeroSpace --> Sesh
         Sesh --> Tmux
     end
 
@@ -91,42 +91,58 @@ AstroNvim v5 framework with Lazy.nvim. Key plugins:
 
 - **Prefix:** `C-a`
 - **Smart pane nav:** `C-h`/`C-l` detect vim and pass-through
-- **Session management:** Sesh + FZF with GitHub-themed picker
-- **Zen mode:** `prefix + z`
+- **Session management:** Sesh + FZF with GitHub-themed picker (`prefix+d`)
+- **File browser:** Yazi toggle (`prefix+e`)
 - **Theme:** Tokyo Night Storm via tmux-powerkit
 
-### Hammerspoon
+### AeroSpace
 
-All hotkeys use the **Meh** modifier (`Shift+Ctrl+Alt`):
+Window management uses `alt` (Option), app launching and session switching use **Meh** (`Shift+Ctrl+Alt`):
 
-| Key               | Action                   |
-| ----------------- | ------------------------ |
-| `Meh+F`           | Launch Ghostty           |
-| `Meh+D`           | Launch Chrome            |
-| `Meh+S`           | Launch Obsidian          |
-| `Meh+A`           | Launch Music             |
-| `Meh+E`           | Tmux: leetcode session   |
-| `Meh+R`           | Tmux: dotfiles session   |
-| `Meh+N` / `Meh+.` | Window left / right half |
-| `Meh+M`           | Maximize window          |
+**Window management**
+
+| Key                  | Action                        |
+| -------------------- | ----------------------------- |
+| `alt-h/j/k/l`        | Focus window                  |
+| `alt-ctrl-h/j/k/l`   | Move window                   |
+| `alt-y/u/i/o/p`      | Switch workspace 1–5          |
+| `alt-ctrl-y/u/i/o/p` | Send window to workspace 1–5  |
+| `alt-r` → `h/j/k/l`  | Resize mode                   |
+| `alt-f`              | Fullscreen                    |
+| `alt-shift-f`        | Toggle float                  |
+| `alt-slash`          | Toggle split direction        |
+| `alt-tab`            | Back-and-forth workspace      |
+
+**App workspaces (Meh)**
+
+| Key     | Action                              |
+| ------- | ----------------------------------- |
+| `Meh+F` | Workspace 1 — Ghostty               |
+| `Meh+D` | Workspace 2 — Chrome                |
+| `Meh+S` | Workspace 3 — Obsidian              |
+| `Meh+A` | Workspace 4 — Music                 |
+| `Meh+E` | Tmux: leetcode session              |
+| `Meh+W` | Tmux: dotfiles session              |
+| `Meh+R` | Tmux: snesjhon session              |
 
 ### Zsh
 
 - Vim keybindings (`bindkey -v`)
 - Starship prompt + Zoxide for fast navigation
-- FZF integration with light theme
-- Custom `dev` function for project navigation
+- FZF integration with GitHub light theme
 - Auto-sourced functions from `zsh/functions/`
 
 ## Symlink Map
 
 ```
-nvim/           → ~/.config/nvim/
-tmux/tmux.conf  → ~/.tmux.conf
-zsh/.zshrc      → ~/.zshrc
-starship.toml   → ~/.config/starship.toml
-ghostty/config  → ~/.config/ghostty/config
-obsidian.vimrc  → ~/.obsidian.vimrc
+nvim/                    → ~/.config/nvim/
+tmux/tmux.conf           → ~/.tmux.conf
+zsh/zshrc                → ~/.zshrc
+zsh/zprofile             → ~/.zprofile
+starship/starship.toml   → ~/.config/starship.toml
+ghostty/config.toml      → ~/.config/ghostty/config
+aerospace/aerospace.toml → ~/.aerospace.toml
+obsidian/obsidian.vimrc  → ~/Developer/snesjhon/.obsidian.vimrc
 ```
 
 ## Brewfile Snapshot
@@ -141,13 +157,6 @@ obsidian.vimrc  → ~/.obsidian.vimrc
 <details>
 <summary>GUI Apps</summary>
 
-`ghostty` `google-chrome` `monitorcontrol` `obsidian` `hammerspoon`
-
-</details>
-
-<details>
-<summary>Fonts</summary>
-
-`font-symbols-only-nerd-font`
+`aerospace` `ghostty` `google-chrome` `monitorcontrol` `obsidian`
 
 </details>

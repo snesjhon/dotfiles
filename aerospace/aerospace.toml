@@ -17,11 +17,11 @@ default-root-container-orientation = 'horizontal'
 # ──────────────────────────────────────────────────────────────────────────────
 [gaps]
 inner.horizontal = 2
-inner.vertical   = 2
-outer.left       = 0
-outer.bottom     = 0
-outer.top        = 0
-outer.right      = 0
+inner.vertical = 2
+outer.left = 0
+outer.bottom = 0
+outer.top = 0
+outer.right = 0
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Main mode bindings  (modifier = alt / Option key)
@@ -41,12 +41,12 @@ alt-ctrl-k = 'move up'
 alt-ctrl-l = 'move right'
 
 # Layout toggles
-alt-slash   = 'layout tiles horizontal vertical'      # toggle split direction
-alt-comma   = 'layout accordion horizontal vertical'  # accordion (stack) mode
-alt-shift-f = 'layout floating tiling'                # toggle float
-
-# macOS native fullscreen
-alt-f = 'fullscreen'
+alt-slash = 'layout tiles horizontal vertical'     # toggle split direction
+alt-comma = 'layout accordion horizontal vertical' # accordion (stack) mode
+# alt-shift-f = 'layout floating tiling'             # toggle float
+#
+# # macOS native fullscreen
+# alt-f = 'fullscreen'
 
 # Back-and-forth between last two workspaces
 alt-tab = 'workspace-back-and-forth'
@@ -58,38 +58,52 @@ alt-shift-tab = 'focus-monitor --wrap-around next'
 alt-ctrl-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # Workspace switching (1–9)
-alt-y = 'workspace 1'
-alt-u = 'workspace 2'
-alt-i = 'workspace 3'
-alt-o = 'workspace 4'
-alt-p = 'workspace 5'
+alt-shift-a = 'workspace 1'
+alt-shift-s = 'workspace 2'
+alt-shift-d = 'workspace 3'
+alt-shift-f = 'workspace 4'
+alt-shift-g = 'workspace 5'
 
-# Move window to workspace (y/u/i/o/p = 1–5, numbers for 6–9)
-alt-ctrl-y = 'move-node-to-workspace 1'
-alt-ctrl-u = 'move-node-to-workspace 2'
-alt-ctrl-i = 'move-node-to-workspace 3'
-alt-ctrl-o = 'move-node-to-workspace 4'
-alt-ctrl-p = 'move-node-to-workspace 5'
+# Move window to workspace (y/u/i/o/p = 2–5, numbers for 6–9)
+alt-a = ['move-node-to-workspace 1', 'workspace 1']
+alt-s = ['move-node-to-workspace 2', 'workspace 2']
+alt-d = ['move-node-to-workspace 3', 'workspace 3']
+alt-f = ['move-node-to-workspace 4', 'workspace 4']
+alt-g = ['move-node-to-workspace 5', 'workspace 5']
 
-# Enter resize mode
-alt-r = 'mode resize'
 
-# App workspaces — Meh+key launches app and switches to its dedicated workspace
-shift-ctrl-alt-f = ['workspace 1', 'exec-and-forget open -a Ghostty']
-shift-ctrl-alt-d = ['workspace 2', 'exec-and-forget open -a "Google Chrome"']
-shift-ctrl-alt-s = ['workspace 3', 'exec-and-forget open -a Obsidian']
-shift-ctrl-alt-a = ['workspace 4', 'exec-and-forget open -a Music']
+# App workspaces — launch app first, then switch to its workspace
+shift-ctrl-alt-a = [
+  'exec-and-forget open /System/Applications/Music.app',
+  'workspace 1',
+]
+shift-ctrl-alt-s = [
+  'exec-and-forget open /Applications/Obsidian.app',
+  'workspace 2',
+]
+shift-ctrl-alt-d = [
+  'exec-and-forget open "/Applications/Google Chrome.app"',
+  'workspace 3',
+]
+shift-ctrl-alt-f = [
+  'exec-and-forget open /Applications/Ghostty.app',
+  'workspace 4',
+]
 
 # Sesh — tmux session switching (Meh = shift+ctrl+alt)
-shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/scripts/tmux-session.sh leetcode /Users/snesjhon/Developer/snesjhon/ysk/leetcode'
-shift-ctrl-alt-w = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/scripts/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
-shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/scripts/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
+shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh leetcode /Users/snesjhon/Developer/snesjhon/ysk/leetcode'
+shift-ctrl-alt-w = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
+shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'
 
 # Enter service mode (destructive ops)
-alt-shift-slash= 'mode service'
+alt-shift-slash = 'mode service'
+
+# Enter resize mode
+alt-r = 'mode resize'
+alt-shift-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/aerospace/reset-workspaces.sh'
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Resize mode  (enter with alt-r, exit with enter/esc)
@@ -101,15 +115,15 @@ k = 'resize height -50'
 l = 'resize width +50'
 
 enter = 'mode main'
-esc   = 'mode main'
+esc = 'mode main'
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Service mode  (enter with alt-shift-\, dangerous ops)
 # ──────────────────────────────────────────────────────────────────────────────
 [mode.service.binding]
-esc       = ['reload-config', 'mode main']
-r         = ['flatten-workspace-tree', 'mode main']  # reset layout
-f         = ['layout floating tiling', 'mode main']
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']                # reset layout
+f = ['layout floating tiling', 'mode main']
 backspace = ['close-all-windows-but-current', 'mode main']
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -118,19 +132,19 @@ backspace = ['close-all-windows-but-current', 'mode main']
 # Remove any entry if you prefer ad-hoc placement.
 # ──────────────────────────────────────────────────────────────────────────────
 [[on-window-detected]]
-if.app-id = 'com.mitchellh.ghostty'
+if.app-id = 'com.apple.Music'
 run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome'
+if.app-id = 'md.obsidian'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
-if.app-id = 'md.obsidian'
+if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
-if.app-id = 'com.apple.Music'
+if.app-id = 'com.mitchellh.ghostty'
 run = 'move-node-to-workspace 4'
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -150,4 +164,8 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
 run = 'layout floating'

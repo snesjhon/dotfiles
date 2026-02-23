@@ -80,7 +80,6 @@ return {
             function() vim.lsp.buf.format(require("astrolsp").format_opts) end,
             desc = "Format buffer",
           },
-          ["<Leader>j"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
           ["gh"] = { function() vim.lsp.buf.hover() end, desc = "Hover Info" },
           ["<Leader>gj"] = { "<Cmd>DiffviewOpen origin/main...HEAD<CR>", desc = "DiffviewOpen" },
           ["<Leader>gq"] = { "<Cmd>DiffviewClose<CR>", desc = "DiffviewClose" },
@@ -114,7 +113,8 @@ return {
           },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>h"] = { "<Cmd>w<CR>" },
+          ["<Leader>j"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
+          ["<Leader>k"] = { "<Cmd>w<CR>" },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)
