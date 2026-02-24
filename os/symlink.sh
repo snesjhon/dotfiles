@@ -94,6 +94,22 @@ if [ -f "$DOTFILES_DIR/obsidian/obsidian.vimrc" ]; then
     create_symlink "$DOTFILES_DIR/obsidian/obsidian.vimrc" "$HOME/Developer/snesjhon/.obsidian.vimrc"
 fi
 
+# Obsidian (CSS snippets)
+mkdir -p "$HOME/Developer/snesjhon/.obsidian/snippets"
+if [ -f "$DOTFILES_DIR/obsidian/line-width.css" ]; then
+    create_symlink "$DOTFILES_DIR/obsidian/line-width.css" "$HOME/Developer/snesjhon/.obsidian/snippets/line-width.css"
+fi
+
+# Prettier
+if [ -f "$DOTFILES_DIR/os/formatters/prettierrc" ]; then
+    create_symlink "$DOTFILES_DIR/os/formatters/prettierrc" "$HOME/.prettierrc"
+fi
+
+# Yazi
+if [ -d "$DOTFILES_DIR/yazi" ]; then
+    create_symlink "$DOTFILES_DIR/yazi" "$HOME/.config/yazi"
+fi
+
 # Claude Code global settings (if you want to symlink them)
 if [ -f "$DOTFILES_DIR/.claude/CLAUDE.md" ]; then
     create_symlink "$DOTFILES_DIR/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"

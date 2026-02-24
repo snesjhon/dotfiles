@@ -16,6 +16,7 @@ return {
           },
           ["<S-h>"] = { "^", desc = "Beginning of line" },
           ["<S-l>"] = { "$", desc = "End of line" },
+          ["<F12>"] = { "gc", desc = "Toggle comment", remap = true },
         },
         n = {
           -- WINDOWS
@@ -113,8 +114,9 @@ return {
           },
           -- FUN!
           ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
-          ["<Leader>j"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
-          ["<Leader>k"] = { "<Cmd>w<CR>" },
+          ["<F9>"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
+          ["<F10>"] = { "<Cmd>w<CR>" },
+          ["<F12>"] = { "gcc", desc = "Toggle comment line", remap = true },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)

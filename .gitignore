@@ -1,3 +1,5 @@
 # Local configuration files (private/personal settings)
 .tmux.local.conf
 .DS_Store
+yazi/flavors/
+yazi/plugins/
