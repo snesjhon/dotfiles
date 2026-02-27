@@ -5,7 +5,7 @@ font-family = "psudoFont Liga Mono"
 
 adjust-cell-height = 10
 
-theme = "light:Github Light Default, dark:Github Dark Default"
+theme = "light:GitLab Light, dark:GitLab Dark"
 
 macos-icon = "blueprint"
 mouse-hide-while-typing = "true"

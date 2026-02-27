@@ -17,12 +17,12 @@ brew "node"
 brew "nvm"
 brew "python3"
 
-# Session & Navigation
-brew "sesh"            # Smart tmux session manager
-brew "zoxide"          # Fast directory jumper (used by sesh)
+# Navigation
+brew "zoxide"          # Fast directory jumper (z command)
 
 # Terminal Enhancement
 brew "starship"        # Prompt
+brew "coreutils"       # GNU core utils (grealpath for yazi)
 
 # GUI Applications
 tap "nikitabobko/tap"

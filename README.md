@@ -150,7 +150,7 @@ obsidian/obsidian.vimrc  → ~/Developer/snesjhon/.obsidian.vimrc
 <details>
 <summary>CLI Tools</summary>
 
-`neovim` `tmux` `fzf` `ripgrep` `tree-sitter` `gh` `node` `nvm` `python3` `sesh` `zoxide` `starship` `zsh-autocomplete` `zsh-autosuggestions` `zsh-syntax-highlighting`
+`neovim` `tmux` `fzf` `ripgrep` `tree-sitter` `gh` `node` `nvm` `python3` `zoxide` `starship` `zsh-autocomplete` `zsh-autosuggestions` `zsh-syntax-highlighting`
 
 </details>
 

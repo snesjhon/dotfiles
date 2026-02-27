@@ -91,7 +91,7 @@ shift-ctrl-alt-f = [
 ]
 
 # Sesh — tmux session switching (Meh = shift+ctrl+alt)
-shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh leetcode /Users/snesjhon/Developer/snesjhon/ysk/leetcode'
+shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh leetcode /Users/snesjhon/Developer/snesjhon/ysk'
 shift-ctrl-alt-w = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
 shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
 
