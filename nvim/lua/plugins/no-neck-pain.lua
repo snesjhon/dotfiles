@@ -5,6 +5,7 @@ return {
     lazy = false,
     opts = {
       width = 119,
+      minSideBufferWidth = 10,
       autocmds = {
         skipEnteringNoNeckPainBuffer = true,
         enableOnVimEnter = true,

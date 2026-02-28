@@ -92,6 +92,7 @@ return {
           },
           -- YAZI
           ["<F6>"] = { function() require("yazi").yazi() end, desc = "Open Yazi" },
+          -- ["<F6>"] = { "<Cmd>Yazi toggle<CR>", desc = "Toggle Yazi" },
           -- TERMINAL
           ["<F7>"] = {
             function() require("snacks").terminal() end,
@@ -126,6 +127,7 @@ return {
             function() require("snacks").terminal.toggle "claude" end,
             desc = "Hide Claude Code",
           },
+          ["<F6>"] = { function() require("yazi").toggle() end, desc = "Open Yazi" },
         },
       },
     },

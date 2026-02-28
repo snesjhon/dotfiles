@@ -5,6 +5,7 @@ export VISUAL=nvim
 HISTFILE=$HOME/.zhistory
 SAVEHIST=1000
 HISTSIZE=999
+
 setopt share_history 
 setopt hist_expire_dups_first
 setopt hist_ignore_dups
@@ -24,7 +25,6 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # FZF
-export FZF_DEFAULT_OPTS='--height 40% --tmux --color=bg:#ffffff,fg:#24292f,query:#24292f,bg+:#f6f8fa,fg+:#24292f,hl:#0969da,hl+:#0550ae,info:#57606a,border:#d0d7de,label:#0969da,preview-label:#0969da,pointer:#0969da,prompt:#0969da,spinner:#0969da,header:#57606a,gutter:#ffffff,marker:#1a7f37'
 export FZF_CTRL_R_OPTS="--height 40% --tmux --reverse"
 source <(fzf --zsh)
 
