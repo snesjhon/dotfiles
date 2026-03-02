@@ -16,6 +16,7 @@ brew "gh"              # GitHub CLI
 brew "node"
 brew "nvm"
 brew "python3"
+brew "pandoc"           # Markdown → EPUB/PDF/HTML converter
 
 # Navigation
 brew "zoxide"          # Fast directory jumper (z command)

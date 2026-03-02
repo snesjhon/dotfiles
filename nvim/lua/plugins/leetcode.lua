@@ -5,8 +5,11 @@ return {
     opts = {
       lang = "typescript",
       storage = {
-        home = vim.fn.expand("$HOME") .. "/Developer/snesjhon/ysk/leetcode",
+        home = vim.fn.expand "$HOME" .. "/Developer/snesjhon/ysk/leetcode",
       },
+      -- plugins = {
+      --   non_standalone = true,
+      -- },
     },
   },
   {

@@ -30,10 +30,18 @@ return {
           ["<Leader>w"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
           -- SPLITS
           ["<Leader>\\"] = {
-            "<Cmd>vsplit<CR>",
+            function()
+              -- local ok, nnp = pcall(require, "no-neck-pain")
+              -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
+              vim.cmd "vsplit"
+            end,
           },
           ["<Leader>|"] = {
-            "<Cmd>split<CR>",
+            function()
+              -- local ok, nnp = pcall(require, "no-neck-pain")
+              -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
+              vim.cmd "split"
+            end,
           },
           -- VIM
           ["vv"] = { "<S-v>", desc = "Visual Select" },
@@ -63,6 +71,8 @@ return {
                 -- Handle single vs multiple definitions
                 if type(result) == "table" and #result == 1 then
                   -- Single definition: open in horizontal split
+                  -- local ok, nnp = pcall(require, "no-neck-pain")
+                  -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
                   vim.cmd.vsplit()
                   vim.lsp.util.show_document(result[1], "utf-8", {
                     focus = true,
@@ -90,12 +100,22 @@ return {
             ":<C-u>let @+ = expand('%') <CR>",
             desc = "Copy file path",
           },
-          -- YAZI
-          ["<F6>"] = { function() require("yazi").yazi() end, desc = "Open Yazi" },
-          -- ["<F6>"] = { "<Cmd>Yazi toggle<CR>", desc = "Toggle Yazi" },
           -- TERMINAL
-          ["<F7>"] = {
-            function() require("snacks").terminal() end,
+          ["<F4>"] = {
+            function()
+              require("snacks").terminal.toggle(nil, {
+                win = {
+                  position = "float",
+                  border = "single",
+                  backdrop = false,
+                  height = 0.99,
+                  width = 0.5,
+                  row = 2,
+                  col = 0.6,
+                  zindex = 9,
+                },
+              })
+            end,
             desc = "Toggle Terminal",
           },
           -- CLAUDE CODE
@@ -104,30 +124,56 @@ return {
               require("snacks").terminal.toggle("claude", {
                 win = {
                   position = "float",
-                  backdrop = 80,
-                  height = 0.9,
-                  width = 0.8,
-                  border = "hpad",
+                  backdrop = false,
+                  border = "single",
+                  height = 0.99,
+                  width = 0.4,
+                  row = 2,
+                  col = 0.6,
+                  zindex = 10,
+                  wo = {
+                    wrap = true,
+                  },
+                  keys = {
+                    no_hscroll_right = { "<ScrollWheelRight>", "<Nop>", mode = { "n", "t" } },
+                    no_hscroll_left = { "<ScrollWheelLeft>", "<Nop>", mode = { "n", "t" } },
+                  },
                 },
               })
             end,
             desc = "Toggle Claude Code",
           },
-          -- FUN!
-          ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
           ["<F9>"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
           ["<F10>"] = { "<Cmd>w<CR>" },
           ["<F12>"] = { "gcc", desc = "Toggle comment line", remap = true },
+          -- FUN!
+          ["<Leader>z"] = { "<Cmd>NoNeckPain<CR>" },
         },
         t = {
           -- Send Shift+Enter as newline to terminal apps (e.g. Claude Code)
           ["<S-CR>"] = { "\x1b[13;2u", desc = "Shift+Enter (newline)" },
           -- CLAUDE CODE - Hide when in terminal mode
+          ["<F4>"] = {
+            function()
+              require("snacks").terminal.toggle(nil, {
+                win = {
+                  position = "float",
+                  border = "single",
+                  backdrop = false,
+                  height = 0.99,
+                  width = 0.5,
+                  row = 2,
+                  col = 0.6,
+                  zindex = 9,
+                },
+              })
+            end,
+            desc = "Toggle Terminal",
+          },
           ["<F8>"] = {
             function() require("snacks").terminal.toggle "claude" end,
             desc = "Hide Claude Code",
           },
-          ["<F6>"] = { function() require("yazi").toggle() end, desc = "Open Yazi" },
         },
       },
     },

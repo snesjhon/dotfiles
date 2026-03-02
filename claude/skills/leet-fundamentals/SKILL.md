@@ -43,6 +43,8 @@ You are generating a **foundational concept guide** that helps the user build de
 
 ### Step 3: Generate Comprehensive Guide
 
+**Reference example**: `ysk/fundamentals/graphs-fundamentals.md` and `ysk/fundamentals/graph-traversal-dfs-fundamentals.md` are the canonical examples of this style. Read them before generating to match the tone, depth, and structure.
+
 Create a guide following this structure:
 
 ---
@@ -65,165 +67,96 @@ Create a guide following this structure:
 
 #### 1. Overview
 
-- Brief introduction (2-3 sentences)
-- Why this topic matters in interviews and real-world applications
-- What you'll learn by the end of this guide
+- 2-3 sentences: what this topic is and why it matters
+- One sentence on what the user already knows that connects to this topic
+- What the three building-block levels will cover
 
 ---
 
 #### 2. Core Concept & Mental Model
 
-**Explanation**:
+**Real-world analogy** — always open with a concrete analogy (city map, building, maze, etc.) that maps directly to the concept. Name its components explicitly: what the nodes are, what the edges are, what the algorithm does in analogy terms.
 
-- Clear, intuitive explanation of the fundamental concept
-- Avoid jargon initially, then introduce formal terms
-- Real-world analogy that maps to the concept
-
-**Concept Map** (Mermaid):
+**Concept Map** (Mermaid): show relationships between the core ideas, not a flowchart of steps.
 
 ```mermaid
-graph TD/LR
-    {Show core properties, relationships, key operations}
+graph TD
+    {core idea} --> {property 1}
+    {core idea} --> {property 2}
+    ...
 ```
 
-Include:
-
-- Core properties of the data structure/technique
-- How it relates to concepts they already know
-- Key operations and their O() complexity
-- Visual representation if applicable
+**Complexity table**: one table covering all operations.
 
 ---
 
-#### 3. Building Blocks - Progressive Learning
+#### 3. Building Blocks — Progressive Learning
 
-**Level 1: Simplest Form**
+Each level has this exact structure — do not skip any part:
 
-- Start with the most basic version
-- Annotated TypeScript/JavaScript code example
-- Explain each line with inline comments
-- What makes this simple
+**Level N: {Name}**
 
-**Level 2: Adding Complexity**
+**Why this level matters**
+One paragraph: why you need this concept, what problem it solves, how it connects to what came before.
 
-- Introduce one additional layer
-- Show how the basic version extends
-- Annotated code example
-- Why this complexity is needed
+**How to think about it**
+One or two paragraphs: the mental model in plain language. No code yet. Explain what the algorithm is *doing*, not just what it *is*. Reference the analogy from Section 2.
 
-**Level 3: Full Pattern**
+**Walking through it**
+A manual step-by-step trace on a small, concrete example. Show the state at every step — visited sets, queues, distances, paths, colors, etc. Use plain text tables or indented steps, not code. The reader should be able to follow along with pencil and paper.
 
-- Complete, production-ready template
-- Heavily annotated TypeScript/JavaScript
-- Cover all edge cases
-- Time/Space complexity analysis
+**The one thing to get right**
+One or two sentences identifying the single most important insight, gotcha, or ordering constraint for this level. Then show the consequence of getting it wrong (wrong output, infinite loop, etc.).
 
-Use mermaid diagrams to show the progression visually where helpful.
+**Code** — short, focused TypeScript. The prose above does the explaining. The code is the confirmation. Avoid inline comments restating what the prose already said. Keep it under ~20 lines when possible.
+
+**Mental anchor** — one sentence in a blockquote that the reader can memorize:
+> "DFS = go deep, mark first, backtrack. The visited set is the only thing stopping cycles from looping forever."
+
+**→ Bridge to Level N+1**
+One sentence explaining *why* the next level exists: what problem the current level can't solve, and how the next level addresses it.
 
 ---
 
 #### 4. Key Patterns
 
-Cover 2-3 most common patterns for this topic.
-
-For each pattern:
+Cover 2 patterns that go beyond the building blocks — real problem variations the user will encounter. Follow this structure per pattern:
 
 **Pattern: {Name}**
 
-**When to Use**:
+**When to use**: problem characteristics that indicate this pattern.
 
-- Input characteristics that suggest this pattern
-- Problem types where this appears
+**How to think about it**: prose explanation of the key insight (not just what the code does, but *why* this approach works).
 
-**Template**:
+**Code**: complete, runnable TypeScript. Shorter than you think — avoid restating things already covered in Building Blocks.
 
-```typescript
-// Heavily annotated TypeScript/JavaScript template
-// Explain the approach, why each step matters
-// Include complexity in comments
-```
-
-**Walkthrough** (optional mermaid diagram):
-
-- Show execution on a simple example if it aids understanding
-
-**Complexity**:
-
-- Time: O(?)
-- Space: O(?)
-- Why this complexity
+**Complexity**: Time and Space.
 
 ---
 
 #### 5. Decision Framework
 
-**Mermaid Decision Tree**:
+Mermaid decision tree: how to recognize which pattern applies. Should be actionable — each leaf should name a specific technique.
 
-```mermaid
-graph TD
-    {How to recognize when to use this technique}
-    {What input patterns suggest this approach}
-    {When to prefer alternatives}
-```
+**Recognition signals table**: problem keywords → technique.
 
-**Recognition Signals**:
-
-- List clear indicators that this technique applies
-- Contrast with similar techniques
-
-**When NOT to Use**:
-
-- Situations where alternatives are better
-- What to use instead
+**When NOT to use**: clear contrast with the alternative.
 
 ---
 
 #### 6. Common Gotchas & Edge Cases
 
-**Typical Mistakes**:
-
-- List 3-5 common errors
-- Why they happen
-- How to avoid them
-
-**Edge Cases**:
-
-- Cases to always test
-- Boundary conditions
-- Special inputs (empty, single element, etc.)
-
-**Debugging Tips**:
-
-- How to trace through the algorithm
-- What to print/log
-- Common failure points
+- 3-5 mistakes, each with: what goes wrong, why it's tempting, how to fix it
+- Edge cases list
+- Debugging tips (what to print/trace, how to spot the failure)
 
 ---
 
 #### 7. Practice Path
 
-**Problems from Your DSA Guide**:
-Organize by difficulty, link to study guides if they exist:
+Organize problems from the DSA path into Starter / Core / Challenge tiers. For each problem, add one sentence explaining *what specifically it tests* from this guide. Link to existing study guides when available.
 
-**Starter Problems** (Build Intuition):
-
-- [ ] [Problem Name](leetcode-link) {link to study guide if exists}
-- [ ] Problem 2
-
-**Core Problems** (Master the Pattern):
-
-- [ ] Problem 3
-- [ ] Problem 4
-
-**Challenge Problems** (Test Mastery):
-
-- [ ] Problem 5
-
-**Suggested Order**:
-
-1. Start with {specific problem} - it's the clearest example
-2. Then try {problem 2} - adds {specific complexity}
-3. Work through remaining problems in any order
+End with a Suggested Order: numbered list with a reason for each step.
 
 ---
 
@@ -240,6 +173,82 @@ Organize by difficulty, link to study guides if they exist:
 3. Save the generated guide to the path
 
 4. Confirm successful save
+
+---
+
+### Step 5: Generate TypeScript Exercise Files
+
+Create one `.ts` file per building-block level in a subdirectory named after the topic slug.
+
+**Directory**: `/Users/snesjhon/Developer/snesjhon/ysk/fundamentals/{topic-slug}/`
+- Example: "Graph Traversal DFS" → `graph-traversal-dfs/`
+
+**Reference examples**: `ysk/fundamentals/graph-fundamentals/level-1-representing-a-graph.ts`, `level-2-dfs.ts`, `level-3-bfs.ts`, and `level-grid-dfs.ts` show the exact format to follow.
+
+**File naming**: `level-1-{concept-name}.ts`, `level-2-{concept-name}.ts`, etc.
+
+**Each file must follow this structure exactly**:
+
+```typescript
+// =============================================================================
+// Level N: {Level Name from guide}
+// =============================================================================
+// Before running: npx ts-node {filename}.ts
+// Goal: {one sentence describing what this level practices}
+//
+// {Optional: one or two lines of context if the level has a key shift
+//  from previous levels — e.g. "There is no adjacency list to build here.
+//  Each cell IS the node."}
+
+// -----------------------------------------------------------------------------
+// Exercise 1
+// {Clear description of what the function should do.}
+// {One or two sentences of context if needed.}
+//
+// Example:
+//   {functionName}({input}) → {expected output}
+//   {functionName}({input2}) → {expected output2}
+// -----------------------------------------------------------------------------
+function {functionName}({params}): {returnType} {
+  throw new Error("TODO");
+}
+
+test('{description}', {functionName}({input}), {expected});
+test('{description}', {functionName}({input2}), {expected2});
+// ... 4-6 tests per exercise covering normal cases and edge cases
+
+// -----------------------------------------------------------------------------
+// Exercise 2
+// ...same structure...
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Exercise 3
+// ...same structure...
+// -----------------------------------------------------------------------------
+
+// =============================================================================
+// Tests — all should print PASS
+// =============================================================================
+
+function test(desc: string, actual: unknown, expected: unknown): void {
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
+  }
+}
+```
+
+**Rules for exercise files**:
+- **Leave all function bodies as `throw new Error("TODO")`** — the user fills in implementations
+- Each file has exactly 3 exercises, each slightly harder than the last
+- Exercises progress: basic case → variation → combined/harder
+- Test cases: 4-6 per exercise, covering a normal case, edge cases (single element, empty, etc.), and boundary conditions
+- The `test()` helper goes at the **bottom** of the file
+- Tests are called inline after each function definition (not grouped at bottom)
+- Keep exercise descriptions concrete: show the exact input/output in the example block
 
 ---
 
@@ -304,19 +313,16 @@ Ready to dive in? Start with the 'Building Blocks' section! 🚀
 
 ## Important Guidelines
 
-- **Depth**: Focused fundamentals (aim for 30-45 min read time)
-- **Code Language**: Always TypeScript/JavaScript with detailed inline comments
-- **Annotations**: Every code block should be heavily commented - explain WHY, not just WHAT
-- **Visualizations**: Use mermaid for:
-  - Concept maps (relationships between ideas)
-  - Decision trees (when to use this technique)
-  - Flow diagrams (for complex algorithms)
-  - Graph representations (for graph-based concepts)
-- **Tone**: Educational, encouraging, progressive (build confidence step by step)
-- **Links**: Always link to existing study guides when available
-- **Prerequisites**: Extract from DSA path order - show what should be learned first
-- **Progression**: Each section should build on the previous
-- **Practical Focus**: Balance theory with practical problem-solving
+- **Prose first, code second**: the explanations ("Why this level matters", "How to think about it", "Walking through it") do the teaching. Code is short and confirming, not the primary explanation vehicle. Avoid restating in inline comments what the prose already said.
+- **State traces over diagrams**: for Building Blocks levels, a manual step-by-step trace showing the visited set / queue / path at each step teaches more than a flowchart.
+- **Depth**: focused fundamentals (aim for 30-45 min read time)
+- **Code Language**: TypeScript
+- **Visualizations**: Use mermaid for concept maps (Section 2) and decision trees (Section 5). Do not use mermaid to show algorithm steps — use prose traces instead.
+- **Tone**: plain, direct, progressive. Build confidence with each level.
+- **Links**: always link to existing fundamentals guides for prerequisites, and to existing study guides for practice problems
+- **Prerequisites**: extract from DSA path order — show what should be learned first
+- **Progression**: each level solves exactly one new problem the previous level couldn't handle. Name that problem explicitly in the bridge sentence.
+- **Exercise files**: always generate alongside the markdown guide (Step 5). Leave all implementations as `throw new Error("TODO")` — never fill them in.
 
 ---
 

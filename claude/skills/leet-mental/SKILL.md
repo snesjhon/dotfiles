@@ -12,6 +12,7 @@ This skill creates mental model study guides that help understand algorithm conc
 - Builds deep understanding of the problem and solution approach
 - Explains the "why" behind algorithmic choices
 - Creates memorable mental models using real-world analogies
+- Generates a `test-cases.ts` file with progressive exercises that teach the concepts
 
 **What this skill does NOT do:**
 - Analyze or debug existing code
@@ -28,15 +29,22 @@ This skill creates mental model study guides that help understand algorithm conc
 1. Choose ONE powerful analogy and commit to it
 2. **Phase 1:** Write substantial analogy section explaining the mental model (NO CODE yet)
 3. **Phase 2:** Build the algorithm incrementally, translating analogy concepts to code
-4. Create mental-model.md using only that analogy throughout
+4. Create `mental-model.md` using only that analogy throughout
 5. Use mermaid charts for visualizations
 6. **MUST validate all mermaid charts** using the validation script
-7. Fix any validation errors before considering the file complete
-8. **DO NOT create README.md or any other summary documents** - only create mental-model.md
+7. Fix any validation errors before considering mental-model.md complete
+8. **Create `test-cases.ts`** with progressive exercises that the learner will implement themselves
+9. **Run test-cases.ts** and verify the file runs without syntax errors (all exercises will throw `new Error('not implemented')` — that is expected)
+10. **DO NOT create README.md or any other summary documents** - only create `mental-model.md` and `test-cases.ts`
 
 **Validation command:**
 ```bash
 ~/Developer/dotfiles/claude/skills/leet-mental/validate-mermaid.sh mental-model.md
+```
+
+**Test cases run command:**
+```bash
+npx tsx test-cases.ts
 ```
 
 ---
@@ -580,10 +588,141 @@ Before considering a mental model complete, verify:
 - ❌ Generic variable names (use analogy-based names always)
 - ❌ Dumping complete code at the end instead of building it incrementally
 - ❌ **Not having a clear break between "understanding the analogy" and "building the code"**
+- ❌ **Implementing the exercise functions in test-cases.ts** — bodies must always be `throw new Error('not implemented')`; the learner writes the code
 
 **Remember:**
 - First: Build the mental model through the analogy (NO CODE)
 - Then: Translate that mental model to code piece by piece
+
+---
+
+## Test Cases File (test-cases.ts)
+
+After completing `mental-model.md`, create `test-cases.ts` in the same directory. This file is **not** a simple round-trip test suite — it is a set of progressive exercises that teach the mental model concepts through code, mirroring the style of `/Users/snesjhon/Developer/snesjhon/ysk/fundamentals/graph-fundamentals/`.
+
+### Pattern to Follow
+
+The canonical reference is:
+```
+/Users/snesjhon/Developer/snesjhon/ysk/study-guides/271-encode-and-decode-strings/test-cases.ts
+```
+
+And the fundamentals style it mirrors:
+```
+/Users/snesjhon/Developer/snesjhon/ysk/fundamentals/graph-fundamentals/level-2-dfs.ts
+```
+
+### File Structure
+
+```typescript
+// =============================================================================
+// [Problem Name]
+// =============================================================================
+// Goal: understand [core concept] by building each piece from scratch.
+//
+// Mental model summary (1-3 lines from the analogy)
+
+// -----------------------------------------------------------------------------
+// Exercise 1
+// [What this exercise teaches — the atomic building block]
+//
+// Example:
+//   functionName(input) → expected
+// -----------------------------------------------------------------------------
+function exercise1(...): ... {
+  throw new Error('not implemented');
+}
+
+test('...', exercise1(...), expected);
+// more tests
+
+// -----------------------------------------------------------------------------
+// Exercise 2
+// [Builds on Exercise 1 — the first major function]
+// -----------------------------------------------------------------------------
+function exercise2(...): ... {
+  throw new Error('not implemented');
+}
+
+test('...', exercise2(...), expected);
+
+// -----------------------------------------------------------------------------
+// Exercise 3
+// [Core sub-problem of the second direction, teaches the key trick]
+// -----------------------------------------------------------------------------
+function exercise3(...): ... {
+  throw new Error('not implemented');
+}
+
+test('...', exercise3(...), expected);
+
+// -----------------------------------------------------------------------------
+// Exercise 4
+// [Full solution using earlier exercises]
+// -----------------------------------------------------------------------------
+function exercise4(...): ... {
+  throw new Error('not implemented');
+}
+
+test('...', exercise4(...), expected);
+
+// -----------------------------------------------------------------------------
+// Round-trip / Integration
+// [Tests that confirm both directions are inverses, or the full algorithm works]
+// Focus on cases that would break a naive approach.
+// -----------------------------------------------------------------------------
+
+test('...', result, expected);
+
+// =============================================================================
+// Tests — all should print PASS
+// =============================================================================
+
+function test(desc: string, actual: unknown, expected: unknown): void {
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
+  }
+}
+```
+
+### Exercise Design Rules
+
+**Decompose the solution into teachable units.** Each exercise should map to a distinct concept from the mental model — not just "here is the code in parts."
+
+- **Exercise 1:** The atomic building block (the smallest operation from the analogy)
+- **Exercise 2:** The first full function (e.g., encode, forward pass)
+- **Exercise 3:** The core sub-problem of the inverse/second function — this is usually where the KEY INSIGHT lives (e.g., the pointer mechanics, the single-step decode, the visited check)
+- **Exercise 4:** The full inverse/second function, built by chaining Exercise 3
+
+**Test the insight, not the happy path.** Every tricky case should be a test:
+- Cases that would break a naive delimiter/scanning approach
+- Empty inputs and single-element inputs
+- Inputs where content looks like structure (e.g., `"5#hello"` as a string to encode)
+- Multi-digit or zero-length values
+
+**The `test` helper always goes at the bottom.** TypeScript function declarations are hoisted, so calling `test(...)` before its definition is valid — this is how the fundamentals files work and how this skill should work.
+
+**No imports. No top-level async.** Pure synchronous TypeScript only, runnable with `npx tsx test-cases.ts`.
+
+### What Each Exercise's Comment Block Must Include
+
+- One sentence: what concept this exercise teaches
+- What steps to follow (if the exercise has a specific algorithm, enumerate the steps)
+- A concrete example showing input → output
+- For Exercise 3 (the key insight): a comment after the tests that explains WHY the tricky case works — name the analogy concept
+
+### Verifying Before Completion
+
+After writing test-cases.ts:
+1. Run `npx tsx test-cases.ts` from the study guide directory
+2. The file must run without TypeScript/syntax errors
+3. Every exercise function body must be `throw new Error('not implemented')` — **do not provide implementations**
+4. The learner fills in the implementations; the tests tell them when they are correct
+
+---
 
 ### Reference Examples
 
@@ -597,3 +736,15 @@ Before considering a mental model complete, verify:
   - Uses odometer/checkpoint analogy
   - Shows why hashmap stores counts
   - Traces duplicate readings clearly
+
+**Excellent test-cases files:**
+- `/Users/snesjhon/Developer/snesjhon/ysk/study-guides/271-encode-and-decode-strings/test-cases.ts`
+  - Exercise 1: `tagOne` — atomic building block, single string → tag
+  - Exercise 2: `encode` — full encode using tagOne
+  - Exercise 3: `readTag(s, i)` — single-step decode, teaches the counting-mode insight
+  - Exercise 4: `decode` — chains readTag calls with a pointer
+  - Round-trip section tests cases that break naive delimiter approaches
+
+**Fundamentals style reference:**
+- `/Users/snesjhon/Developer/snesjhon/ysk/fundamentals/graph-fundamentals/level-2-dfs.ts`
+  - Header format, exercise comment blocks, `test` helper placement
