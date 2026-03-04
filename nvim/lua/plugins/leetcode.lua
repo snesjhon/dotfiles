@@ -7,9 +7,6 @@ return {
       storage = {
         home = vim.fn.expand "$HOME" .. "/Developer/snesjhon/ysk/leetcode",
       },
-      -- plugins = {
-      --   non_standalone = true,
-      -- },
     },
   },
   {

@@ -90,10 +90,10 @@ shift-ctrl-alt-f = [
   'workspace 4',
 ]
 
-# Sesh — tmux session switching (Meh = shift+ctrl+alt)
-shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh leetcode /Users/snesjhon/Developer/snesjhon/ysk'
-shift-ctrl-alt-w = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
-shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
+# tmux session switching (Meh = shift+ctrl+alt)
+shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh ysk /Users/snesjhon/Developer/snesjhon/ysk'
+shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
+shift-ctrl-alt-t = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'

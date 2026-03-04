@@ -27,7 +27,7 @@ return {
           -- BUFFERS
           ["<S-j>"] = { function() require("astrocore.buffer").nav(-vim.v.count1) end, desc = "Next buffer" },
           ["<S-k>"] = { function() require("astrocore.buffer").nav(vim.v.count1) end, desc = "Previous buffer" },
-          ["<Leader>w"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
+          ["<C-M-w>"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
           -- SPLITS
           ["<Leader>\\"] = {
             function()
@@ -103,7 +103,7 @@ return {
           -- TERMINAL
           ["<F4>"] = {
             function()
-              require("snacks").terminal.toggle(nil, {
+              local opts = {
                 win = {
                   position = "float",
                   border = "single",
@@ -114,14 +114,27 @@ return {
                   col = 0.6,
                   zindex = 9,
                 },
-              })
+              }
+              local term
+              for _, t in pairs(require("snacks").terminal.list()) do
+                if t.cmd == nil then term = t; break end
+              end
+              if term and term:win_valid() then
+                if vim.api.nvim_get_current_win() == term.win then
+                  term:hide()
+                else
+                  term:focus()
+                end
+              else
+                require("snacks").terminal.toggle(nil, opts)
+              end
             end,
             desc = "Toggle Terminal",
           },
           -- CLAUDE CODE
           ["<F8>"] = {
             function()
-              require("snacks").terminal.toggle("claude", {
+              local opts = {
                 win = {
                   position = "float",
                   backdrop = false,
@@ -139,7 +152,20 @@ return {
                     no_hscroll_left = { "<ScrollWheelLeft>", "<Nop>", mode = { "n", "t" } },
                   },
                 },
-              })
+              }
+              local term
+              for _, t in pairs(require("snacks").terminal.list()) do
+                if t.cmd == "claude" then term = t; break end
+              end
+              if term and term:win_valid() then
+                if vim.api.nvim_get_current_win() == term.win then
+                  term:hide()
+                else
+                  term:focus()
+                end
+              else
+                require("snacks").terminal.toggle("claude", opts)
+              end
             end,
             desc = "Toggle Claude Code",
           },

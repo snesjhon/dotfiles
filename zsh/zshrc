@@ -55,3 +55,4 @@ ZSH_CONFIG_DIR="$HOME/Developer/dotfiles/zsh"
 for file in $ZSH_CONFIG_DIR/functions/*.zsh; do
   source "$file"
 done
+eval "$(rbenv init - zsh)"
