@@ -43,13 +43,13 @@ alt-ctrl-l = 'move right'
 # Layout toggles
 alt-slash = 'layout tiles horizontal vertical'     # toggle split direction
 alt-comma = 'layout accordion horizontal vertical' # accordion (stack) mode
-# alt-shift-f = 'layout floating tiling'             # toggle float
+alt-period = 'layout floating tiling'              # toggle float
 #
-# # macOS native fullscreen
+#nm # macOS native fullscreen
 # alt-f = 'fullscreen'
 
 # Back-and-forth between last two workspaces
-alt-tab = 'workspace-back-and-forth'
+alt-m = 'workspace-back-and-forth'
 
 # Focus next monitor
 alt-shift-tab = 'focus-monitor --wrap-around next'
