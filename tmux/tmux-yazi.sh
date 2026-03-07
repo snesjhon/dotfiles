@@ -6,8 +6,8 @@ if [ "$1" = "--launch" ]; then
   CURRENT_CMD=$(tmux display-message -p '#{pane_current_command}' | tr -d '[:space:]')
 
   if echo "$CURRENT_CMD" | grep -qiE '^(zsh|bash|fish|sh)$'; then
-    tmux send-keys "yazi" Enter
+    tmux send-keys "y" Enter
   else
-    tmux new-window "yazi"
+    tmux new-window "y"
   fi
 fi
