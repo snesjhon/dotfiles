@@ -1,6 +1,3 @@
-# [flavor]
-# dark = "tokyo-night"
-# light = "catppuccin-latte"
 [flavor]
 dark = "gitlab-dark"
 light = "gitlab-light"
