@@ -1,71 +1,23 @@
 return {
-  -- "rebelot/heirline.nvim",
-  -- opts = function(_, opts)
-  --   local status = require "astroui.status"
-  --   opts.statusline = {
-  --     hl = { fg = "fg", bg = "bg" },
-  --     status.component.mode(),
-  --     status.component.git_branch(),
-  --     status.component.diagnostics(),
-  --     status.component.fill(),
-  --     status.component.cmd_info(),
-  --     status.component.fill(),
-  --     status.component.lsp {
-  --       -- lsp_client_names = false,
-  --       -- surround = false,
-  --       -- padding = {
-  --       --   left = 0,
-  --       --   right = 0,
-  --       -- },
-  --     },
-  --     status.component.git_diff {
-  --       surround = false,
-  --       padding = {
-  --         left = 0,
-  --         right = 1,
-  --       },
-  --     },
-  --     -- status.component.nav {
-  --     --   scrollbar = false,
-  --     --   surround = false,
-  --     --   padding = {
-  --     --     left = 0,
-  --     --     right = 1,
-  --     --   },
-  --     -- },
-  --     -- status.component.mode { surround = { separator = "right" } },
-  --     -- hl = { fg = "fg", bg = "bg" },
-  --     -- -- Left side: colored bar only, no "NORMAL" text
-  --     -- status.component.mode(),
-  --     -- status.component.git_branch(),
-  --     -- -- Modified indicator after branch name
-  --     -- {
-  --     --   provider = function() return vim.bo.modified and " ●" or "" end,
-  --     --   hl = { fg = "git_changed" },
-  --     --   update = { "BufModifiedSet" },
-  --     -- },
-  --     -- status.component.git_diff(),
-  --     -- status.component.diagnostics(),
-  --     -- status.component.fill(),
-  --     -- status.component.cmd_info(),
-  --     -- status.component.fill(),
-  --     -- -- Clickable gear icon → :checkhealth
-  --     -- {
-  --     --   provider = function() return " " .. require("astroui").get_icon "ActiveLSP" .. "  " end,
-  --     --   on_click = {
-  --     --     name = "checkhealth_click",
-  --     --     callback = function() vim.cmd "checkhealth" end,
-  --     --   },
-  --     -- },
-  --     -- --
-  --     -- status.component.file_info {
-  --     --   filename = false,
-  --     --   unique_path = false,
-  --     --   filetype = false,
-  --     --   file_modified = false,
-  --     --   file_icon = { padding = { left = 1, right = 0 } },
-  --     -- },
-  --   }
-  --   return opts
-  -- end,
+  "rebelot/heirline.nvim",
+  opts = function(_, opts)
+    local status = require "astroui.status"
+    opts.statusline = {
+      hl = { fg = "fg", bg = "bg" },
+      status.component.mode(),
+      status.component.git_branch(),
+      status.component.file_info(),
+      status.component.git_diff(),
+      status.component.diagnostics(),
+      status.component.fill(),
+      status.component.cmd_info(),
+      status.component.fill(),
+      status.component.lsp(),
+      status.component.virtual_env(),
+      status.component.nav {
+        percentage = false,
+      },
+    }
+    return opts
+  end,
 }
