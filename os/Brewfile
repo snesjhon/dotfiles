@@ -1,6 +1,8 @@
 # Homebrew Bundle - All packages and apps
+tap "nikitabobko/tap"
 
 # Core CLI Tools
+brew "bash"            # Bash 5+ (required by tmux-powerkit plugin)
 brew "zsh"
 brew "zsh-autocomplete"
 brew "zsh-autosuggestions"
@@ -17,6 +19,8 @@ brew "node"
 brew "nvm"
 brew "python3"
 brew "pandoc"           # Markdown → EPUB/PDF/HTML converter
+brew "rbenv"
+brew "ruby-build"
 
 # Navigation
 brew "zoxide"          # Fast directory jumper (z command)
@@ -26,8 +30,7 @@ brew "starship"        # Prompt
 brew "coreutils"       # GNU core utils (grealpath for yazi)
 
 # GUI Applications
-tap "nikitabobko/tap"
-cask "aerospace"
+#cask "aerospace"
 cask "ghostty"
 cask "google-chrome"
 cask "monitorcontrol"
