@@ -20,3 +20,13 @@ hash = "f28bac9badabeb9097751292c1c69777"
 use = "matt-dong-123/base16"
 rev = "0b65636"
 hash = "58f02e21ee02a35a3f46d4c2c8198821"
+
+[[flavor.deps]]
+use = "snesjhon/gitlab-yazi-theme:gitlab-dark"
+rev = "9ebfbc8"
+hash = "5182074aed6d3dd61dcaab799115a9a3"
+
+[[flavor.deps]]
+use = "snesjhon/gitlab-yazi-theme:gitlab-light"
+rev = "9ebfbc8"
+hash = "daa7c4a497fae00b1c2f53ffdbbf2384"

@@ -67,6 +67,9 @@ if [ -f "$DOTFILES_DIR/tmux/tmux-zen.sh" ]; then
 fi
 
 # Zsh
+if [ -f "$DOTFILES_DIR/zsh/zshenv" ]; then
+    create_symlink "$DOTFILES_DIR/zsh/zshenv" "$HOME/.zshenv"
+fi
 if [ -f "$DOTFILES_DIR/zsh/zshrc" ]; then
     create_symlink "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"
 fi

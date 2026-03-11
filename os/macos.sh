@@ -40,6 +40,9 @@ info "Configuring Keyboard & Input..."
 defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+# Disable press-and-hold for accent menu (enables key repeat instead)
+defaults write -g ApplePressAndHoldEnabled -bool false
+
 
 ###############################################################################
 # Trackpad

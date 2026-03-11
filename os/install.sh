@@ -65,7 +65,31 @@ fi
 echo ""
 
 # ============================================
-# 3. Create symlinks for dotfiles
+# 3. Install latest Ruby via rbenv
+# ============================================
+info "Setting up Ruby via rbenv..."
+if command -v rbenv &> /dev/null; then
+    eval "$(rbenv init - zsh)"
+    LATEST_RUBY=$(rbenv install -l 2>/dev/null | grep -E '^\s+[0-9]+\.[0-9]+\.[0-9]+$' | tail -1 | tr -d ' ')
+    if [ -n "$LATEST_RUBY" ]; then
+        if ! rbenv versions | grep -q "$LATEST_RUBY"; then
+            info "Installing Ruby $LATEST_RUBY..."
+            rbenv install "$LATEST_RUBY"
+        fi
+        rbenv global "$LATEST_RUBY"
+        rbenv rehash
+        gem install rubocop sorbet --no-document
+        success "Ruby $LATEST_RUBY set as global, rubocop + sorbet installed"
+    else
+        warn "Could not determine latest Ruby version, skipping"
+    fi
+else
+    warn "rbenv not found, skipping Ruby setup"
+fi
+echo ""
+
+# ============================================
+# 4. Create symlinks for dotfiles
 # ============================================
 info "Creating symlinks for dotfiles..."
 if [ -f "$SCRIPT_DIR/symlink.sh" ]; then
@@ -76,7 +100,7 @@ fi
 echo ""
 
 # ============================================
-# 4. Install TPM (Tmux Plugin Manager)
+# 6. Install TPM (Tmux Plugin Manager)
 # ============================================
 info "Checking for TPM..."
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
@@ -89,7 +113,7 @@ fi
 echo ""
 
 # ============================================
-# 5. Setup Claude Code
+# 7. Setup Claude Code
 # ============================================
 info "Setting up Claude Code..."
 if [ -f "$DOTFILES_DIR/claude/setup.sh" ]; then
@@ -100,7 +124,7 @@ fi
 echo ""
 
 # ============================================
-# 6. Install global npm packages
+# 8. Install global npm packages
 # ============================================
 info "Installing global npm packages..."
 if command -v npm &> /dev/null; then
@@ -112,7 +136,7 @@ fi
 echo ""
 
 # ============================================
-# 7. macOS Settings (optional)
+# 9. macOS Settings (optional)
 # ============================================
 if [ -f "$SCRIPT_DIR/macos.sh" ]; then
     read -p "Apply macOS settings? (y/n) " -n 1 -r
@@ -125,7 +149,7 @@ if [ -f "$SCRIPT_DIR/macos.sh" ]; then
 fi
 
 # ============================================
-# 8. Setup shell
+# 10. Setup shell
 # ============================================
 info "Setting up shell..."
 if ! grep -q "$(which zsh)" /etc/shells; then

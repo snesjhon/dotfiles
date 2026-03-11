@@ -1,0 +1,4 @@
+# .zprofile - sourced for login shells, after /etc/zprofile (path_helper)
+# Homebrew must be set here so it takes precedence over /etc/paths.d entries
+
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"

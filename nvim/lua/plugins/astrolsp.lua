@@ -8,6 +8,14 @@ return {
         root_dir = require("lspconfig.util").root_pattern("sorbet/config"),
         filetypes = { "ruby" },
       },
+      ruby_lsp = {
+        cmd = { "rbenv", "exec", "bundle", "exec", "ruby-lsp" },
+        root_dir = require("lspconfig.util").root_pattern("Gemfile", ".git"),
+        filetypes = { "ruby" },
+        init_options = {
+          formatter = "auto",
+        },
+      },
       vtsls = {
         filetypes = {
           "javascript",
