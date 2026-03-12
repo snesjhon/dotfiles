@@ -22,6 +22,7 @@ return {
           -- WINDOWS
           ["<C-h>"] = { function() require("smart-splits").move_cursor_left() end, desc = "Move to left window/pane" },
           ["<C-l>"] = { function() require("smart-splits").move_cursor_right() end, desc = "Move to right window/pane" },
+          ["<C-m>"] = { "<C-d>" },
           ["<LocalLeader>l"] = { function() require("smart-splits").resize_left(30) end, desc = "Resize split left" },
           ["<LocalLeader>;"] = { function() require("smart-splits").resize_right(30) end, desc = "Resize split right" },
           -- BUFFERS
@@ -30,18 +31,10 @@ return {
           ["<C-M-w>"] = { function() require("astrocore.buffer").close() end, desc = "Close buffer" },
           -- SPLITS
           ["<Leader>\\"] = {
-            function()
-              -- local ok, nnp = pcall(require, "no-neck-pain")
-              -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
-              vim.cmd "vsplit"
-            end,
+            function() vim.cmd "vsplit" end,
           },
           ["<Leader>|"] = {
-            function()
-              -- local ok, nnp = pcall(require, "no-neck-pain")
-              -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
-              vim.cmd "split"
-            end,
+            function() vim.cmd "split" end,
           },
           -- VIM
           ["vv"] = { "<S-v>", desc = "Visual Select" },
@@ -71,13 +64,10 @@ return {
                 -- Handle single vs multiple definitions
                 if type(result) == "table" and #result == 1 then
                   -- Single definition: open in horizontal split
-                  -- local ok, nnp = pcall(require, "no-neck-pain")
-                  -- if ok and nnp.state and nnp.state.enabled then nnp.disable() end
                   vim.cmd.vsplit()
                   vim.lsp.util.show_document(result[1], "utf-8", {
                     focus = true,
                   })
-                  -- vim.lsp.util.jump_to_location(result[1], "utf-8")
                 else
                   -- Multiple definitions or fallback: use picker
                   require("snacks").picker.lsp_definitions()
@@ -117,7 +107,10 @@ return {
               }
               local term
               for _, t in pairs(require("snacks").terminal.list()) do
-                if t.cmd == nil then term = t; break end
+                if t.cmd == nil then
+                  term = t
+                  break
+                end
               end
               if term and term:win_valid() then
                 if vim.api.nvim_get_current_win() == term.win then
@@ -155,7 +148,10 @@ return {
               }
               local term
               for _, t in pairs(require("snacks").terminal.list()) do
-                if t.cmd == "claude" then term = t; break end
+                if t.cmd == "claude" then
+                  term = t
+                  break
+                end
               end
               if term and term:win_valid() then
                 if vim.api.nvim_get_current_win() == term.win then
