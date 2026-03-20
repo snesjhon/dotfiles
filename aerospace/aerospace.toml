@@ -82,7 +82,7 @@ shift-ctrl-alt-s = [
   'workspace 2',
 ]
 shift-ctrl-alt-d = [
-  'exec-and-forget open "/Applications/Google Chrome.app"',
+  'exec-and-forget open "/System/Applications/Safari.app"',
   'workspace 3',
 ]
 shift-ctrl-alt-f = [
@@ -140,7 +140,7 @@ if.app-id = 'md.obsidian'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome'
+if.app-id = 'com.apple.Safari'
 run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
@@ -164,10 +164,6 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.ActivityMonitor'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.MobileSMS'
 run = 'layout floating'
 
 [[on-window-detected]]

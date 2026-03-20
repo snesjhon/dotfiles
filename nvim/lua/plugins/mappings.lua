@@ -22,7 +22,6 @@ return {
           -- WINDOWS
           ["<C-h>"] = { function() require("smart-splits").move_cursor_left() end, desc = "Move to left window/pane" },
           ["<C-l>"] = { function() require("smart-splits").move_cursor_right() end, desc = "Move to right window/pane" },
-          ["<C-m>"] = { "<C-d>" },
           ["<LocalLeader>l"] = { function() require("smart-splits").resize_left(30) end, desc = "Resize split left" },
           ["<LocalLeader>;"] = { function() require("smart-splits").resize_right(30) end, desc = "Resize split right" },
           -- BUFFERS
