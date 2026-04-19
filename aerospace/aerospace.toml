@@ -82,7 +82,7 @@ shift-ctrl-alt-s = [
   'workspace 2',
 ]
 shift-ctrl-alt-d = [
-  'exec-and-forget open "/System/Applications/Safari.app"',
+  'exec-and-forget open "/Applications/Google Chrome.app"',
   'workspace 3',
 ]
 shift-ctrl-alt-f = [
@@ -91,9 +91,11 @@ shift-ctrl-alt-f = [
 ]
 
 # tmux session switching (Meh = shift+ctrl+alt)
-shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh ysk /Users/snesjhon/Developer/snesjhon/ysk'
-shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dotfiles /Users/snesjhon/Developer/dotfiles'
-shift-ctrl-alt-t = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh snesjhon /Users/snesjhon/Developer/snesjhon'
+
+# tmux-session.sh myapp ~/projects/myapp code agent server
+shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh thinkdeep /Users/snesjhon/Developer/thinkdeep code agent server'
+shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh lazyhire /Users/snesjhon/Developer/lazyhire/ code agent server'
+shift-ctrl-alt-t = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dev /Users/snesjhon/Developer'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'
@@ -140,7 +142,7 @@ if.app-id = 'md.obsidian'
 run = 'move-node-to-workspace 2'
 
 [[on-window-detected]]
-if.app-id = 'com.apple.Safari'
+if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]

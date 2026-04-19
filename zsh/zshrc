@@ -31,7 +31,6 @@ source <(fzf --zsh)
 # ZSH PLUGINS 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
@@ -39,15 +38,24 @@ export NVM_DIR="$HOME/.nvm"
 
 
 bindkey '^ ' menu-complete
-bindkey '^I' autosuggest-accept 
+bindkey '^I' autosuggest-accept
 
-bindkey -M menuselect '^M' .accept-line
 bindkey '^[[A' history-beginning-search-backward
 bindkey '^[[B' history-beginning-search-forward
+
 export PATH="$HOME/.local/bin:$PATH"
 
 autoload -Uz compinit
 compinit
+
+# Skip slow completion for pnpm run/exec (including partial typing like 'r', 'ru')
+_pnpm_custom() {
+  if [[ -n ${words[2]} && ( "run" == ${words[2]}* || "exec" == ${words[2]}* ) ]]; then
+    return 0
+  fi
+  (( $+functions[_pnpm] )) && _pnpm "$@"
+}
+compdef _pnpm_custom pnpm
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd

@@ -22,6 +22,19 @@ return {
           end,
         },
       },
+      stay_centered_terminal = {
+        {
+          event = "BufEnter",
+          desc = "Disable stay-centered in terminal buffers",
+          callback = function()
+            if vim.bo.buftype == "terminal" then
+              require("stay-centered").disable()
+            else
+              require("stay-centered").enable()
+            end
+          end,
+        },
+      },
     },
   },
 }

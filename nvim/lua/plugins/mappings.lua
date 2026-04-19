@@ -5,6 +5,10 @@ return {
     opts = {
       mappings = {
         v = {
+          ["<leader>ac"] = {
+            function() require("sidekick.cli").send { name = "claude", msg = "File: {file}\n\n{selection}" } end,
+            desc = "Send selection to Claude",
+          },
           ["<leader>gi"] = {
             function()
               require("snacks").gitbrowse {
@@ -125,43 +129,7 @@ return {
           },
           -- CLAUDE CODE
           ["<F8>"] = {
-            function()
-              local opts = {
-                win = {
-                  position = "float",
-                  backdrop = false,
-                  border = "single",
-                  height = 0.99,
-                  width = 0.4,
-                  row = 2,
-                  col = 0.6,
-                  zindex = 10,
-                  wo = {
-                    wrap = true,
-                  },
-                  keys = {
-                    no_hscroll_right = { "<ScrollWheelRight>", "<Nop>", mode = { "n", "t" } },
-                    no_hscroll_left = { "<ScrollWheelLeft>", "<Nop>", mode = { "n", "t" } },
-                  },
-                },
-              }
-              local term
-              for _, t in pairs(require("snacks").terminal.list()) do
-                if t.cmd == "claude" then
-                  term = t
-                  break
-                end
-              end
-              if term and term:win_valid() then
-                if vim.api.nvim_get_current_win() == term.win then
-                  term:hide()
-                else
-                  term:focus()
-                end
-              else
-                require("snacks").terminal.toggle("claude", opts)
-              end
-            end,
+            function() require("sidekick.cli").toggle { name = "claude", focus = true } end,
             desc = "Toggle Claude Code",
           },
           ["<F9>"] = { function() vim.lsp.buf.format(require("astrolsp").format_opts) end, desc = "Format buffer" },
@@ -192,7 +160,7 @@ return {
             desc = "Toggle Terminal",
           },
           ["<F8>"] = {
-            function() require("snacks").terminal.toggle "claude" end,
+            function() require("sidekick.cli").toggle { name = "claude" } end,
             desc = "Hide Claude Code",
           },
         },
