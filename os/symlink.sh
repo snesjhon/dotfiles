@@ -53,11 +53,6 @@ create_symlink() {
 info "Creating symlinks from $DOTFILES_DIR"
 echo ""
 
-# Neovim
-if [ -d "$DOTFILES_DIR/nvim" ]; then
-    create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
-fi
-
 # Tmux
 if [ -f "$DOTFILES_DIR/tmux/tmux.conf" ]; then
     create_symlink "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
@@ -82,11 +77,6 @@ if [ -f "$DOTFILES_DIR/starship/starship.toml" ]; then
     create_symlink "$DOTFILES_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
 fi
 
-# Ghostty
-if [ -f "$DOTFILES_DIR/ghostty/config.toml" ]; then
-    create_symlink "$DOTFILES_DIR/ghostty/config.toml" "$HOME/.config/ghostty/config"
-fi
-
 # AeroSpace
 if [ -f "$DOTFILES_DIR/aerospace/aerospace.toml" ]; then
     create_symlink "$DOTFILES_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml"
@@ -97,25 +87,41 @@ if [ -f "$DOTFILES_DIR/obsidian/obsidian.vimrc" ]; then
     create_symlink "$DOTFILES_DIR/obsidian/obsidian.vimrc" "$HOME/Developer/snesjhon/.obsidian.vimrc"
 fi
 
-# Obsidian (CSS snippets)
-mkdir -p "$HOME/Developer/snesjhon/.obsidian/snippets"
-if [ -f "$DOTFILES_DIR/obsidian/line-width.css" ]; then
-    create_symlink "$DOTFILES_DIR/obsidian/line-width.css" "$HOME/Developer/snesjhon/.obsidian/snippets/line-width.css"
-fi
-
-# Prettier
-if [ -f "$DOTFILES_DIR/os/formatters/prettierrc" ]; then
-    create_symlink "$DOTFILES_DIR/os/formatters/prettierrc" "$HOME/.prettierrc"
-fi
-
 # Yazi
 if [ -d "$DOTFILES_DIR/yazi" ]; then
     create_symlink "$DOTFILES_DIR/yazi" "$HOME/.config/yazi"
 fi
 
-# Claude Code global settings (if you want to symlink them)
-if [ -f "$DOTFILES_DIR/.claude/CLAUDE.md" ]; then
-    create_symlink "$DOTFILES_DIR/.claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+# Bat (no config of its own in dotfiles -- BAT_THEME env var in zsh/zshrc picks
+# the theme; the Gitlab .tmTheme files themselves live in the separate
+# gitlab-vim-theme repo)
+if [ -d "$HOME/Developer/gitlab-vim-theme/bat-themes" ]; then
+    mkdir -p "$HOME/.config/bat"
+    create_symlink "$HOME/Developer/gitlab-vim-theme/bat-themes" "$HOME/.config/bat/themes"
+    if command -v bat &> /dev/null; then
+        bat cache --build
+        success "Rebuilt bat theme cache"
+    fi
+else
+    warn "gitlab-vim-theme/bat-themes not found, skipping bat theme symlink"
+fi
+
+# Ripgrep (shared ignore globs, read via $RIPGREP_CONFIG_PATH in zshrc)
+if [ -d "$DOTFILES_DIR/ripgrep" ]; then
+    create_symlink "$DOTFILES_DIR/ripgrep" "$HOME/.config/ripgrep"
+fi
+
+# Ghostty (reads from Application Support on macOS, not the XDG path)
+if [ -f "$DOTFILES_DIR/ghostty/config.ghostty" ]; then
+    create_symlink "$DOTFILES_DIR/ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+fi
+
+# Vim
+if [ -f "$DOTFILES_DIR/vim/vimrc" ]; then
+    create_symlink "$DOTFILES_DIR/vim/vimrc" "$HOME/.vimrc"
+fi
+if [ -f "$DOTFILES_DIR/vim/coc-settings.json" ]; then
+    create_symlink "$DOTFILES_DIR/vim/coc-settings.json" "$HOME/.vim/coc-settings.json"
 fi
 
 echo ""

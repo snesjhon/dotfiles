@@ -1,11 +1,5 @@
 [opener]
 edit = [
-  { run = 'nvim "$@"', desc = "Open in nvim", block = true },
+  { run = 'vim "$@"', desc = "Open in vim", block = true },
 ]
 
-[manager]
-folder_filter = "**/node_modules/*"
-
-[preview]
-max_width = 2000
-max_height = 2000

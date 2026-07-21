@@ -6,4 +6,5 @@ ZSH_CONFIG_DIR="$HOME/.zshenv"
 export ZSH_CONFIG_DIR="${ZSH_CONFIG_DIR:A:h}"
 
 # HOMEBREW
-[[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+# Guarded on HOMEBREW_PREFIX so child zsh -c invocations (fzf reload/transform/become) skip re-forking brew -- measured ~40-50ms per invocation otherwise.
+[[ -z "$HOMEBREW_PREFIX" && -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"

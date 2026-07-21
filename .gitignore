@@ -1,5 +1,7 @@
-# Local configuration files (private/personal settings)
-.tmux.local.conf
+# Local configuration files (private/personal/internal-only settings)
+# Convention: <name>.local or <name>.local.<ext>
+*.local
+*.local.*
 .DS_Store
 yazi/flavors/
 yazi/plugins/

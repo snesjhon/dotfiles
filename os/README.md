@@ -7,7 +7,7 @@ Automated setup for a new Mac with all your development tools and settings.
 On a fresh Mac, run:
 
 ```bash
-git clone https://github.com/yourusername/dotfiles.git ~/Developer/dotfiles
+git clone https://github.com/snesjhon/dotfiles.git ~/Developer/dotfiles
 cd ~/Developer/dotfiles/os
 ./install.sh
 ```
@@ -17,9 +17,10 @@ This will:
 1. Install Homebrew (if not installed)
 2. Install all packages and apps from Brewfile
 3. Create symlinks for all config files
-4. Setup Claude Code custom skills
-5. Install global npm packages
-6. Optionally apply macOS system preferences
+4. Install yazi packages (flavors/plugins pinned in yazi/package.toml)
+5. Install TPM (Tmux Plugin Manager)
+6. Install global npm packages
+7. Set zsh as the default shell
 
 ## What's Included
 
@@ -27,7 +28,6 @@ This will:
 
 - **install.sh** - Main bootstrap script that orchestrates everything
 - **symlink.sh** - Creates symlinks from dotfiles to their expected locations
-- **macos.sh** - Configures macOS system preferences for development
 - **Brewfile** - Lists all Homebrew packages and applications
 
 ### Packages Installed
@@ -35,21 +35,19 @@ This will:
 **CLI Tools:**
 
 - zsh with plugins (autocomplete, autosuggestions, syntax-highlighting)
-- neovim, tmux, fzf, ripgrep
+- vim, tmux, fzf, ripgrep, bat
 - starship (prompt)
 - gh (GitHub CLI)
 - node, nvm
+- lazygit
 
 **Applications:**
 
 - Ghostty (terminal)
 - Google Chrome
-- iTerm2
 - MonitorControl
-
-**Fonts:**
-
-- Symbols Only Nerd Font
+- Obsidian
+- AeroSpace
 
 ## Usage
 
@@ -71,9 +69,6 @@ brew bundle --file=Brewfile
 
 # Only create symlinks
 ./symlink.sh
-
-# Only apply macOS settings
-./macos.sh
 ```
 
 ## Customization
@@ -102,22 +97,10 @@ To regenerate Brewfile from currently installed packages:
 brew bundle dump --force
 ```
 
-### Modify macOS Settings
-
-Edit `macos.sh` to add/remove system preferences. Common settings are organized by category:
-
-- General UI/UX
-- Keyboard & Input
-- Trackpad
-- Finder
-- Dock
-- Safari
-- Screenshots
-
 ## After Installation
 
 1. **Restart your terminal** for shell changes to take effect
-2. **Review configurations** in nvim, tmux, zsh, etc.
+2. **Review configurations** in vim, tmux, zsh, etc.
 3. **Clean up unused packages**:
    ```bash
    brew bundle cleanup --file=Brewfile
@@ -138,23 +121,33 @@ Some things need to be done manually:
    git config --global user.name "Your Name"
    git config --global user.email "your_email@example.com"
    ```
+5. **Clone `gitlab-vim-theme`** to `~/Developer/gitlab-vim-theme` — vim's colorscheme
+   (`vim/plugins.vim`) and bat's theme (`bat-themes/`) both source from it as a
+   local sibling checkout rather than vendoring the colors in this repo:
+   ```bash
+   git clone https://github.com/snesjhon/gitlab-vim-theme ~/Developer/gitlab-vim-theme
+   ```
 
 ## Symlinks Created
 
 The `symlink.sh` script creates these symlinks:
 
-| Source                        | Target                         |
-| ----------------------------- | ------------------------------ |
-| `../nvim/`                    | `~/.config/nvim/`              |
-| `../tmux/tmux.conf`           | `~/.tmux.conf`                 |
-| `../tmux/tmux-zen.sh`         | `~/.config/tmux/tmux-zen.sh`   |
-| `../zsh/.zshrc`               | `~/.zshrc`                     |
-| `../zsh/.zprofile`            | `~/.zprofile`                  |
-| `../starship/starship.toml`   | `~/.config/starship.toml`      |
-| `../ghostty/config`           | `~/.config/ghostty/config`     |
-| `../obsidian/.obsidian.vimrc` | `~/.obsidian.vimrc`            |
-| `../.claude/CLAUDE.md`        | `~/.claude/CLAUDE.md`          |
-| `../scripts/`                 | `~/.local/bin/custom-scripts/` |
+| Source                        | Target                                    |
+| ------------------------------ | ------------------------------------------ |
+| `../tmux/tmux.conf`             | `~/.tmux.conf`                             |
+| `../tmux/tmux-zen.sh`           | `~/.config/tmux/tmux-zen.sh`               |
+| `../zsh/zshenv`                 | `~/.zshenv`                                |
+| `../zsh/zshrc`                  | `~/.zshrc`                                 |
+| `../zsh/zprofile`               | `~/.zprofile`                              |
+| `../starship/starship.toml`     | `~/.config/starship.toml`                  |
+| `../aerospace/aerospace.toml`   | `~/.aerospace.toml`                        |
+| `../obsidian/obsidian.vimrc`    | `~/Developer/snesjhon/.obsidian.vimrc`     |
+| `../yazi/`                      | `~/.config/yazi`                           |
+| `~/Developer/gitlab-vim-theme/bat-themes` | `~/.config/bat/themes`            |
+| `../ripgrep/`                   | `~/.config/ripgrep`                        |
+| `../ghostty/config.ghostty`     | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
+| `../vim/vimrc`                  | `~/.vimrc`                                 |
+| `../vim/coc-settings.json`      | `~/.vim/coc-settings.json`                 |
 
 ## Troubleshooting
 
@@ -172,12 +165,8 @@ Existing files are backed up with timestamp:
 ls ~/*.backup.*
 ```
 
-**Permission issues:**
-Some macOS settings require admin password. Run with sudo if needed.
-
 ## Notes
 
 - Existing files are backed up before being replaced
 - The script is idempotent - safe to run multiple times
-- Some settings require logout/restart to take effect
 - Homebrew is installed to `/opt/homebrew` on Apple Silicon Macs

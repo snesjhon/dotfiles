@@ -1,0 +1,8 @@
+# Shared by every rg invocation (terminal fzf pickers, vim/nvim's live-grep,
+# coc.nvim search, etc. via $RIPGREP_CONFIG_PATH) so ignore rules and case
+# sensitivity stay consistent no matter what's driving ripgrep. Mirrors the
+# --exclude list already used by fd in fcd (zsh/functions/fzf-pickers.zsh).
+--smart-case
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!build/*

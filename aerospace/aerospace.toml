@@ -1,6 +1,4 @@
 # AeroSpace - i3-like tiling window manager for macOS
-# https://nikitabobko.github.io/AeroSpace/guide
-# Config location: ~/.aerospace.toml
 
 start-at-login = true
 
@@ -22,6 +20,80 @@ outer.left = 0
 outer.bottom = 0
 outer.top = 0
 outer.right = 0
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Resize mode  (enter with alt-r, exit with enter/esc)
+# ──────────────────────────────────────────────────────────────────────────────
+[mode.resize.binding]
+h = 'resize width -50'
+j = 'resize height +50'
+k = 'resize height -50'
+l = 'resize width +50'
+
+enter = 'mode main'
+esc = 'mode main'
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Service mode  (enter with alt-shift-\, dangerous ops)
+# ──────────────────────────────────────────────────────────────────────────────
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']                # reset layout
+f = ['layout floating tiling', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Workspace auto-assignment
+# Apps land in their designated workspace when opened.
+# Remove any entry if you prefer ad-hoc placement.
+# ──────────────────────────────────────────────────────────────────────────────
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.window-title-regex-substring = 'Ignition Designer'
+run = 'move-node-to-workspace 5'
+
+[[on-window-detected]]
+if.app-id = 'com.azul.zulu.java'
+run = 'move-node-to-workspace 5'
+# if.window-title-regex-substring = 'DesignerStartupHook'
+
+# ──────────────────────────────────────────────────────────────────────────────
+# App rules — always float these
+# ──────────────────────────────────────────────────────────────────────────────
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = 'layout floating'
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Main mode bindings  (modifier = alt / Option key)
@@ -74,28 +146,38 @@ alt-g = ['move-node-to-workspace 5', 'workspace 5']
 
 # App workspaces — launch app first, then switch to its workspace
 shift-ctrl-alt-a = [
-  'exec-and-forget open /System/Applications/Music.app',
+  'exec-and-forget open -a "Slack"',
   'workspace 1',
 ]
 shift-ctrl-alt-s = [
-  'exec-and-forget open /Applications/Obsidian.app',
+  'exec-and-forget open -a "Obsidian"',
   'workspace 2',
 ]
 shift-ctrl-alt-d = [
-  'exec-and-forget open "/Applications/Google Chrome.app"',
+  'exec-and-forget open -a "Google Chrome"',
   'workspace 3',
 ]
 shift-ctrl-alt-f = [
-  'exec-and-forget open /Applications/Ghostty.app',
+  'exec-and-forget open -a "Ghostty"',
   'workspace 4',
 ]
+shift-ctrl-alt-g = [
+  'exec-and-forget open -a "Ignition Designer"',
+  'workspace 5',
+]
 
-# tmux session switching (Meh = shift+ctrl+alt)
+# tmux session switching (Meh = shift+ctrl+alt). AeroSpace's exec-and-forget does not
+# expand $HOME/~ itself, so these are wrapped in `zsh -lc "..."` -- zsh does the real
+# expansion at runtime, same as any other shell command.
 
-# tmux-session.sh myapp ~/projects/myapp code agent server
-shift-ctrl-alt-e = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh thinkdeep /Users/snesjhon/Developer/thinkdeep code agent server'
-shift-ctrl-alt-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh lazyhire /Users/snesjhon/Developer/lazyhire/ code agent server'
-shift-ctrl-alt-t = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/tmux/tmux-session.sh dev /Users/snesjhon/Developer'
+# tmux-session.sh myapp ~/projects/myapp code agent server:~/projects/myapp/web
+shift-ctrl-alt-b = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/tmux/tmux-session.sh dev $HOME/Developer/ dots:$HOME/Developer/dotfiles me:$HOME/Developer/me"'
+
+# scripts/meh-c.local.sh and meh-v.local.sh are gitignored (not pushed): they hold
+# whatever internal project paths/sessions you want behind these two hotkeys. Create
+# them yourself, e.g. calling tmux-session.sh the same way shift-ctrl-alt-b does above.
+shift-ctrl-alt-c = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-c.local.sh"'
+shift-ctrl-alt-v = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-v.local.sh"'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'
@@ -105,69 +187,4 @@ alt-shift-slash = 'mode service'
 
 # Enter resize mode
 alt-r = 'mode resize'
-alt-shift-r = 'exec-and-forget /Users/snesjhon/Developer/dotfiles/aerospace/reset-workspaces.sh'
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Resize mode  (enter with alt-r, exit with enter/esc)
-# ──────────────────────────────────────────────────────────────────────────────
-[mode.resize.binding]
-h = 'resize width -50'
-j = 'resize height +50'
-k = 'resize height -50'
-l = 'resize width +50'
-
-enter = 'mode main'
-esc = 'mode main'
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Service mode  (enter with alt-shift-\, dangerous ops)
-# ──────────────────────────────────────────────────────────────────────────────
-[mode.service.binding]
-esc = ['reload-config', 'mode main']
-r = ['flatten-workspace-tree', 'mode main']                # reset layout
-f = ['layout floating tiling', 'mode main']
-backspace = ['close-all-windows-but-current', 'mode main']
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Workspace auto-assignment
-# Apps land in their designated workspace when opened.
-# Remove any entry if you prefer ad-hoc placement.
-# ──────────────────────────────────────────────────────────────────────────────
-[[on-window-detected]]
-if.app-id = 'com.apple.Music'
-run = 'move-node-to-workspace 1'
-
-[[on-window-detected]]
-if.app-id = 'md.obsidian'
-run = 'move-node-to-workspace 2'
-
-[[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace 3'
-
-[[on-window-detected]]
-if.app-id = 'com.mitchellh.ghostty'
-run = 'move-node-to-workspace 4'
-
-# ──────────────────────────────────────────────────────────────────────────────
-# App rules — always float these
-# ──────────────────────────────────────────────────────────────────────────────
-[[on-window-detected]]
-if.app-id = 'com.apple.systempreferences'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.finder'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.calculator'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.ActivityMonitor'
-run = 'layout floating'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.MobileSMS'
-run = 'layout floating'
+alt-shift-r = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/aerospace/reset-workspaces.sh"'

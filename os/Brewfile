@@ -9,27 +9,24 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
 # Development Tools
-brew "neovim"
+brew "vim"              # macOS's system vim lacks +clipboard; needed for `set clipboard=unnamed`
 brew "tmux"
 brew "fzf"
 brew "ripgrep"
-brew "tree-sitter"
+brew "bat"              # Syntax-highlighted previews for fzf.vim
 brew "gh"              # GitHub CLI
-brew "node"
+brew "node"             # Runs coc.nvim (vim/plugins/coc.vim)
 brew "nvm"
-brew "python@3.12"     # Required by Mason (checks python3.12 specifically)
-brew "pandoc"           # Markdown → EPUB/PDF/HTML converter
-brew "rbenv"
-brew "ruby-build"
 brew "watchman"            # Required by rubocop and sorbet for file watching
 brew "lazygit"
 
 # Navigation
-brew "zoxide"          # Fast directory jumper (z command)
+brew "fd"               # Backs `fcd` (zsh/functions/fzf-pickers.zsh) and yazi's file search
 
 # Terminal Enhancement
 brew "starship"        # Prompt
 brew "coreutils"       # GNU core utils (grealpath for yazi)
+brew "yazi"             # Terminal file manager (zsh `y` function, tmux-yazi.sh)
 
 # GUI Applications
 cask "ghostty"
