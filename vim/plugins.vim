@@ -37,6 +37,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf'
 Plug 'mhinz/vim-startify'
+Plug 'liuchengxu/vim-which-key'
 Plug '~/Developer/gitlab-vim-theme'
 
 call plug#end()

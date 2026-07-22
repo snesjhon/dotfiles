@@ -26,7 +26,7 @@ brew "fd"               # Backs `fcd` (zsh/functions/fzf-pickers.zsh) and yazi's
 # Terminal Enhancement
 brew "starship"        # Prompt
 brew "coreutils"       # GNU core utils (grealpath for yazi)
-brew "yazi"             # Terminal file manager (zsh `y` function, tmux-yazi.sh)
+brew "yazi"             # Terminal file manager (zsh `y` function, tmux-picker.sh)
 
 # GUI Applications
 cask "ghostty"

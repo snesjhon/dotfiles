@@ -137,7 +137,7 @@ Windows also auto-assign to workspaces on launch (Slack→1, Obsidian→2, Chrom
 
 - Vim keybindings (`bindkey -v`)
 - Starship prompt; FZF colors auto-follow macOS light/dark, synced with vim/bat/yazi's GitLab theme
-- Custom fzf pickers (`zsh/functions/fzf-pickers.zsh`): `ff` (files), `fw` (live grep), `fcd` (cd), `fr` (recent files, fed by vim's `mru.vim`) — vim-style modal `j`/`k` nav, `ctrl-g` swaps between `ff`/`fw`
+- Custom fzf pickers (`zsh/functions/fzf-pickers.zsh`): `ff` (files), `fw` (live grep), `fcd` (cd), `fr` (recent files, fed by vim's `mru.vim`), `gd` (working-tree changes, diff preview) — vim-style modal `j`/`k` nav, `ctrl-g` swaps between `ff`/`fw`
 - `y` — yazi wrapper that `cd`s the shell to yazi's exit directory
 - `dev` — jump to `~/Developer/<project>` or run a script from `scripts/`
 

@@ -13,6 +13,8 @@ nnoremap <silent> <Bar> :call NoNeckPainSplit('vsplit')<CR>
 " --- smart-splits (native reimplementation, see plugins/smart-splits.vim) ---
 nnoremap <silent> <C-h> :call VimOrTmuxMove('h')<CR>
 nnoremap <silent> <C-l> :call VimOrTmuxMove('l')<CR>
+nnoremap <silent> <C-j> :call VimOrTmuxMove('j')<CR>
+nnoremap <silent> <C-k> :call VimOrTmuxMove('k')<CR>
 
 nnoremap <leader>n :bnext<CR>
 nnoremap <leader>p :bprevious<CR>
@@ -40,6 +42,10 @@ nnoremap vv V
 " live in plugins/<name>.vim (sourced before this file, see plugins.vim) --
 " this file only binds keys to what they expose.
 " ============================================================
+
+" --- vim-which-key (see plugins/which-key.vim for the menu tree) ---
+nnoremap <silent> <leader> :silent WhichKey '<Space>'<CR>
+vnoremap <silent> <leader> :silent WhichKeyVisual '<Space>'<CR>
 
 " --- easymotion (flash.nvim equivalent) ---
 map s <Plug>(easymotion-sn)
@@ -83,13 +89,17 @@ nnoremap <leader>gi :GBrowse!<CR>
 " PR review: turns the diff into a navigable pager buffer, fugitive's equivalent of nvim's diffview.nvim.
 nnoremap <leader>gj :Git diff origin/main...HEAD<CR>
 " Per-file commit history via :Gclog, fugitive's equivalent of :DiffviewFileHistory %.
-nnoremap <leader>gh :0Gclog<CR>
+nnoremap <leader>gh :call FugitiveFileHistory()<CR>
 
 " --- fzf ---
 nnoremap <leader>ff :Files<CR>
 nnoremap <leader>fg :GFiles<CR>
 nnoremap <leader>fb :Buffers<CR>
 nnoremap <leader>fw :Rg<CR>
+
+" <F7> mirrors <leader>ff; tmux's C-S-f sends it (see tmux.conf) since C-S-f
+" itself can't be mapped reliably through a tmux send-keys/if-shell chain.
+nnoremap <silent> <F7> :Files<CR>
 
 " --- coc lists, via fzf (see plugins/coc-fzf.vim) ---
 nnoremap <leader>lo :CocFzfList outline<CR>

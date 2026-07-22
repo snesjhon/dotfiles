@@ -5,6 +5,9 @@ export FZF_PICKERS_FILE="$ZSH_CONFIG_DIR/functions/fzf-pickers.zsh"
 # Bounded-preview script shared with vim/plugins/fzf.vim's :Rg and :Files.
 export FZF_PREVIEW_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/fzf-preview.sh"
 
+# Diff-preview script for gd()'s changed-files list.
+export GIT_STATUS_PREVIEW_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/git-status-preview.sh"
+
 # Reuses an existing vim pane in the tmux window instead of nesting vim in
 # :terminal; multi-file selections open a fresh vim instead.
 _open_in_vim() {
@@ -154,6 +157,78 @@ fr() {
     "${nav_binds[@]}" \
     < "$mru")"})
   (( $#files )) || return
+  if (( $#files == 1 )); then
+    _open_in_vim "$files[1]"
+  else
+    vim -- "${files[@]}"
+  fi
+}
+
+# Flat list of working-tree changes (staged/unstaged/untracked) -- terminal
+# counterpart to vim-fugitive's :G status and lazygit's Files panel. Status
+# codes are colored by hand (rather than `git status`'s own --color) so the
+# real path can ride along as a hidden tab-delimited field (hidden via
+# --with-nth) instead of being re-derived from the colored text fzf hands
+# back -- a stray lookup miss there previously fed vim a bare directory,
+# which is what dropped it into netrw instead of opening the file.
+gd() {
+  local root
+  root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -z "$root" ]]; then
+    print -u2 "Not a git repository"
+    return 1
+  fi
+
+  # NB: don't name any of these `path`/`fpath`/etc. -- those are zsh's special
+  # tied-to-$PATH parameters and shadowing them locally breaks command lookup
+  # (fzf, git, vim) for the rest of this function.
+  local raw code rel_path new_path idx_ch wt_ch idx_disp wt_disp colored_code display
+  local -a fzf_lines
+  while IFS= read -r raw; do
+    code="${raw[1,2]}"
+    rel_path="${raw[4,-1]}"
+    if [[ "$rel_path" == *' -> '* ]]; then
+      new_path="${rel_path#* -> }"
+    else
+      new_path="$rel_path"
+    fi
+    if [[ "$code" == '??' ]]; then
+      colored_code=$'\e[33m??\e[0m'
+    else
+      idx_ch="${code[1]}"
+      wt_ch="${code[2]}"
+      [[ "$idx_ch" == ' ' ]] && idx_disp=' ' || idx_disp=$'\e[32m'"$idx_ch"$'\e[0m'
+      [[ "$wt_ch" == ' ' ]] && wt_disp=' ' || wt_disp=$'\e[31m'"$wt_ch"$'\e[0m'
+      colored_code="${idx_disp}${wt_disp}"
+    fi
+    display="${colored_code} ${rel_path}"
+    fzf_lines+=("${display}"$'\t'"${new_path}")
+  done < <(git -C "$root" status --porcelain=v1 --untracked-files=all)
+
+  if (( $#fzf_lines == 0 )); then
+    print "Clean working tree"
+    return 0
+  fi
+
+  local -a nav_binds
+  nav_binds=("${(0)$(_fzf_modal_nav_binds)}")
+  nav_binds=("${nav_binds[@]:#}")
+  local -a sels
+  sels=(${(f)"$(printf '%s\n' "${fzf_lines[@]}" | fzf --ansi -m --tmux 90%,70% \
+    --prompt 'Changes> ' \
+    --border-label ' Changes ' --border-label-pos 2 \
+    --delimiter $'\t' --with-nth 1 \
+    --preview "$GIT_STATUS_PREVIEW_SCRIPT {2} '$root'" \
+    --preview-window 'right,50%' \
+    --preview-label ' Diff ' \
+    "${nav_binds[@]}")"})
+  (( $#sels )) || return
+
+  local -a files
+  local s
+  for s in "${sels[@]}"; do
+    files+=("${root}/${s##*$'\t'}")
+  done
   if (( $#files == 1 )); then
     _open_in_vim "$files[1]"
   else
