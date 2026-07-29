@@ -1,8 +1,5 @@
 #!/bin/bash
-# Switch to (or create) a tmux session, then focus Ghostty
-# Usage: tmux-session.sh <session-name> <session-path> [window[:path] ...]
-# A window without ":path" uses session-path as its cwd.
-# Example: tmux-session.sh myapp ~/projects/myapp code agent server:~/projects/myapp/web
+# Switches to (or creates) a tmux session and focuses Ghostty. Usage: tmux-session.sh <session-name> <session-path> [window[:path] ...] (a window without ":path" uses session-path as its cwd).
 
 SESSION=$1
 SESSION_PATH=$2

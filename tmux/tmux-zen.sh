@@ -1,6 +1,5 @@
 #!/bin/bash
-# Tmux Zen Mode - Center your terminal
-# Usage: tmux-zen.sh [width]
+# Tmux Zen Mode - centers your terminal. Usage: tmux-zen.sh [width]
 
 CENTER_WIDTH="${1:-120}"
 

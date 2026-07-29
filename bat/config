@@ -1,0 +1,6 @@
+# auto:system detects macOS's current light/dark preference on every
+# invocation (bat 0.24+) -- unlike the BAT_THEME env var this used to be
+# (see zsh/plugins/theme.zsh), it never goes stale in an already-open shell.
+--theme="auto:system"
+--theme-light="Gitlab Light"
+--theme-dark="Gitlab Dark"

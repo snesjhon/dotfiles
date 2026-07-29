@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# Diff preview for the gd() picker (zsh/functions/fzf-pickers.zsh). Takes the
-# plain (hidden, tab-delimited) path field fzf hands back -- no status code
-# needed: an untracked file just has no `git diff HEAD` output, so that's
-# what decides whether to fall back to the /dev/null "whole file as added" diff.
+# Diff preview for the gd() picker -- falls back to a /dev/null "whole file as added" diff when `git diff HEAD` has no output (untracked files).
 set -u
 
 FILE=${1:-}

@@ -60,18 +60,19 @@ endfunction
 command! -bang -nargs=? -complete=dir Files call s:Files(<q-args>, <bang>0)
 
 " --- Rg (live grep) ---
-" Reruns ripgrep on every keystroke, same feel as Telescope/Snacks live grep.
-"
-" Preview scroll target is computed per item on focus (min(match line, 151)) since the bounded preview window isn't always symmetric -- keep 151 in sync with that script's pad.
+" Reruns ripgrep on every keystroke; preview scroll follows the match, and ctrl-f toggles rg-reload vs. a local fuzzy filter (each mode's query stashed separately). Mirrors zsh's fw() exactly.
 function! s:LiveGrep(query, fullscreen) abort
   let cmd = 'rg --column --line-number --no-heading --color=always -- %s || true'
   let hidden_cmd = 'rg --column --line-number --no-heading --color=always --hidden --no-ignore -- %s || true'
   let initial = empty(a:query) ? 'true' : printf(cmd, shellescape(a:query))
+  let rg_query_file = tempname()
+  let filter_query_file = tempname()
   let options = ['--border-label', ' Rg ', '--border-label-pos', '2',
         \ '--preview-label', ' Preview ', '--bind', 'focus:transform-preview-label(echo [ {1} ])+transform(LINE={2}; ROW=$(( LINE < 151 ? LINE : 151 )); echo "change-preview-window(+$ROW-/2,right,50%)")',
         \ '--disabled', '--prompt', 'Rg> ', '--query', a:query,
         \ '--bind', 'change:reload:' . printf(cmd, '{q}'),
         \ '--bind', 'alt-.:transform:[[ $FZF_PROMPT != *hidden* ]] && echo "change-prompt(Rg [hidden]> )+reload(' . printf(hidden_cmd, '{q}') . ')" || echo "change-prompt(Rg> )+reload(' . printf(cmd, '{q}') . ')"',
+        \ '--bind', 'ctrl-f:transform:if [[ $FZF_PROMPT == *filter* ]]; then echo "execute-silent(echo -n \{q} > ' . filter_query_file . ')+change-prompt(Rg> )+disable-search+rebind(change)+transform-query(cat ' . rg_query_file . ' 2>/dev/null)"; else echo "execute-silent(echo -n \{q} > ' . rg_query_file . ')+change-prompt(Rg [filter]> )+enable-search+unbind(change)+transform-query(cat ' . filter_query_file . ' 2>/dev/null)"; fi',
         \ '--bind', s:SwitchModeBind()]
         \ + FzfModalNavBinds()
   let spec = {'options': options, 'exit': function('s:AfterExit', ['Files'])}
@@ -81,3 +82,49 @@ function! s:LiveGrep(query, fullscreen) abort
   call fzf#vim#grep(initial, spec, a:fullscreen)
 endfunction
 command! -nargs=* -bang Rg call s:LiveGrep(<q-args>, <bang>0)
+
+" --- PrFiles (mirrors zsh's gp(), see zsh/functions/fzf-pickers.zsh) ---
+" Base branch is resolved once per invocation (not per keystroke, since it can shell out to `gh pr view`) and shared with git-pr-files.sh/git-pr-preview.sh so the two pickers can't drift apart.
+let s:git_pr_base_script = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h') . '/scripts/git-pr-base.sh'
+let s:git_pr_files_script = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h') . '/scripts/git-pr-files.sh'
+let s:git_pr_preview_script = fnamemodify(resolve(expand('<sfile>:p')), ':h:h:h') . '/scripts/git-pr-preview.sh'
+
+" [key, ...selected lines], same shape core fzf's s:common_sink dispatches (reimplemented since that sink is script-local); each line's real path rides hidden in field 2, same trick gp() uses.
+function! s:PrFilesSink(root, lines) abort
+  if len(a:lines) < 2
+    return
+  endif
+  let key = remove(a:lines, 0)
+  let cmd = get(g:fzf_action, key, 'edit')
+  for line in a:lines
+    execute cmd fnameescape(a:root . '/' . split(line, "\t")[-1])
+  endfor
+endfunction
+
+function! s:PrFiles(base_override, bang) abort
+  let root = trim(system('git rev-parse --show-toplevel 2>/dev/null'))
+  if v:shell_error || empty(root)
+    echoerr 'Not a git repository'
+    return
+  endif
+
+  let diff_base = trim(system(join([s:git_pr_base_script, shellescape(a:base_override), shellescape(root)]) . ' 2>&1'))
+  if v:shell_error
+    echoerr diff_base
+    return
+  endif
+
+  let options = ['--ansi', '--multi', '--expect', join(keys(g:fzf_action), ','),
+        \ '--prompt', 'PR (' . diff_base . ')> ',
+        \ '--border-label', ' PR Changes ', '--border-label-pos', '2',
+        \ '--delimiter', "\t", '--with-nth', '1',
+        \ '--preview-label', ' Diff ',
+        \ '--preview', s:git_pr_preview_script . ' {2} ' . shellescape(diff_base) . ' ' . shellescape(root)]
+        \ + FzfModalNavBinds()
+  let spec = {
+        \ 'source': s:git_pr_files_script . ' ' . shellescape(diff_base) . ' ' . shellescape(root),
+        \ 'options': options,
+        \ 'sink*': function('s:PrFilesSink', [root])}
+  call fzf#run(fzf#wrap(spec, a:bang))
+endfunction
+command! -bang -nargs=? PrFiles call s:PrFiles(<q-args>, <bang>0)

@@ -1,6 +1,5 @@
 #!/bin/bash
-# Create symlinks for dotfiles
-# This script links config files from the dotfiles repo to their expected locations
+# Links config files from the dotfiles repo to their expected locations.
 
 set -e
 
@@ -92,9 +91,10 @@ if [ -d "$DOTFILES_DIR/yazi" ]; then
     create_symlink "$DOTFILES_DIR/yazi" "$HOME/.config/yazi"
 fi
 
-# Bat (no config of its own in dotfiles -- BAT_THEME env var in zsh/zshrc picks
-# the theme; the Gitlab .tmTheme files themselves live in the separate
-# gitlab-vim-theme repo)
+# Bat theme picked via auto:system in bat/config; .tmTheme files live in the separate gitlab-vim-theme repo.
+if [ -f "$DOTFILES_DIR/bat/config" ]; then
+    create_symlink "$DOTFILES_DIR/bat/config" "$HOME/.config/bat/config"
+fi
 if [ -d "$HOME/Developer/gitlab-vim-theme/bat-themes" ]; then
     mkdir -p "$HOME/.config/bat"
     create_symlink "$HOME/Developer/gitlab-vim-theme/bat-themes" "$HOME/.config/bat/themes"
@@ -105,6 +105,17 @@ if [ -d "$HOME/Developer/gitlab-vim-theme/bat-themes" ]; then
 else
     warn "gitlab-vim-theme/bat-themes not found, skipping bat theme symlink"
 fi
+
+# Lazygit
+if [ -f "$DOTFILES_DIR/lazygit/config.yml" ]; then
+    create_symlink "$DOTFILES_DIR/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
+fi
+
+# Hunk
+if [ -f "$DOTFILES_DIR/hunk/config.toml" ]; then
+    create_symlink "$DOTFILES_DIR/hunk/config.toml" "$HOME/.config/hunk/config.toml"
+fi
+
 
 # Ripgrep (shared ignore globs, read via $RIPGREP_CONFIG_PATH in zshrc)
 if [ -d "$DOTFILES_DIR/ripgrep" ]; then

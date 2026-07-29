@@ -11,7 +11,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   // Disabled since eager resolution races against Gradle's project locking on this monorepo and aborts the import.
   "java.import.gradle.annotationProcessing.enabled": false,
-  "signatureHelp.target": "echo",
+  "signature.hideOnTextChange": true,
   "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.enableSign": true,

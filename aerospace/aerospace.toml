@@ -43,9 +43,7 @@ f = ['layout floating tiling', 'mode main']
 backspace = ['close-all-windows-but-current', 'mode main']
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Workspace auto-assignment
-# Apps land in their designated workspace when opened.
-# Remove any entry if you prefer ad-hoc placement.
+# Workspace auto-assignment — apps land in their designated workspace on open; remove an entry for ad-hoc placement.
 # ──────────────────────────────────────────────────────────────────────────────
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -70,7 +68,10 @@ run = 'move-node-to-workspace 5'
 [[on-window-detected]]
 if.app-id = 'com.azul.zulu.java'
 run = 'move-node-to-workspace 5'
-# if.window-title-regex-substring = 'DesignerStartupHook'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Music'
+run = 'move-node-to-workspace 6'
 
 # ──────────────────────────────────────────────────────────────────────────────
 # App rules — always float these
@@ -135,6 +136,7 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
 
 # Move window to workspace (y/u/i/o/p = 2–5, numbers for 6–9)
 alt-a = ['move-node-to-workspace 1', 'workspace 1']
@@ -142,6 +144,7 @@ alt-s = ['move-node-to-workspace 2', 'workspace 2']
 alt-d = ['move-node-to-workspace 3', 'workspace 3']
 alt-f = ['move-node-to-workspace 4', 'workspace 4']
 alt-g = ['move-node-to-workspace 5', 'workspace 5']
+alt-z = ['move-node-to-workspace 6', 'workspace 6']
 
 
 # App workspaces — launch app first, then switch to its workspace
@@ -166,16 +169,17 @@ shift-ctrl-alt-g = [
   'workspace 5',
 ]
 
-# tmux session switching (Meh = shift+ctrl+alt). AeroSpace's exec-and-forget does not
-# expand $HOME/~ itself, so these are wrapped in `zsh -lc "..."` -- zsh does the real
-# expansion at runtime, same as any other shell command.
+shift-ctrl-alt-z = [
+  'exec-and-forget open -a "Music"',
+  'workspace 6',
+]
+
+# tmux session switching (Meh = shift+ctrl+alt) -- wrapped in `zsh -lc "..."` since exec-and-forget won't expand $HOME/~ itself.
 
 # tmux-session.sh myapp ~/projects/myapp code agent server:~/projects/myapp/web
 shift-ctrl-alt-b = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/tmux/tmux-session.sh dev $HOME/Developer/ dots:$HOME/Developer/dotfiles me:$HOME/Developer/me"'
 
-# scripts/meh-c.local.sh and meh-v.local.sh are gitignored (not pushed): they hold
-# whatever internal project paths/sessions you want behind these two hotkeys. Create
-# them yourself, e.g. calling tmux-session.sh the same way shift-ctrl-alt-b does above.
+# scripts/meh-c.local.sh and meh-v.local.sh are gitignored -- create them yourself to bind internal project paths/sessions behind these two hotkeys.
 shift-ctrl-alt-c = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-c.local.sh"'
 shift-ctrl-alt-v = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-v.local.sh"'
 

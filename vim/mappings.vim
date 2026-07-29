@@ -1,14 +1,10 @@
 " ============================================================
-" All custom keybindings, centralized here regardless of whether they're
-" built-in Vim features or belong to a plugin. Settings/functions/commands
-" all live in plugins/*.vim instead -- see plugins.vim. This file only
-" binds keys; it defines no functions of its own.
+" All custom keybindings, centralized here regardless of built-in/plugin origin; settings/functions live in plugins/*.vim instead. This file only binds keys.
 " ============================================================
 
-" --- built-in Vim features (no plugin) ---
-
 " --- window splits ---
-nnoremap <silent> <Bar> :call NoNeckPainSplit('vsplit')<CR>
+" nnoremap <silent> <Bar> :call NoNeckPainSplit('vsplit')<CR>
+nnoremap <silent> - :call NoNeckPainSplit('vsplit')<CR>
 
 " --- smart-splits (native reimplementation, see plugins/smart-splits.vim) ---
 nnoremap <silent> <C-h> :call VimOrTmuxMove('h')<CR>
@@ -16,8 +12,8 @@ nnoremap <silent> <C-l> :call VimOrTmuxMove('l')<CR>
 nnoremap <silent> <C-j> :call VimOrTmuxMove('j')<CR>
 nnoremap <silent> <C-k> :call VimOrTmuxMove('k')<CR>
 
-nnoremap <leader>n :bnext<CR>
-nnoremap <leader>p :bprevious<CR>
+nnoremap . :bnext<CR>
+nnoremap , :bprevious<CR>
 
 nnoremap <C-S-w> :bp<bar>bd #<CR>
 nnoremap <C-S-q> :q<CR>
@@ -30,17 +26,20 @@ nnoremap <leader>/ :Commentary<CR>
 nnoremap <leader>uw :set wrap!<CR>
 
 " --- terminal (no floating window support in plain vim) ---
-" nnoremap <F4> :botright term ++rows=15<CR>
-" tnoremap <F4> <C-\><C-n>:q<CR>
-nnoremap <leader>tt :botright term ++rows=15<CR>
+nnoremap <leader>tt :call NoNeckPainSplit('vertical botright term')<CR>
 
+" Reuse the same smart-splits move to jump out of a terminal window, leaving terminal-job mode first (<C-\><C-n>) so C-h/j/k/l don't go straight to the shell.
+tnoremap <silent> <C-h> <C-\><C-n>:call VimOrTmuxMove('h')<CR>
+tnoremap <silent> <C-l> <C-\><C-n>:call VimOrTmuxMove('l')<CR>
+tnoremap <silent> <C-j> <C-\><C-n>:call VimOrTmuxMove('j')<CR>
+tnoremap <silent> <C-k> <C-\><C-n>:call VimOrTmuxMove('k')<CR>
+
+" I just like doing vv instead of shift
 nnoremap vv V
 
 
 " ============================================================
-" Plugin mappings. Each plugin's own settings/functions/commands still
-" live in plugins/<name>.vim (sourced before this file, see plugins.vim) --
-" this file only binds keys to what they expose.
+" Plugin mappings -- each plugin's own settings/functions/commands still live in plugins/<name>.vim; this file only binds keys to what they expose.
 " ============================================================
 
 " --- vim-which-key (see plugins/which-key.vim for the menu tree) ---
@@ -62,8 +61,7 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<C
 inoremap <silent><expr> <c-space> coc#refresh()
 inoremap <silent><expr> <Nul> coc#refresh()
 
-" Navigate the pum with <C-j>/<C-k>, falling back to their default
-" insert-mode behavior (linefeed / digraph entry) when it's not visible.
+" Navigate the pum with <C-j>/<C-k>, falling back to default insert-mode behavior (linefeed/digraph entry) when it's not visible.
 inoremap <expr><c-j> coc#pum#visible() ? coc#pum#next(1) : "\<C-j>"
 inoremap <expr><c-k> coc#pum#visible() ? coc#pum#prev(1) : "\<C-k>"
 
@@ -80,16 +78,25 @@ nmap <silent> gf <Plug>(coc-format)
 nmap [g <Plug>(coc-diagnostic-prev)
 nmap ]g <Plug>(coc-diagnostic-next)
 
-" --- fugitive (+ rhubarb for :GBrowse) ---
+" --- GITHUB ---
 nnoremap <leader>gs :Git<CR>
-nnoremap <leader>gd :Gdiffsplit main<CR>
+" Native vertical vimdiff against the PR's resolved base branch, toggled by the same key (see plugins/pr-diff.vim).
+nnoremap <leader>gd :PrDiff<CR>
 nnoremap <leader>gl :Git log --oneline<CR>
-nnoremap <leader>gi :GBrowse!<CR>
+nnoremap <leader>gi :GBrowse<CR>
 
-" PR review: turns the diff into a navigable pager buffer, fugitive's equivalent of nvim's diffview.nvim.
-nnoremap <leader>gj :Git diff origin/main...HEAD<CR>
 " Per-file commit history via :Gclog, fugitive's equivalent of :DiffviewFileHistory %.
 nnoremap <leader>gh :call FugitiveFileHistory()<CR>
+
+" --- lazygit (see plugins/lazygit.vim) ---
+nnoremap <leader>gg :LazyGit<CR>
+
+" --- PrFiles (see plugins/fzf.vim; mirrors terminal's gp()) ---
+nnoremap <leader>gp :PrFiles<CR>
+
+" --- PrList (see plugins/pr-list.vim) -- plain-vim quickfix alternative to PrFiles' fzf
+" popup: a persistent bottom split of changed files, <CR> jumps + shows the diff above.
+nnoremap <leader>gr :PrList<CR>
 
 " --- fzf ---
 nnoremap <leader>ff :Files<CR>
@@ -97,14 +104,14 @@ nnoremap <leader>fg :GFiles<CR>
 nnoremap <leader>fb :Buffers<CR>
 nnoremap <leader>fw :Rg<CR>
 
-" <F7> mirrors <leader>ff; tmux's C-S-f sends it (see tmux.conf) since C-S-f
-" itself can't be mapped reliably through a tmux send-keys/if-shell chain.
-nnoremap <silent> <F7> :Files<CR>
 
 " --- coc lists, via fzf (see plugins/coc-fzf.vim) ---
 nnoremap <leader>lo :CocFzfList outline<CR>
 nnoremap <leader>ld :CocFzfList diagnostics<CR>
 nnoremap <leader>lc :CocFzfList commands<CR>
+
+" Prompt for a code action at the cursor (imports, quick fixes, refactors) -- coc's equivalent of nvim's code-action picker.
+nnoremap <silent> <leader>la :call CocActionAsync('codeAction', 'cursor')<CR>
 
 " --- no-neck-pain ---
 nnoremap <leader>z :NoNeckPain<CR>
@@ -115,5 +122,7 @@ nnoremap <leader>h :Startify<CR>
 " --- gitlab-vim-theme ---
 nnoremap <leader>ut :ToggleTheme<CR>
 
-" --- yazi ---
-nnoremap <silent> <F6> :YaziChooser<CR>
+" --- yazi, files, hunk ---
+" No vim-side mappings for C-S-y/C-S-n/C-S-h: tmux's root-table bindings (tmux.conf)
+" intercept those chords and inject the :YaziChooser/:Files/:HunkShow Ex command
+" directly into the vim pane via send-keys, since the raw keypress never reaches vim.

@@ -17,11 +17,6 @@ function! s:ResolveBackground() abort
   return l:os
 endfunction
 
-" Keeps bat's theme (used by fzf.vim previews) in sync with vim's background.
-function! s:SyncBatTheme() abort
-  let $BAT_THEME = &background ==# 'dark' ? 'Gitlab Dark' : 'Gitlab Light'
-endfunction
-
 " Re-applies tmux popup colors immediately on toggle instead of waiting for a new shell.
 function! s:SyncTmuxPopupStyle() abort
   if empty($TMUX)
@@ -44,7 +39,6 @@ function! s:ToggleTheme() abort
     set background=dark
     colorscheme gitlab_dark
   endif
-  call s:SyncBatTheme()
   call s:SyncTmuxPopupStyle()
   call writefile([&background, s:OSAppearance()], s:state_file)
 endfunction
@@ -58,5 +52,4 @@ else
   set background=light
   colorscheme gitlab_light
 endif
-call s:SyncBatTheme()
 call s:SyncTmuxPopupStyle()

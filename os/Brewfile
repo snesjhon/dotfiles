@@ -19,6 +19,7 @@ brew "node"             # Runs coc.nvim (vim/plugins/coc.vim)
 brew "nvm"
 brew "watchman"            # Required by rubocop and sorbet for file watching
 brew "lazygit"
+brew "hunk"             # Terminal diff viewer (vim's :HunkShow, tmux C-S-h)
 
 # Navigation
 brew "fd"               # Backs `fcd` (zsh/functions/fzf-pickers.zsh) and yazi's file search

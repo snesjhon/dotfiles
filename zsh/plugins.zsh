@@ -1,13 +1,5 @@
 # ============================================================
-# Plugin loading + bootstrap. Each plugin's own settings/functions live in
-# plugins/<name>.zsh, sourced right before its load line below -- settings a
-# plugin reads at source time (fzf's default command, zsh-autosuggestions'
-# highlight style) must be set before that plugin loads. Unlike vim's
-# plugins.vim (bootstrap everything via plug#end(), then loop over settings
-# files afterward) zsh has no separate load-then-configure phase, so each
-# plugin here is inlined at its own load point instead of deferred to a
-# trailing loop. Keybindings are centralized in mappings.zsh instead of
-# living here.
+# Plugin loading + bootstrap. Each plugin's settings live in plugins/<name>.zsh, sourced right before its load line (unlike vim's bootstrap-then-configure, zsh has no separate phase). Keybindings live in mappings.zsh.
 # ============================================================
 
 # --- starship ---

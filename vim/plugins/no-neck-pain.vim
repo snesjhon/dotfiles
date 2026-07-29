@@ -1,11 +1,6 @@
 " ============================================================
-" no-neck-pain (native) — centers the current window by padding it
-" with fixed-width, unenterable scratch splits on both sides.
-" Fully native vimscript, no plugin dependency — vim equivalent of
-" nvim's no-neck-pain.nvim (lua/plugins/no-neck-pain.lua): same
-" width, same enable-on-start, same <leader>z toggle.
+" no-neck-pain (native) — centers the window with fixed-width scratch splits on both sides; fully native vimscript equivalent of nvim's no-neck-pain.nvim, same width/enable-on-start/<leader>z toggle.
 " ============================================================
-" 
 let g:no_neck_pain_width = get(g:, 'no_neck_pain_width', 100)
 let g:no_neck_pain_min_side_width = get(g:, 'no_neck_pain_min_side_width', 10)
 
@@ -164,3 +159,5 @@ augroup no_neck_pain
   autocmd WinClosed * call timer_start(0, {-> s:CheckMainClosed()})
   autocmd WinClosed * call timer_start(0, {-> s:CheckPendingReenable()})
 augroup END
+
+command! NNPDebug echo 'enabled=' . s:enabled . ' awaiting=' . s:awaiting_reenable . ' winnr=' . winnr('$') . ' main=' . s:main_winid . ' left=' . s:left_winid . ' right=' . s:right_winid

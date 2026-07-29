@@ -1,10 +1,5 @@
 " ============================================================
-" vim-plug bootstrap + plugin manifest.
-" Only `Plug` declarations belong here — each plugin's own settings/
-" functions/commands live in plugins/<name>.vim, sourced below once
-" plug#end() has put them on 'runtimepath' (mirrors nvim's lazy_setup.lua,
-" which bootstraps lazy.nvim and then imports lua/plugins/*.lua). Their
-" keybindings are centralized in mappings.vim instead of living here.
+" vim-plug bootstrap + plugin manifest. Only `Plug` declarations belong here — settings/functions live in plugins/<name>.vim, sourced after plug#end() (mirrors nvim's lazy_setup.lua). Keybindings live in mappings.vim.
 " ============================================================
 
 " --- vim-plug bootstrap ---
@@ -14,8 +9,7 @@ if empty(glob(s:plug_vim))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-" vim-polyglot reads this global on load, so unlike the other plugins it
-" can't be deferred to plugins/polyglot.vim — it must be set before plug#end().
+" vim-polyglot reads this global on load, so unlike other plugins it can't be deferred to plugins/polyglot.vim — it must be set before plug#end().
 let g:polyglot_disabled = ['typescript', 'typescriptreact', 'javascript', 'jsx']
 
 call plug#begin('~/.vim/plugged')

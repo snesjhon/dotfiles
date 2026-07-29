@@ -1,8 +1,5 @@
 " ============================================================
-" vim-which-key -- popup menu of <leader> mappings, shown after a short
-" pause post-<leader> so muscle memory gaps don't require memorizing
-" mappings.vim by heart. Tree below must be kept in sync by hand with
-" every <leader>-prefixed mapping in mappings.vim.
+" vim-which-key -- popup menu of <leader> mappings; the tree below must be kept in sync by hand with every <leader>-prefixed mapping in mappings.vim.
 " ============================================================
 
 " Shorten the wait before the popup appears (default 1000ms).
@@ -35,11 +32,12 @@ let g:which_key_map.r = {
 let g:which_key_map.g = {
       \ 'name' : '+git',
       \ 's' : ['Git',                              'status'],
-      \ 'd' : ['Gdiffsplit main',                   'diff vs main'],
+      \ 'd' : ['PrDiff',                             'toggle diff vs PR base'],
       \ 'l' : ['Git log --oneline',                 'log'],
-      \ 'i' : ['GBrowse!',                          'open in browser'],
-      \ 'j' : ['Git diff origin/main...HEAD',       'PR diff'],
+      \ 'i' : ['GBrowse',                           'open in browser'],
       \ 'h' : ['FugitiveFileHistory()',              'file history'],
+      \ 'g' : ['LazyGit',                            'lazygit'],
+      \ 'p' : ['PrFiles',                            'PR changed files'],
       \ }
 
 let g:which_key_map.f = {
@@ -55,6 +53,7 @@ let g:which_key_map.l = {
       \ 'o' : ['CocFzfList outline',     'outline'],
       \ 'd' : ['CocFzfList diagnostics', 'diagnostics'],
       \ 'c' : ['CocFzfList commands',    'commands'],
+      \ 'a' : ['call CocActionAsync(''codeAction'', ''cursor'')', 'code action'],
       \ }
 
 call which_key#register('<Space>', "g:which_key_map")

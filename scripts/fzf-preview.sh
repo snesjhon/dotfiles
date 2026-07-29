@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
-# Bounded preview for the content-grep pickers (vim/plugins/fzf.vim's :Rg/:Files,
-# zsh/functions/fzf-pickers.zsh's fw()/ff()/fr()).
-#
-# Bounded two ways (byte-size and line-depth) since bat's highlight cost scales
-# with the matched line number, not file size. Zero-lexing-cost awk fallback
-# (no highlighting) is commented out below if that trade-off is ever worth it.
+# Bounded preview (byte-size + line-depth) for the content-grep pickers, since bat's highlight cost scales with matched line number, not file size.
 set -u
 
 FILE=${1:-}

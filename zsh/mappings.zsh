@@ -1,12 +1,5 @@
 # ============================================================
-# All custom keybindings, centralized here regardless of whether they're
-# built-in zsh features or belong to a plugin. Settings/functions live in
-# plugins/*.zsh instead -- see plugins.zsh. This file only binds keys.
-#
-# Sourced after plugins.zsh: fzf's completion script unconditionally rebinds
-# Tab (falling back to whatever it was bound to before), so our Tab ->
-# autosuggest-accept binding has to come after plugins.zsh loads fzf, not
-# before, or fzf's binding wins instead.
+# All custom keybindings, centralized here regardless of built-in/plugin origin (settings/functions live in plugins/*.zsh). Sourced after plugins.zsh so our Tab binding isn't overridden by fzf's own rebind.
 # ============================================================
 
 # --- vi mode (built-in, no plugin) ---

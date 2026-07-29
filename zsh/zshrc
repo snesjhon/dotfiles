@@ -23,6 +23,11 @@ setopt hist_verify
 setopt NO_BEEP
 setopt IGNORE_EOF
 
+# Disable XON/XOFF flow control -- otherwise the tty driver eats Ctrl-S/Ctrl-Q itself
+# (pause/resume output) before apps like vim ever see them, and a stray Ctrl-S silently
+# freezes all terminal output until Ctrl-Q is pressed, which looks like random lag.
+stty -ixon
+
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"
 

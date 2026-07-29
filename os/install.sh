@@ -1,6 +1,5 @@
 #!/bin/bash
-# Bootstrap script for setting up a new Mac
-# Usage: ./install.sh
+# Bootstrap script for setting up a new Mac. Usage: ./install.sh
 
 set -e
 
@@ -113,7 +112,16 @@ fi
 echo ""
 
 # ============================================
-# 7. Setup shell
+# 7. Configure git difftool (vimdiff, no confirm prompt)
+# ============================================
+info "Configuring git difftool..."
+git config --global diff.tool vimdiff
+git config --global difftool.prompt false
+success "git difftool set to vimdiff"
+echo ""
+
+# ============================================
+# 8. Setup shell
 # ============================================
 info "Setting up shell..."
 if ! grep -q "$(which zsh)" /etc/shells; then

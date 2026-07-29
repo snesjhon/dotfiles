@@ -1,13 +1,8 @@
-" coc.nvim's bundled JS calls the global WebCrypto `crypto` object, which isn't defined until
-" Node 19+. Point coc's own backend at the system Node (/usr/local/bin, from nodejs.org's
-" installer) rather than a version manager's shim, since those resolve per-project/per-branch
-" (e.g. a monorepo pinning an older Node) and would crash extension activation depending on cwd.
+" coc.nvim's bundled JS needs Node 19+ (for global WebCrypto); points at the system Node (/usr/local/bin) rather than a version manager's shim, since those resolve per-project/branch and could crash activation.
 let g:coc_node_path = '/usr/local/bin/node'
 
 " --- coc.nvim: extensions (JS/TS/React/JSON focus) ---
-" coc-java: stale worktree caches aren't cleaned up automatically; `dev run jdtls-prune --apply` handles it.
-" Standard server mode kept over LightWeight for cross-module go-to-definition (see coc-settings.json).
-" coc-tsserver removed in favor of vtsls (coc-settings.json) to avoid duplicate diagnostics/completion.
+" coc-java needs periodic `dev run jdtls-prune --apply`; kept in standard (not LightWeight) mode for cross-module go-to-definition; coc-tsserver dropped for vtsls to avoid duplicate diagnostics.
 let g:coc_global_extensions = [
   \ 'coc-java',
   \ 'coc-json',
@@ -26,8 +21,7 @@ endfunction
 command! JavaOn call coc#config('java.enabled', v:true) | CocRestart
 command! JavaOff call coc#config('java.enabled', v:false) | CocRestart
 
-" Machine-specific coc#config() calls (personal JDK/vtsls paths) that need a real $HOME
-" expansion JSON can't do. Gitignored; add e.g.:
+" Machine-specific coc#config() calls (personal JDK/vtsls paths needing a real $HOME) go here. Gitignored; add e.g.:
 "   call coc#config('java.import.gradle.javaHome', $HOME . '/path/to/jdk')
 let s:coc_local_config = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/../coc-settings.local.vim'
 if filereadable(s:coc_local_config)

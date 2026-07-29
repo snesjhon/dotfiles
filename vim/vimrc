@@ -1,12 +1,5 @@
 " ============================================================
-" Vanilla Vim config — main entry point.
-"
-" Layout mirrors nvim/ (init.lua -> lazy_setup.lua -> lua/plugins/*.lua):
-"   vimrc         - this file: core options only
-"   plugins.vim   - vim-plug bootstrap + Plug declarations
-"   mappings.vim  - all keybindings, plugin or not
-"   plugins/*.vim - one file per plugin's own settings/functions/commands
-"                   (no keybindings -- those belong in mappings.vim)
+" Vanilla Vim config — main entry point. Layout mirrors nvim/ (init.lua -> lazy_setup.lua -> lua/plugins/*.lua): vimrc (options only), plugins.vim (Plug declarations), mappings.vim (all keybindings), plugins/*.vim (per-plugin settings, no keybindings).
 " ============================================================
 let mapleader = " "
 set nocompatible
@@ -16,6 +9,7 @@ filetype plugin indent on
 
 set nonumber
 set norelativenumber
+set cursorline
 set expandtab shiftwidth=2 tabstop=2 softtabstop=2
 set ignorecase smartcase incsearch hlsearch
 set clipboard=unnamed
@@ -23,6 +17,7 @@ set hidden
 set termguicolors
 set signcolumn=yes
 set nowrap
+set mouse=a
 
 " coc.nvim's undercurl diagnostics need these termcap strings; auto-detection doesn't resolve through tmux.
 let &t_Cs = "\<Esc>[4:3m"

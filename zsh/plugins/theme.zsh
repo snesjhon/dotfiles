@@ -17,14 +17,21 @@ _resolve_theme() {
   echo "$os_appearance"
 }
 
+# fzf's own UI colors (no auto:system equivalent like bat), re-resolved by fzf-pickers.zsh on every invocation so an already-open shell doesn't go stale when macOS's appearance changes.
+_fzf_theme_opts() {
+  if [[ "$(_resolve_theme)" == dark ]]; then
+    echo "--color=bg:#28262B,fg:#FFFFFF,hl:#7FB6ED,fg+:#FFFFFF,bg+:#312F35,hl+:#7FB6ED,info:#8B7AA0,prompt:#F57F6C,pointer:#F57F6C,marker:#52B87A,spinner:#52B87A,header:#8B7AA0,border:#5D5277,gutter:#28262B --layout=reverse --info=inline-right --border=rounded"
+  else
+    echo "--color=bg:#FAFAFF,fg:#303030,hl:#006CD8,fg+:#303030,bg+:#EFEFFC,hl+:#006CD8,info:#7878A8,prompt:#A31700,pointer:#A31700,marker:#0A7F3D,spinner:#0A7F3D,header:#7878A8,border:#E2DEF8,gutter:#FAFAFF --layout=reverse --info=inline-right --border=rounded"
+  fi
+}
+
+export FZF_DEFAULT_OPTS="$(_fzf_theme_opts)"
+
 if [[ "$(_resolve_theme)" == dark ]]; then
-  export BAT_THEME="Gitlab Dark"
-  export FZF_DEFAULT_OPTS="--color=bg:#28262B,fg:#FFFFFF,hl:#7FB6ED,fg+:#FFFFFF,bg+:#312F35,hl+:#7FB6ED,info:#8B7AA0,prompt:#F57F6C,pointer:#F57F6C,marker:#52B87A,spinner:#52B87A,header:#8B7AA0,border:#5D5277,gutter:#28262B --layout=reverse --info=inline-right --border=rounded"
   _popup_style="bg=#28262B,fg=#FFFFFF"
   _popup_border_style="fg=#5D5277"
 else
-  export BAT_THEME="Gitlab Light"
-  export FZF_DEFAULT_OPTS="--color=bg:#FAFAFF,fg:#303030,hl:#006CD8,fg+:#303030,bg+:#EFEFFC,hl+:#006CD8,info:#7878A8,prompt:#A31700,pointer:#A31700,marker:#0A7F3D,spinner:#0A7F3D,header:#7878A8,border:#E2DEF8,gutter:#FAFAFF --layout=reverse --info=inline-right --border=rounded"
   _popup_style="bg=#FAFAFF,fg=#303030"
   _popup_border_style="fg=#E2DEF8"
 fi
