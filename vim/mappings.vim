@@ -70,7 +70,9 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> grr <Plug>(coc-references)
 nmap <silent> gh :call CocActionAsync('doHover')<CR>
-nmap <silent> g<Bar> :call NoNeckPainSplit("call CocAction('jumpDefinition', 'vsplit')")<CR>
+nmap <silent> g- :call NoNeckPainSplit("call CocAction('jumpDefinition', 'botright vsplit')")<CR>
+
+" nmap <silent> g<Bar> :call NoNeckPainSplit("call CocAction('jumpDefinition', 'vsplit')")<CR>
 
 nmap <leader>rn <Plug>(coc-rename)
 nmap <silent> gf <Plug>(coc-format)
