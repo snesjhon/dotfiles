@@ -1,14 +1,3 @@
-# Based on josean's dotfiles: https://github.com/josean-dev/dev-environment-files/blob/main/.zshrc
-# ============================================================
-# Main entry point. Layout mirrors vim/ (vimrc -> plugins.vim/mappings.vim):
-#   zshrc           - this file: core shell options only
-#   plugins.zsh     - plugin loading + bootstrap
-#   mappings.zsh    - all keybindings, plugin or not
-#   plugins/*.zsh   - one file per plugin's own settings/functions
-#                     (no keybindings -- those belong in mappings.zsh)
-#   functions/*.zsh - general-purpose custom functions
-# ============================================================
-
 export EDITOR=vim
 export VISUAL=vim
 
@@ -26,7 +15,7 @@ setopt IGNORE_EOF
 # Disable XON/XOFF flow control -- otherwise the tty driver eats Ctrl-S/Ctrl-Q itself
 # (pause/resume output) before apps like vim ever see them, and a stray Ctrl-S silently
 # freezes all terminal output until Ctrl-Q is pressed, which looks like random lag.
-stty -ixon
+# stty -ixon
 
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"

@@ -17,6 +17,22 @@ function! CocCheckBackSpace() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+" --- coc.nvim: helper for the gl mapping in mappings.vim ---
+" gh's hover is a floating popup, which plain Vim can't focus (coc#float#jump() is a
+" no-op without Neovim). Forcing this call's hoverTarget to 'preview' opens a real,
+" focusable/scrollable preview window instead, then wincmd P jumps straight into it.
+" :pedit always opens its first preview window horizontally, but reuses whichever one
+" already exists (:help preview-window) -- so a vertical one is pre-seeded once here,
+" through NoNeckPainSplit like the g- definition-split, and every later hover reuses it.
+function! CocShowAndFocusHover() abort
+  if empty(filter(range(1, winnr('$')), 'getwinvar(v:val, "&previewwindow")'))
+    let l:cur = win_getid()
+    call NoNeckPainSplit('botright vertical new | setlocal previewwindow nobuflisted bufhidden=wipe')
+    call win_gotoid(l:cur)
+  endif
+  call CocActionAsync('doHover', 'preview', {err -> execute('silent! wincmd P')})
+endfunction
+
 " coc-java defaults off since it activates for any file in a Gradle/Maven repo, not just .java; :JavaOn/:JavaOff flip it live.
 command! JavaOn call coc#config('java.enabled', v:true) | CocRestart
 command! JavaOff call coc#config('java.enabled', v:false) | CocRestart

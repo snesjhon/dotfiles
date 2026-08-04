@@ -12,6 +12,10 @@ nnoremap <silent> <C-l> :call VimOrTmuxMove('l')<CR>
 nnoremap <silent> <C-j> :call VimOrTmuxMove('j')<CR>
 nnoremap <silent> <C-k> :call VimOrTmuxMove('k')<CR>
 
+" coc's own recommended mapping for scrolling a float (e.g. gh's hover) in place.
+nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+
 nnoremap . :bnext<CR>
 nnoremap , :bprevious<CR>
 
@@ -70,6 +74,7 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> grr <Plug>(coc-references)
 nmap <silent> gh :call CocActionAsync('doHover')<CR>
+nmap <silent> gl :call CocShowAndFocusHover()<CR>
 nmap <silent> g- :call NoNeckPainSplit("call CocAction('jumpDefinition', 'botright vsplit')")<CR>
 
 " nmap <silent> g<Bar> :call NoNeckPainSplit("call CocAction('jumpDefinition', 'vsplit')")<CR>
