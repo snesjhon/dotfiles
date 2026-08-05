@@ -1,7 +1,7 @@
 " ============================================================
 " no-neck-pain (native) — centers the window with fixed-width scratch splits on both sides; fully native vimscript equivalent of nvim's no-neck-pain.nvim, same width/enable-on-start/<leader>z toggle.
 " ============================================================
-let g:no_neck_pain_width = get(g:, 'no_neck_pain_width', 100)
+let g:no_neck_pain_width = get(g:, 'no_neck_pain_width', 130)
 let g:no_neck_pain_min_side_width = get(g:, 'no_neck_pain_min_side_width', 10)
 
 let s:enabled = 0

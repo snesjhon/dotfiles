@@ -120,6 +120,15 @@ nnoremap <leader>lc :CocFzfList commands<CR>
 " Prompt for a code action at the cursor (imports, quick fixes, refactors) -- coc's equivalent of nvim's code-action picker.
 nnoremap <silent> <leader>la :call CocActionAsync('codeAction', 'cursor')<CR>
 
+" --- vimspector (see plugins/vimspector.vim for the Java/TS adapter wiring) ---
+nmap <silent> <leader>dd <Plug>(debug-start)
+nmap <silent> <leader>db <Plug>VimspectorToggleBreakpoint
+nmap <silent> <leader>do <Plug>VimspectorStepOver
+nmap <silent> <leader>di <Plug>VimspectorStepInto
+nmap <silent> <leader>du <Plug>VimspectorStepOut
+nmap <silent> <leader>ds <Plug>VimspectorStop
+nmap <silent> <leader>dr <Plug>VimspectorRestart
+
 " --- no-neck-pain ---
 nnoremap <leader>z :NoNeckPain<CR>
 

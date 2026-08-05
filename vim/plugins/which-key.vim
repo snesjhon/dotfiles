@@ -48,6 +48,17 @@ let g:which_key_map.f = {
       \ 'w' : ['Rg',      'live grep'],
       \ }
 
+let g:which_key_map.d = {
+      \ 'name' : '+debug',
+      \ 'd' : ['call feedkeys(''\<Plug>(debug-start)'')',            'start / continue'],
+      \ 'b' : ['call feedkeys(''\<Plug>VimspectorToggleBreakpoint'')', 'toggle breakpoint'],
+      \ 'o' : ['call feedkeys(''\<Plug>VimspectorStepOver'')',       'step over'],
+      \ 'i' : ['call feedkeys(''\<Plug>VimspectorStepInto'')',       'step into'],
+      \ 'u' : ['call feedkeys(''\<Plug>VimspectorStepOut'')',        'step out'],
+      \ 's' : ['call feedkeys(''\<Plug>VimspectorStop'')',           'stop'],
+      \ 'r' : ['call feedkeys(''\<Plug>VimspectorRestart'')',        'restart'],
+      \ }
+
 let g:which_key_map.l = {
       \ 'name' : '+lists',
       \ 'o' : ['CocFzfList outline',     'outline'],
