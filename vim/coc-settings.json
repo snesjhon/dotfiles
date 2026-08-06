@@ -12,6 +12,8 @@
   // Disabled since eager resolution races against Gradle's project locking on this monorepo and aborts the import.
   "java.import.gradle.annotationProcessing.enabled": false,
   "signature.hideOnTextChange": true,
+  // Caps hover popup height so it's less likely to grow upward into context.vim's context bar at the top of the window.
+  "hover.floatConfig": { "maxHeight": 20 },
   "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.enableSign": true,

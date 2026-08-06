@@ -25,12 +25,10 @@ Plug 'puremourning/vimspector', { 'do': 'python3 install_gadget.py --force-enabl
 " Syntax for everything else; TS/JSX/JS use Vim's own built-in syntax files instead.
 Plug 'sheerun/vim-polyglot'
 
-Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'easymotion/vim-easymotion'
-Plug 'jiangmiao/auto-pairs'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -38,6 +36,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'antoinemadec/coc-fzf'
 Plug 'mhinz/vim-startify'
 Plug 'liuchengxu/vim-which-key'
+Plug 'wellle/context.vim'
 Plug '~/Developer/gitlab-vim-theme'
 
 call plug#end()

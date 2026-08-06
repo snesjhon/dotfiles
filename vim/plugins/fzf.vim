@@ -69,6 +69,7 @@ function! s:LiveGrep(query, fullscreen) abort
   let filter_query_file = tempname()
   let options = ['--border-label', ' Rg ', '--border-label-pos', '2',
         \ '--preview-label', ' Preview ', '--bind', 'focus:transform-preview-label(echo [ {1} ])+transform(LINE={2}; ROW=$(( LINE < 151 ? LINE : 151 )); echo "change-preview-window(+$ROW-/2,right,50%)")',
+        \ '--wrap',
         \ '--disabled', '--prompt', 'Rg> ', '--query', a:query,
         \ '--bind', 'change:reload:' . printf(cmd, '{q}'),
         \ '--bind', 'alt-.:transform:[[ $FZF_PROMPT != *hidden* ]] && echo "change-prompt(Rg [hidden]> )+reload(' . printf(hidden_cmd, '{q}') . ')" || echo "change-prompt(Rg> )+reload(' . printf(cmd, '{q}') . ')"',

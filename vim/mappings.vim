@@ -88,7 +88,7 @@ nmap ]g <Plug>(coc-diagnostic-next)
 " --- GITHUB ---
 nnoremap <leader>gs :Git<CR>
 " Native vertical vimdiff against the PR's resolved base branch, toggled by the same key (see plugins/pr-diff.vim).
-nnoremap <leader>gd :PrDiff<CR>
+" nnoremap <leader>gd :PrDiff<CR>
 nnoremap <leader>gl :Git log --oneline<CR>
 nnoremap <leader>gi :GBrowse<CR>
 
@@ -99,11 +99,11 @@ nnoremap <leader>gh :call FugitiveFileHistory()<CR>
 nnoremap <leader>gg :LazyGit<CR>
 
 " --- PrFiles (see plugins/fzf.vim; mirrors terminal's gp()) ---
-nnoremap <leader>gp :PrFiles<CR>
+" nnoremap <leader>gp :PrFiles<CR>
 
 " --- PrList (see plugins/pr-list.vim) -- plain-vim quickfix alternative to PrFiles' fzf
 " popup: a persistent bottom split of changed files, <CR> jumps + shows the diff above.
-nnoremap <leader>gr :PrList<CR>
+" nnoremap <leader>gr :PrList<CR>
 
 " --- fzf ---
 nnoremap <leader>ff :Files<CR>
@@ -137,8 +137,3 @@ nnoremap <leader>h :Startify<CR>
 
 " --- gitlab-vim-theme ---
 nnoremap <leader>ut :ToggleTheme<CR>
-
-" --- yazi, files, hunk ---
-" No vim-side mappings for C-S-y/C-S-n/C-S-h: tmux's root-table bindings (tmux.conf)
-" intercept those chords and inject the :YaziChooser/:Files/:HunkShow Ex command
-" directly into the vim pane via send-keys, since the raw keypress never reaches vim.

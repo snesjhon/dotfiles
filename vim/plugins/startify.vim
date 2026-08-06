@@ -1,7 +1,3 @@
-" ============================================================
-" vim-startify — start screen for a bare `vim` launch; vim equivalent of nvim's snacks.nvim dashboard.
-" ============================================================
-
 let g:startify_custom_header = [
       \ '██╗   ██╗██╗███╗   ███╗',
       \ '██║   ██║██║████╗ ████║',
@@ -13,7 +9,7 @@ let g:startify_custom_header = [
 
 let g:startify_lists = [
       \ { 'type': 'commands', 'header': ['   Quick actions'] },
-      \ { 'type': 'files',    'header': ['   Recent files'] },
+      \ { 'type': 'dir',    'header': ['   MRU'. getcwd()] },
       \ ]
 
 let g:startify_commands = [
@@ -23,6 +19,7 @@ let g:startify_commands = [
       \ ]
 
 let g:startify_files_number = 5
+let g:startify_change_to_dir = 0
 
 " Shortens recent-file paths: relative to cwd or $HOME, collapsing deep paths (>4 components) to just the top dir, '…', and the immediate parent.
 function! s:ShortenPath(absolute_path) abort
