@@ -3,7 +3,6 @@
 " ============================================================
 
 " --- window splits ---
-" nnoremap <silent> <Bar> :call NoNeckPainSplit('vsplit')<CR>
 nnoremap <silent> - :call NoNeckPainSplit('vsplit')<CR>
 
 " --- smart-splits (native reimplementation, see plugins/smart-splits.vim) ---
@@ -25,7 +24,6 @@ nnoremap <F10> :w<CR>
 
 nnoremap <leader>/ :Commentary<CR>
 
-
 " --- UI toggles ---
 nnoremap <leader>uw :set wrap!<CR>
 
@@ -41,6 +39,8 @@ tnoremap <silent> <C-k> <C-\><C-n>:call VimOrTmuxMove('k')<CR>
 " I just like doing vv instead of shift
 nnoremap vv V
 
+nnoremap L g_
+nnoremap H 0
 
 " ============================================================
 " Plugin mappings -- each plugin's own settings/functions/commands still live in plugins/<name>.vim; this file only binds keys to what they expose.
@@ -77,8 +77,6 @@ nmap <silent> gh :call CocActionAsync('doHover')<CR>
 nmap <silent> gl :call CocShowAndFocusHover()<CR>
 nmap <silent> g- :call NoNeckPainSplit("call CocAction('jumpDefinition', 'botright vsplit')")<CR>
 
-" nmap <silent> g<Bar> :call NoNeckPainSplit("call CocAction('jumpDefinition', 'vsplit')")<CR>
-
 nmap <leader>rn <Plug>(coc-rename)
 nmap <silent> gf <Plug>(coc-format)
 
@@ -97,13 +95,6 @@ nnoremap <leader>gh :call FugitiveFileHistory()<CR>
 
 " --- lazygit (see plugins/lazygit.vim) ---
 nnoremap <leader>gg :LazyGit<CR>
-
-" --- PrFiles (see plugins/fzf.vim; mirrors terminal's gp()) ---
-" nnoremap <leader>gp :PrFiles<CR>
-
-" --- PrList (see plugins/pr-list.vim) -- plain-vim quickfix alternative to PrFiles' fzf
-" popup: a persistent bottom split of changed files, <CR> jumps + shows the diff above.
-" nnoremap <leader>gr :PrList<CR>
 
 " --- fzf ---
 nnoremap <leader>ff :Files<CR>

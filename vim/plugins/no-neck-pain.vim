@@ -1,5 +1,5 @@
 " ============================================================
-" no-neck-pain (native) — centers the window with fixed-width scratch splits on both sides; fully native vimscript equivalent of nvim's no-neck-pain.nvim, same width/enable-on-start/<leader>z toggle.
+" no-neck-pain (native) — pads the window with a fixed-width scratch split on the left; fully native vimscript equivalent of nvim's no-neck-pain.nvim, same width/enable-on-start/<leader>z toggle.
 " ============================================================
 let g:no_neck_pain_width = get(g:, 'no_neck_pain_width', 100)
 let g:no_neck_pain_min_side_width = get(g:, 'no_neck_pain_min_side_width', 10)
@@ -8,11 +8,10 @@ let s:enabled = 0
 let s:pad_bufnr = -1
 let s:main_winid = -1
 let s:left_winid = -1
-let s:right_winid = -1
 let s:main_fillchars = ''
 let s:awaiting_reenable = 0
 
-" one shared scratch buffer, displayed in both side windows
+" scratch buffer displayed in the left pad window
 function! s:PadBufnr() abort
   if s:pad_bufnr == -1 || !bufexists(s:pad_bufnr)
     let s:pad_bufnr = bufadd('')
@@ -56,15 +55,8 @@ function! s:Enable() abort
   let s:left_winid = win_getid()
 
   call win_gotoid(s:main_winid)
-  rightbelow vertical split
-  execute 'buffer ' . padbuf
-  execute 'vertical resize ' . side_width
-  call s:DecoratePad()
-  let s:right_winid = win_getid()
-
-  call win_gotoid(s:main_winid)
   let s:main_fillchars = &l:fillchars
-  " drop 'vert' so the border renders blank, matching the pad's border on the other side
+  " drop 'vert' so the border against the left pad renders blank
   call s:HideMainVert()
   setlocal winfixwidth
   let s:enabled = 1
@@ -76,12 +68,10 @@ function! s:Disable() abort
   endif
   " flip before navigating so SkipPad's guard doesn't bounce focus back before `quit` runs
   let s:enabled = 0
-  for winid in [s:left_winid, s:right_winid]
-    if win_id2win(winid) != 0
-      call win_gotoid(winid)
-      quit
-    endif
-  endfor
+  if win_id2win(s:left_winid) != 0
+    call win_gotoid(s:left_winid)
+    quit
+  endif
   if win_id2win(s:main_winid) != 0
     call win_gotoid(s:main_winid)
     setlocal nowinfixwidth
@@ -121,28 +111,24 @@ function! s:CheckPendingReenable() abort
   endif
 endfunction
 
-" if focus somehow lands in a pad (e.g. <C-w>w cycling), bounce back out
+" if focus somehow lands in the pad (e.g. <C-w>w cycling), bounce back out
 function! s:SkipPad() abort
   if !s:enabled || bufnr('%') != s:pad_bufnr
     return
   endif
   if win_getid() == s:left_winid
     wincmd l
-  elseif win_getid() == s:right_winid
-    wincmd h
   endif
 endfunction
 
-" Tears down orphaned pads if the main window closes; `quit` avoids E444 on the last remaining pad.
+" Tears down an orphaned pad if the main window closes; `quit` avoids E444 on the last remaining pad.
 function! s:CheckMainClosed() abort
   if s:enabled && win_id2win(s:main_winid) == 0
     let s:enabled = 0
-    for winid in [s:left_winid, s:right_winid]
-      if win_id2win(winid) != 0
-        call win_gotoid(winid)
-        quit
-      endif
-    endfor
+    if win_id2win(s:left_winid) != 0
+      call win_gotoid(s:left_winid)
+      quit
+    endif
   endif
 endfunction
 
@@ -160,4 +146,4 @@ augroup no_neck_pain
   autocmd WinClosed * call timer_start(0, {-> s:CheckPendingReenable()})
 augroup END
 
-command! NNPDebug echo 'enabled=' . s:enabled . ' awaiting=' . s:awaiting_reenable . ' winnr=' . winnr('$') . ' main=' . s:main_winid . ' left=' . s:left_winid . ' right=' . s:right_winid
+command! NNPDebug echo 'enabled=' . s:enabled . ' awaiting=' . s:awaiting_reenable . ' winnr=' . winnr('$') . ' main=' . s:main_winid . ' left=' . s:left_winid

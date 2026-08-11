@@ -117,9 +117,6 @@ alt-ctrl-l = 'move right'
 alt-slash = 'layout tiles horizontal vertical'     # toggle split direction
 alt-comma = 'layout accordion horizontal vertical' # accordion (stack) mode
 alt-period = 'layout floating tiling'              # toggle float
-#
-#nm # macOS native fullscreen
-# alt-f = 'fullscreen'
 
 # Back-and-forth between last two workspaces
 alt-m = 'workspace-back-and-forth'
@@ -174,14 +171,13 @@ shift-ctrl-alt-z = [
   'workspace 6',
 ]
 
-# tmux session switching (Meh = shift+ctrl+alt) -- wrapped in `zsh -lc "..."` since exec-and-forget won't expand $HOME/~ itself.
-
 # tmux-session.sh myapp ~/projects/myapp code agent server:~/projects/myapp/web
-shift-ctrl-alt-b = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/tmux/tmux-session.sh dev $HOME/Developer/ dots:$HOME/Developer/dotfiles me:$HOME/Developer/me"'
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/tmux/tmux-session.sh dev $HOME/Developer/ dots:$HOME/Developer/dotfiles me:$HOME/Developer/me"'
 
 # scripts/meh-c.local.sh and meh-v.local.sh are gitignored -- create them yourself to bind internal project paths/sessions behind these two hotkeys.
-shift-ctrl-alt-c = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-c.local.sh"'
-shift-ctrl-alt-v = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-v.local.sh"'
+shift-ctrl-alt-j = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-j.local.sh"'
+shift-ctrl-alt-u = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-u.local.sh"'
+shift-ctrl-alt-i = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-i.local.sh"'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'
