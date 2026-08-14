@@ -23,23 +23,27 @@ format = "[$symbol($version )]($style)"
 [nodejs]
 format = "[$symbol($version )]($style)"
 
-[custom.ignition_base]
-command = "GIT_PR_BASE_SKIP_GH=1 $HOME/Developer/dotfiles/scripts/git-pr-base.sh 2>/dev/null"
-when = '''
-git remote get-url origin 2>/dev/null | grep -q "ignition.git" || exit 1
-base="$(GIT_PR_BASE_SKIP_GH=1 "$HOME/Developer/dotfiles/scripts/git-pr-base.sh" 2>/dev/null)"
-[ -z "$base" ] && exit 1
-default=""
-for remote in upstream origin; do
-  ref=$(git symbolic-ref --short "refs/remotes/${remote}/HEAD" 2>/dev/null)
-  [ -n "$ref" ] && { default="${ref#${remote}/}"; break; }
-done
-[ -z "$default" ] && default="main"
-[ "${base#*/}" != "$default" ]
-'''
-symbol = "⑂ "
-style = "bold yellow"
-format = '[$symbol\($output\)]($style) '
+# Disabled 2026-08-13: cost ~200ms/prompt in large repos (git-pr-base.sh runs
+# twice per prompt via when+command, each forking 6+ git subprocesses).
+# Not currently needed -- kept here in case we want it back.
+# [custom.ignition_base]
+# command = "GIT_PR_BASE_SKIP_GH=1 $HOME/Developer/dotfiles/scripts/git-pr-base.sh 2>/dev/null"
+# when = '''
+# git remote get-url origin 2>/dev/null | grep -q "ignition.git" || exit 1
+# base="$(GIT_PR_BASE_SKIP_GH=1 "$HOME/Developer/dotfiles/scripts/git-pr-base.sh" 2>/dev/null)"
+# [ -z "$base" ] && exit 1
+# default=""
+# for remote in upstream origin; do
+#   ref=$(git symbolic-ref --short "refs/remotes/${remote}/HEAD" 2>/dev/null)
+#   [ -n "$ref" ] && { default="${ref#${remote}/}"; break; }
+# done
+# [ -z "$default" ] && default="main"
+# [ "${base#*/}" != "$default" ]
+# '''
+# symbol = "⑂ "
+# style = "bold yellow"
+# format = '[$symbol\($output\)]($style) '
+# ignore_timeout = true
 
 [cmd_duration]
 disabled = true

@@ -7,8 +7,7 @@ set timeoutlen=500
 
 let g:which_key_map = {}
 
-let g:which_key_map['n'] = ['bnext',      'next buffer']
-let g:which_key_map['p'] = ['bprevious',  'prev buffer']
+let g:which_key_map['s'] = ['Save', 'Save File']
 let g:which_key_map['/'] = ['Commentary', 'toggle comment']
 let g:which_key_map['z'] = ['NoNeckPain', 'toggle focus mode']
 let g:which_key_map['h'] = ['Startify',   'start screen']

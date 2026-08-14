@@ -1,2 +1,3 @@
 alias cc='claude --permission-mode auto'
 alias gg='lazygit'
+alias gs='git status'

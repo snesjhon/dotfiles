@@ -21,6 +21,7 @@ nnoremap , :bprevious<CR>
 nnoremap <C-S-w> :bp<bar>bd #<CR>
 nnoremap <C-S-q> :q<CR>
 nnoremap <F10> :w<CR>
+nnoremap <leader>s :w<CR>
 
 nnoremap <leader>/ :Commentary<CR>
 

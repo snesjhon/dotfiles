@@ -1,5 +1,6 @@
 nmap j gj
 nmap k gk
+nmap vv V
 
 set clipboard=unnamed
 

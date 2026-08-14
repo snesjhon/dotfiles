@@ -17,7 +17,11 @@ source <(fzf --zsh)
 
 # --- zsh-autosuggestions ---
 source "$ZSH_CONFIG_DIR/plugins/zsh-autosuggestions.zsh"
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# brew --prefix forks a Ruby process (~40-50ms) -- compute once, reuse for both plugins below.
+BREW_PREFIX="$(brew --prefix)"
+source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # --- zsh-syntax-highlighting ---
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+unset BREW_PREFIX
