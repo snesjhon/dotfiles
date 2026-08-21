@@ -1,7 +1,3 @@
-" ============================================================
-" vim-plug bootstrap + plugin manifest. Only `Plug` declarations belong here — settings/functions live in plugins/<name>.vim, sourced after plug#end() (mirrors nvim's lazy_setup.lua). Keybindings live in mappings.vim.
-" ============================================================
-
 " --- vim-plug bootstrap ---
 let s:plug_vim = expand('~/.vim/autoload/plug.vim')
 if empty(glob(s:plug_vim))
@@ -15,16 +11,8 @@ let g:polyglot_disabled = ['typescript', 'typescriptreact', 'javascript', 'jsx']
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" DAP client (breakpoints/step/attach) for Java and TypeScript; needs Vim built
-" with +python3, hence Homebrew's vim rather than the macOS system one.
-" 'do' auto-installs the vscode-js-debug gadget (Node/TS adapter) on install/update;
-" Java has no gadget here since it reuses coc-java's own jdt.ls instead (see plugins/vimspector.vim).
 Plug 'puremourning/vimspector', { 'do': 'python3 install_gadget.py --force-enable-node' }
-
-" Syntax for everything else; TS/JSX/JS use Vim's own built-in syntax files instead.
 Plug 'sheerun/vim-polyglot'
-
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'

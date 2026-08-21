@@ -1,6 +1,9 @@
 nmap j gj
 nmap k gk
-nmap vv V
+" 'v' switches mode instantly with no timeoutlen, so nmap vv can never see the
+" second key; remap v inside visual mode instead, once the mode change already happened
+vnoremap v V
+
 
 set clipboard=unnamed
 
