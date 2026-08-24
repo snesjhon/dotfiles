@@ -41,7 +41,7 @@ tnoremap <silent> <C-k> <C-\><C-n>:call VimOrTmuxMove('k')<CR>
 nnoremap vv V
 
 nnoremap L g_
-nnoremap H 0
+nnoremap H ^
 
 " ============================================================
 " Plugin mappings -- each plugin's own settings/functions/commands still live in plugins/<name>.vim; this file only binds keys to what they expose.
@@ -89,7 +89,10 @@ nnoremap <leader>gs :Git<CR>
 " Native vertical vimdiff against the PR's resolved base branch, toggled by the same key (see plugins/pr-diff.vim).
 " nnoremap <leader>gd :PrDiff<CR>
 nnoremap <leader>gl :Git log --oneline<CR>
-nnoremap <leader>gi :GBrowse<CR>
+" .GBrowse anchors the current line's URL; in a :Git blame buffer, fugitive
+" instead resolves the line to its commit and opens that commit's page.
+nnoremap <leader>gi :.GBrowse<CR>
+xnoremap <leader>gi :GBrowse<CR>
 
 " Per-file commit history via :Gclog, fugitive's equivalent of :DiffviewFileHistory %.
 nnoremap <leader>gh :call FugitiveFileHistory()<CR>

@@ -21,6 +21,10 @@
   "diagnostic.virtualTextLimitInOneLine": 1,
   "semanticTokens.enable": true,
   "semanticTokens.filetypes": ["typescript", "typescriptreact", "javascript", "javascriptreact", "java"],
+  "inlayHint.enable": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.enabled": "all",
   "semanticTokens.combinedModifiers": [
     "deprecated",
     "readonly",
