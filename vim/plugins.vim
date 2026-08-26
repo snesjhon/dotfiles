@@ -1,18 +1,13 @@
-" --- vim-plug bootstrap ---
 let s:plug_vim = expand('~/.vim/autoload/plug.vim')
 if empty(glob(s:plug_vim))
   silent execute '!curl -fLo ' . s:plug_vim . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-" vim-polyglot reads this global on load, so unlike other plugins it can't be deferred to plugins/polyglot.vim — it must be set before plug#end().
-let g:polyglot_disabled = ['typescript', 'typescriptreact', 'javascript', 'jsx']
-
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'puremourning/vimspector', { 'do': 'python3 install_gadget.py --force-enable-node' }
-Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
@@ -29,9 +24,8 @@ Plug '~/Developer/gitlab-vim-theme'
 
 call plug#end()
 
-" --- per-plugin config, one file per plugin (like nvim/lua/plugins/*.lua) ---
-let s:plugin_config_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/plugins'
-for s:f in sort(glob(s:plugin_config_dir . '/*.vim', 0, 1))
+let s:configs_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/configs'
+for s:f in sort(glob(s:configs_dir . '/*.vim', 0, 1))
   execute 'source ' . s:f
 endfor
-unlet s:f s:plugin_config_dir s:plug_vim
+unlet s:f s:configs_dir s:plug_vim

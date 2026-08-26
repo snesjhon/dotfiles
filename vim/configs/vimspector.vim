@@ -1,4 +1,3 @@
-
 function! JavaStartDebug() abort
   call CocActionAsync('runCommand', 'vscode.java.startDebugSession', {err, port ->
         \ vimspector#LaunchWithSettings({

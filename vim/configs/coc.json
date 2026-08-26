@@ -1,18 +1,11 @@
 {
-  // Machine-specific settings that need an absolute home-dir path (coc-java's bundled
-  // JDK, the vtsls binary) live in the gitignored coc-settings.local.vim instead of
-  // here, since plain JSON can't expand $HOME/~ the way vimscript can (see coc.vim).
-  //
-  // Defaults off since coc-java activates for any file in a Gradle/Maven repo; toggle with :JavaOn (coc.vim).
   "java.enabled": false,
   "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
   "java.server.launchMode": "Standard",
   "java.import.gradle.jvmArguments": "-Xmx3g -Xms512m",
   "java.compile.nullAnalysis.mode": "automatic",
-  // Disabled since eager resolution races against Gradle's project locking on this monorepo and aborts the import.
   "java.import.gradle.annotationProcessing.enabled": false,
   "signature.hideOnTextChange": true,
-  // Caps hover popup height so it's less likely to grow upward into context.vim's context bar at the top of the window.
   "hover.floatConfig": { "maxHeight": 20 },
   "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
@@ -20,7 +13,13 @@
   "diagnostic.virtualTextPrefix": " ■ ",
   "diagnostic.virtualTextLimitInOneLine": 1,
   "semanticTokens.enable": true,
-  "semanticTokens.filetypes": ["typescript", "typescriptreact", "javascript", "javascriptreact", "java"],
+  "semanticTokens.filetypes": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact",
+    "java"
+  ],
   "inlayHint.enable": true,
   "typescript.inlayHints.parameterNames.enabled": "all",
   "typescript.inlayHints.variableTypes.enabled": true,

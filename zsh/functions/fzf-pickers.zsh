@@ -1,10 +1,10 @@
 # fzf-driven pickers for find-files/grep-words/open-in-vim; kept in their own file so ctrl-g can re-source just this via `become()`.
 export FZF_PICKERS_FILE="$ZSH_CONFIG_DIR/functions/fzf-pickers.zsh"
 
-# Bounded-preview script shared with vim/plugins/fzf.vim's :Rg and :Files.
+# Bounded-preview script shared with vim/configs/fzf.vim's :Rg and :Files.
 export FZF_PREVIEW_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/fzf-preview.sh"
 
-# Base-branch resolution shared with vim's :PrDiff, hunk.zsh, and lazygit/config.yml, so they all treat "the PR" identically.
+# Base-branch resolution shared with vim's :PrDiff, so they all treat "the PR" identically.
 export GIT_PR_BASE_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/git-pr-base.sh"
 
 # ctrl-g's become() sources only this file in a fresh non-interactive zsh, so pull in plugins/theme.zsh ourselves (a no-op if zshrc already sourced it).

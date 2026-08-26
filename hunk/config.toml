@@ -1,4 +1,0 @@
-# Hunk config -- symlinked to ~/.config/hunk/config.toml (os/symlink.sh).
-# Other keys: mode, vcs, watch, exclude_untracked, line_numbers, wrap_lines, hunk_headers,
-# menu_bar, agent_notes, copy_decorations, transparent_background, color_moved.
-theme = "auto"

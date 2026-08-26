@@ -1,11 +1,7 @@
-" ============================================================
-" All custom keybindings, centralized here regardless of built-in/plugin origin; settings/functions live in plugins/*.vim instead. This file only binds keys.
-" ============================================================
-
 " --- window splits ---
 nnoremap <silent> - :call NoNeckPainSplit('vsplit')<CR>
 
-" --- smart-splits (native reimplementation, see plugins/smart-splits.vim) ---
+" --- smart-splits (native reimplementation, see configs/smart-splits.vim) ---
 nnoremap <silent> <C-h> :call VimOrTmuxMove('h')<CR>
 nnoremap <silent> <C-l> :call VimOrTmuxMove('l')<CR>
 nnoremap <silent> <C-j> :call VimOrTmuxMove('j')<CR>
@@ -44,10 +40,10 @@ nnoremap L g_
 nnoremap H ^
 
 " ============================================================
-" Plugin mappings -- each plugin's own settings/functions/commands still live in plugins/<name>.vim; this file only binds keys to what they expose.
+" Plugin mappings -- each plugin's own settings/functions/commands still live in configs/<name>.vim; this file only binds keys to what they expose.
 " ============================================================
 
-" --- vim-which-key (see plugins/which-key.vim for the menu tree) ---
+" --- vim-which-key (see configs/which-key.vim for the menu tree) ---
 nnoremap <silent> <leader> :silent WhichKey '<Space>'<CR>
 vnoremap <silent> <leader> :silent WhichKeyVisual '<Space>'<CR>
 
@@ -86,7 +82,7 @@ nmap ]g <Plug>(coc-diagnostic-next)
 
 " --- GITHUB ---
 nnoremap <leader>gs :Git<CR>
-" Native vertical vimdiff against the PR's resolved base branch, toggled by the same key (see plugins/pr-diff.vim).
+" Native vertical vimdiff against the PR's resolved base branch, toggled by the same key (see configs/pr-diff.vim).
 " nnoremap <leader>gd :PrDiff<CR>
 nnoremap <leader>gl :Git log --oneline<CR>
 " .GBrowse anchors the current line's URL; in a :Git blame buffer, fugitive
@@ -97,7 +93,7 @@ xnoremap <leader>gi :GBrowse<CR>
 " Per-file commit history via :Gclog, fugitive's equivalent of :DiffviewFileHistory %.
 nnoremap <leader>gh :call FugitiveFileHistory()<CR>
 
-" --- lazygit (see plugins/lazygit.vim) ---
+" --- lazygit (see configs/lazygit.vim) ---
 nnoremap <leader>gg :LazyGit<CR>
 
 " --- fzf ---
@@ -107,7 +103,7 @@ nnoremap <leader>fb :Buffers<CR>
 nnoremap <leader>fw :Rg<CR>
 
 
-" --- coc lists, via fzf (see plugins/coc-fzf.vim) ---
+" --- coc lists, via fzf (see configs/coc-fzf.vim) ---
 nnoremap <leader>lo :CocFzfList outline<CR>
 nnoremap <leader>ld :CocFzfList diagnostics<CR>
 nnoremap <leader>lc :CocFzfList commands<CR>
@@ -115,7 +111,7 @@ nnoremap <leader>lc :CocFzfList commands<CR>
 " Prompt for a code action at the cursor (imports, quick fixes, refactors) -- coc's equivalent of nvim's code-action picker.
 nnoremap <silent> <leader>la :call CocActionAsync('codeAction', 'cursor')<CR>
 
-" --- vimspector (see plugins/vimspector.vim for the Java/TS adapter wiring) ---
+" --- vimspector (see configs/vimspector.vim for the Java/TS adapter wiring) ---
 nmap <silent> <leader>dd <Plug>(debug-start)
 nmap <silent> <leader>db <Plug>VimspectorToggleBreakpoint
 nmap <silent> <leader>do <Plug>VimspectorStepOver

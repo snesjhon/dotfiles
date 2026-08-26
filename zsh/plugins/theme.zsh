@@ -1,4 +1,4 @@
-# One-shot check at startup (see vim/plugins/theme.vim); honors vim's manual <leader>tt toggle until System Settings actually changes.
+# One-shot check at startup (see vim/configs/theme.vim); honors vim's manual <leader>tt toggle until System Settings actually changes.
 _resolve_theme() {
   local os_appearance state_file="$HOME/.vim/gitlab-theme-state"
   if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then

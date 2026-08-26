@@ -34,7 +34,7 @@ function! s:AfterExit(target, code) abort
 endfunction
 
 " --- Modal navigation (esc -> normal mode j/k, i -> insert, q/esc -> quit) ---
-" Hand-simulates vim's insert/normal split, since fzf has no such modes natively; global so plugins/coc-fzf.vim can reuse it.
+" Hand-simulates vim's insert/normal split, since fzf has no such modes natively; global so configs/coc-fzf.vim can reuse it.
 function! FzfModalNavBinds() abort
   let flag = shellescape(tempname())
   return ['--bind', 'j:down', '--bind', 'k:up', '--bind', 'q:abort',

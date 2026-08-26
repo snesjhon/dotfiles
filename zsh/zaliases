@@ -1,3 +1,4 @@
 alias cc='claude --permission-mode auto'
 alias gg='lazygit'
+alias v='nvim'
 alias gs='git status'

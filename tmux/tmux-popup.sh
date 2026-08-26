@@ -6,7 +6,7 @@
 POPUP_SESSION="popup"
 STATE_FILE="$HOME/.vim/gitlab-theme-state"
 
-# Same resolution as zsh/plugins/theme.zsh + vim/plugins/theme.vim, reimplemented here rather
+# Same resolution as zsh/plugins/theme.zsh + vim/configs/theme.vim, reimplemented here rather
 # than shared: tmux-powerkit's own render cycle overwrites the global popup-style/
 # popup-border-style options with its solarized theme, so this passes color explicitly per
 # call instead of trusting that global state.
