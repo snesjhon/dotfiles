@@ -61,21 +61,22 @@ vim.keymap.set("n", "<leader>gC", function() require("snacks").picker.git_log({ 
 vim.keymap.set("n", "<leader>gs", function() require("snacks").picker.git_status() end, { desc = "Git status" })
 vim.keymap.set("n", "<leader>gT", function() require("snacks").picker.git_stash() end, { desc = "Git stash" })
 
-vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "LazyGit" })
-vim.keymap.set("n", "<C-S-w>", function() require("snacks").bufdelete() end, { desc = "Close Buffer" })
 
--- vim.keymap.set("n", "<C-S-w>", function()
---   local buf = vim.api.nvim_get_current_buf()
---   local win = vim.api.nvim_get_current_win()
---   local was_last = #vim.tbl_filter(function(b)
---     return vim.bo[b].buflisted
---   end, vim.api.nvim_list_bufs()) == 1
---
---   require("snacks").bufdelete()
---
---   if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then return end
---
---   if was_last then
---     require("snacks").dashboard.open({ buf = vim.api.nvim_get_current_buf(), win = win })
---   end
--- end, { desc = "Close buffer" })
+vim.api.nvim_create_user_command("LazyGit", function() require("snacks").lazygit() end, { desc = "Open yazi to pick a file" })
+vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "LazyGit" })
+
+vim.keymap.set("n", "<C-S-w>", function()
+  local buf = vim.api.nvim_get_current_buf()
+  local win = vim.api.nvim_get_current_win()
+  local was_last = #vim.tbl_filter(function(b)
+    return vim.bo[b].buflisted
+  end, vim.api.nvim_list_bufs()) == 1
+
+  require("snacks").bufdelete()
+
+  if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then return end
+
+  if was_last then
+    require("snacks").dashboard.open({ buf = vim.api.nvim_get_current_buf(), win = win })
+  end
+end, { desc = "Close buffer" })

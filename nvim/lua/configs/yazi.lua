@@ -18,8 +18,10 @@ local function chooser()
     auto_close = false,
     win = {
       position = "float",
-      width = 0.9,
-      height = 0.9,
+      width = 0.99,
+      height = 0.99,
+      -- width = 1.0,
+      -- height = 1.0,
       border = "rounded",
       title = " Yazi ",
       title_pos = "center",
