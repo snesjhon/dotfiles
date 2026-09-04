@@ -187,4 +187,3 @@ alt-shift-slash = 'mode service'
 
 # Enter resize mode
 alt-r = 'mode resize'
-alt-shift-r = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/aerospace/reset-workspaces.sh"'
