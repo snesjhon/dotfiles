@@ -54,4 +54,6 @@ end
 -- System Settings) while the terminal isn't focused, so re-check on focus.
 vim.api.nvim_create_autocmd("FocusGained", { callback = M.sync })
 
+vim.keymap.set("n", "<leader>ut", M.toggle, { desc = "Toggle light/dark theme" })
+
 return M

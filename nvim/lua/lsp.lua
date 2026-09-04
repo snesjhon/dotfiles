@@ -1,3 +1,13 @@
+Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(buf) vim.lsp.inlay_hint.enable(true, { bufnr = buf }) end)
+
+vim.diagnostic.config({ virtual_text = { spacing = 2, prefix = "●" } })
+
+vim.lsp.config("*", {
+  capabilities = {
+    workspace = { didChangeWatchedFiles = { dynamicRegistration = false } },
+  },
+})
+
 vim.lsp.config("vtsls", {
   cmd = { "vtsls", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
@@ -18,99 +28,82 @@ vim.lsp.config("vtsls", {
 
 vim.lsp.enable("vtsls")
 
-Snacks.util.lsp.on({ method = "textDocument/inlayHint" }, function(buf) vim.lsp.inlay_hint.enable(true, { bufnr = buf }) end)
 
-vim.diagnostic.config({ virtual_text = { spacing = 2, prefix = "●" } })
 
--- Java (jdtls) ----------------------------------------------------------
--- `jdtls` is Homebrew-managed and expected on $PATH; its wrapper already
--- derives a per-project `-data` workspace dir, so none is passed here.
-vim.lsp.config("jdtls", {
-  cmd = {
-    "jdtls",
-    -- jdtls's own JVM selection otherwise falls back to whatever `java`/$JAVA_HOME is ambient
-    -- on $PATH, which isn't consistent across shells/sessions -- observed launching under
-    -- Homebrew's openjdk 26 instead of this mise-managed JDK 25. Since the Gradle daemon
-    -- inherits "current java home" from jdtls's own JVM, that mismatch alone was enough to
-    -- fail settings.gradle.kts's `must be run with java 25` check on the whole import. Pin
-    -- explicitly instead of relying on ambient resolution.
-    "--java-executable=/Users/jsalazar/.local/share/mise/http-tarballs/85503144cf864b54c9125c2d5bebb096e206b8d881f6d5043d4dc846b7e22ae5/bin/java",
-    "--jvm-arg=-XX:+UseParallelGC",
-    "--jvm-arg=-XX:GCTimeRatio=4",
-    "--jvm-arg=-XX:AdaptiveSizePolicyWeight=90",
-    "--jvm-arg=-Dsun.zip.disableMemoryMapping=true",
-    "--jvm-arg=-Xmx4G",
-    "--jvm-arg=-Xms100m",
-    "--jvm-arg=-Xlog:disable",
-  },
-  filetypes = { "java" },
-  -- settings.gradle(.kts) must win over build.gradle(.kts): every subproject has its own
-  -- build.gradle.kts, so searching that marker first stops at the nearest module instead of
-  -- climbing to the actual multi-project root, and jdtls ends up importing e.g.
-  -- Platform/designer standalone instead of the whole build.
-  root_markers = { "settings.gradle", "settings.gradle.kts", "pom.xml", "build.gradle", "build.gradle.kts", ".git" },
-  capabilities = require("blink.cmp").get_lsp_capabilities(),
-  -- Neovim's own VimLeavePre handler waits (synchronously, no polling interval) for jdtls to
-  -- close its RPC channel before quitting; with the default `exit_timeout = false` there's no
-  -- fallback force-stop, so if jdtls is still busy (mid Gradle sync, or working through a slow
-  -- request queued ahead of the shutdown request) Nvim hangs on quit indefinitely. A numeric
-  -- exit_timeout force-stops it after this many ms instead of waiting forever.
-  exit_timeout = 3000,
-  settings = {
-    java = {
-      server = { launchMode = "Standard" },
-      import = {
-        gradle = {
-          jvmArguments = "-Xmx3g -Xms512m",
-          annotationProcessing = { enabled = false },
-          -- The project's nexus-hosted wrapper (Gradle 9.4.0 / Kotlin 2.3.0, needed for the
-          -- `JvmTarget.JVM_25` reference in build-logic/java-convention) isn't consistently
-          -- honored by Buildship for every import phase -- it's been observed falling back to
-          -- a bundled Gradle 8.9, which can't parse that build script. Pin directly at the
-          -- already-extracted local copy of the same distro instead of relying on the wrapper.
-          wrapper = { enabled = false },
-          home = "/Users/jsalazar/.gradle/wrapper/dists/gradle-9.4.0-all/anruhsiep7hy403aoddj90ll1/gradle-9.4.0",
-          -- With the wrapper disabled there's no strict version pin forcing a matching Gradle
-          -- daemon, so it resolves to "current java home" -- i.e. whatever JVM jdtls itself
-          -- launched under (see --java-executable above; without that pin this used to resolve
-          -- inconsistently and could fail settings.gradle.kts's `must be run with java 25`
-          -- check). Neither `java.import.gradle.java.home` nor a literal
-          -- `-Dorg.gradle.java.home=...` arg here actually got that JVM used -- only fixing it
-          -- at the source, above, worked.
-          -- TODO: dotfiles/gradle/fix-buildship-compileonly.init.gradle.kts (the same init
-          -- script the coc-java setup applies) would fix two real, separate Buildship bugs here
-          -- too -- it drops compileOnly *project* dependencies (gradle/gradle#32284,
-          -- eclipse-buildship/buildship#939) and has no Kotlin support at all, so Java files in
-          -- mixed Kotlin/Java modules like Platform/designer never resolve Java-from-Kotlin
-          -- references. Tried wiring it in via `arguments = {"--init-script", ...}`, but its own
-          -- Gradle invocation doesn't inherit the JVM jdtls launched under and fails
-          -- settings.gradle.kts's `must be run with java 25` check -- fatally, regressing the
-          -- whole import back to a single fallback project, not just this init-script's own
-          -- step. Setting `java.home` alongside it didn't fix that either. Reverted for now;
-          -- revisit once there's a way to pin the JVM for this specific sub-invocation.
-        },
-      },
-      compile = { nullAnalysis = { mode = "automatic" } },
-    },
-  },
+-- Per-file busywork (e.g. vtsls re-analyzing a file and its deps on every
+-- edit/save) is noise -- only startup progress is worth a popup.
+local lsp_progress_ignore = {
+  "^Publish Diagnostics$",
+  "^Analyzing .+ and its dependencies$",
+}
+
+vim.api.nvim_create_autocmd("LspProgress", {
+  callback = function(ev)
+    -- jdtls emits progress notifications as part of its own graceful
+    -- shutdown, which exit_timeout (see lsp.local.lua) blocks quitting on.
+    -- v:exiting is set before any VimLeavePre autocmd runs (including
+    -- vim.lsp's own client:stop() handler), so this reliably skips
+    -- popping the notifier -- and its spinner-driven redraw loop -- while
+    -- nvim is already on its way out.
+    if vim.v.exiting ~= vim.NIL then return end
+    local title = ev.data.params.value.title
+    for _, pattern in ipairs(lsp_progress_ignore) do
+      if title and title:match(pattern) then return end
+    end
+    local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+    -- `icon` must be a plain value, not a function: snacks' notifier treats a
+    -- function-valued `opts`/dynamic field as perpetually dirty and re-renders
+    -- (force-flushing the whole screen) on every tick of its ~50ms refresh
+    -- timer for as long as the notification stays queued -- not just when we
+    -- actually call vim.notify. jdtls keeps this notification alive
+    -- continuously for tens of seconds during import/indexing, which turned
+    -- into a sustained 20Hz full-screen redraw fighting everything else
+    -- (e.g. scrolling a references picker) for CPU the whole time.
+    local icon = ev.data.params.value.kind == "end" and " "
+      or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+    vim.notify(vim.lsp.status(), "info", {
+      id = "lsp_progress",
+      title = "LSP Progress",
+      icon = icon,
+    })
+  end,
 })
 
-vim.lsp.enable("jdtls")
+-- LSP keymaps -----------------------------------------------------------
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(ev)
+    local opts = { buffer = ev.buf }
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "gr", function() require("snacks").picker.lsp_references() end, opts)
+    vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts)
+    -- native hover() focuses an already-open float on a second call; defer a
+    -- second call so `gl` opens-and-focuses in one keypress instead of two.
+    vim.keymap.set("n", "gl", function()
+      vim.lsp.buf.hover()
+      vim.defer_fn(vim.lsp.buf.hover, 50)
+    end, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "]d", function() vim.diagnostic.jump { count = 1, float = true } end, opts)
+    vim.keymap.set("n", "[d", function() vim.diagnostic.jump { count = -1, float = true } end, opts)
+    vim.keymap.set("n", "<leader>d", function() require("snacks").picker.diagnostics_buffer() end, opts)
+    vim.keymap.set("n", "<leader>lD", function() require("snacks").picker.diagnostics() end, opts)
+    vim.keymap.set("n", "<leader>ls", function() require("snacks").picker.lsp_symbols() end, opts)
+    -- Insert-mode <C-Space> is handled by blink.cmp's own "default" keymap
+    -- preset (lua/configs/blink.lua); only the normal-mode entry point lives
+    -- here since it needs the diagnostic-float fallback.
+    vim.keymap.set("n", "<C-Space>", function()
+      local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+      if #vim.diagnostic.get(0, { lnum = lnum }) > 0 then
+        vim.diagnostic.open_float()
+        return
+      end
+      vim.cmd("startinsert!") -- append, not insert -- keeps the cursor after the current char
+      require("blink.cmp").show()
+    end, opts)
+  end,
+})
 
--- :await instead of :wait -- :wait blocks the UI thread for the whole install (can be
--- minutes on first run), and while blocked it still pumps the event/redraw loop, which can
--- re-enter into other autocmds (e.g. the tabline redraw or zen-mode's quit handling) and
--- livelock. :await runs the install in the background with no blocking at all.
-require("nvim-treesitter").install({ "java" }):await(function(err)
-  if err then
-    vim.notify("nvim-treesitter: java parser install failed: " .. tostring(err), vim.log.levels.ERROR)
-    return
-  end
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = "java",
-    callback = function(ev) vim.treesitter.start(ev.buf) end,
-  })
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "java" then vim.treesitter.start(buf) end
-  end
-end)
+local local_lsp = vim.fn.stdpath("config") .. "/lua/lsp.local.lua"
+if vim.uv.fs_stat(local_lsp) then dofile(local_lsp) end

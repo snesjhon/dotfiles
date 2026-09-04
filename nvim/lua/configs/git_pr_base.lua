@@ -1,6 +1,3 @@
--- Shared PR-base resolution for diffview.lua and gitsigns.lua, delegated to
--- $GIT_PR_BASE_SCRIPT (dotfiles' scripts/git-pr-base.sh) so vim, zsh,
--- lazygit, and v all agree on what "the PR base" is.
 return function(override)
   local script = vim.env.GIT_PR_BASE_SCRIPT
   if not script or script == "" then

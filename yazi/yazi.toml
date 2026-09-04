@@ -1,5 +1,5 @@
 [opener]
 edit = [
-  { run = 'vim "$@"', desc = "Open in vim", block = true },
+  { run = 'nvim "$@"', desc = "Open in vim", block = true },
 ]
 

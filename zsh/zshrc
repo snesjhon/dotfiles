@@ -1,5 +1,5 @@
-export EDITOR=vim
-export VISUAL=vim
+export EDITOR=nvim
+export VISUAL=nvim
 
 HISTFILE=$HOME/.zhistory
 SAVEHIST=100
@@ -11,6 +11,13 @@ setopt hist_ignore_dups
 setopt hist_verify
 setopt NO_BEEP
 setopt IGNORE_EOF
+
+# Blank the prompt EOL mark (zsh defaults it to a bold inverse "%"). PROMPT_SP
+# sizes its padding to the terminal width, so a pane that changes width -- tmux
+# zen mode adding or dropping its margins, say -- can strand that mark partway
+# up the pane. Empty keeps the partial-line preservation, minus the visible
+# marker. See tmux/tmux-zen.sh.
+PROMPT_EOL_MARK=''
 
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"

@@ -95,7 +95,7 @@ Vanilla Vim (`vim/vimrc` + `vim/plugins.vim` via vim-plug), one file per plugin 
 - **Prefix:** `C-a`
 - **Smart pane nav:** `C-h`/`C-l` detect vim and pass-through
 - **Session switcher:** `tmux-session.sh`, fzf-driven (bound to AeroSpace `Meh+B`, see below)
-- **Zen mode:** `prefix+Z` toggles a centered pane via `tmux-zen.sh`
+- **Zen mode:** `prefix+g` toggles a centered pane via `tmux-zen.sh` — manual, per window, never automatic
 - **File browser:** Yazi — `C-S-y` toggles, `prefix+E` opens in a new window
 - **Theme:** Tokyo Night Storm via tmux-powerkit
 

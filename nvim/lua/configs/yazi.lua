@@ -1,8 +1,3 @@
--- Yazi chooser -- one-shot, rooted at the current file, mirrors vim's
--- :YaziChooser (see dotfiles/vim/configs/yazi.vim) so tmux's C-S-y works
--- unchanged whether the pane is running vim or nvim. Unlike a persistent
--- toggle terminal, a fresh session is spawned each time since the cwd is
--- tied to whatever file is open when it's invoked.
 local Snacks = require("snacks")
 
 local active
@@ -23,8 +18,8 @@ local function chooser()
     auto_close = false,
     win = {
       position = "float",
-      width = 0.8,
-      height = 0.8,
+      width = 0.9,
+      height = 0.9,
       border = "rounded",
       title = " Yazi ",
       title_pos = "center",
@@ -48,4 +43,5 @@ local function chooser()
 end
 
 vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
+
 vim.keymap.set({ "n", "t" }, "<F6>", chooser, { desc = "Open yazi" })

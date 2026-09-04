@@ -7,6 +7,8 @@ vim.pack.add({
   "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/folke/which-key.nvim",
   "https://github.com/sindrets/diffview.nvim",
+  "https://github.com/stevearc/conform.nvim",
+  "https://github.com/shortcuts/no-neck-pain.nvim",
   { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1") },
 })
 
