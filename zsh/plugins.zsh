@@ -1,5 +1,5 @@
 # ============================================================
-# Plugin loading + bootstrap. Each plugin's settings live in plugins/<name>.zsh, sourced right before its load line (unlike vim's bootstrap-then-configure, zsh has no separate phase). Keybindings live in mappings.zsh.
+# Plugin loading + bootstrap. Each plugin's settings live in plugins/<name>.zsh, sourced right before its load line (zsh has no separate bootstrap-then-configure phase). Keybindings live in mappings.zsh.
 # ============================================================
 
 # --- starship ---
@@ -7,9 +7,6 @@ eval "$(starship init zsh)"
 
 # --- theme (bat/fzf light-dark, see plugins/theme.zsh) ---
 source "$ZSH_CONFIG_DIR/plugins/theme.zsh"
-
-# --- ripgrep ---
-source "$ZSH_CONFIG_DIR/plugins/ripgrep.zsh"
 
 # --- fzf ---
 source "$ZSH_CONFIG_DIR/plugins/fzf.zsh"

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Tmux Zen Mode - centers your terminal by padding a window with two empty
-# spacer panes, in the spirit of nvim/lua/configs/zen.lua.
+# spacer panes, in the spirit of nvim/lua/configs/no_neck_pain.lua.
 #
 # Usage: tmux-zen.sh <command> <pane-id> [width]
 #

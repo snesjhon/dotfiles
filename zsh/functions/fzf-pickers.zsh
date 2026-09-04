@@ -1,10 +1,10 @@
-# fzf-driven pickers for find-files/grep-words/open-in-vim; kept in their own file so ctrl-g can re-source just this via `become()`.
+# fzf-driven pickers for find-files/grep-words/open-in-nvim; kept in their own file so ctrl-g can re-source just this via `become()`.
 export FZF_PICKERS_FILE="$ZSH_CONFIG_DIR/functions/fzf-pickers.zsh"
 
-# Bounded-preview script shared with vim/configs/fzf.vim's :Rg and :Files.
+# Bounded-preview script backing the terminal-side pickers (nvim's snacks pickers bring their own preview).
 export FZF_PREVIEW_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/fzf-preview.sh"
 
-# Base-branch resolution shared with vim's :PrDiff, so they all treat "the PR" identically.
+# Base-branch resolution shared with nvim's :PrDiff, so they all treat "the PR" identically.
 export GIT_PR_BASE_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/git-pr-base.sh"
 
 # ctrl-g's become() sources only this file in a fresh non-interactive zsh, so pull in plugins/theme.zsh ourselves (a no-op if zshrc already sourced it).
@@ -12,8 +12,8 @@ if ! typeset -f _fzf_theme_opts >/dev/null; then
   source "$ZSH_CONFIG_DIR/plugins/theme.zsh"
 fi
 
-# Reuses an existing vim pane in the tmux window instead of nesting vim in :terminal; multi-file selections open a fresh vim instead.
-_open_in_vim() {
+# Reuses an existing nvim pane in the tmux window instead of nesting nvim in :terminal; multi-file selections open a fresh nvim instead.
+_open_in_nvim() {
   local file="$1" line="$2"
   if [[ -n "$TMUX" ]]; then
     local pane id tty
@@ -37,13 +37,13 @@ _open_in_vim() {
     fi
   fi
   if [[ -n "$line" ]]; then
-    vim "+${line}" -- "$file"
+    nvim "+${line}" -- "$file"
   else
-    vim -- "$file"
+    nvim -- "$file"
   fi
 }
 
-# Vim-like modal navigation (mirrors vim/plugins/fzf.vim's FzfModalNavBinds); NUL-delimited so callers can rebuild an exact array despite embedded spaces.
+# Vim-like modal navigation for fzf; NUL-delimited so callers can rebuild an exact array despite embedded spaces.
 _fzf_modal_nav_binds() {
   local flag=$(mktemp -u)
   local -a binds=(
@@ -55,7 +55,7 @@ _fzf_modal_nav_binds() {
   printf '%s\0' "${binds[@]}"
 }
 
-# Fuzzy filename picker -- terminal counterpart to vim's <leader>ff (:Files); ctrl-g swaps to fw (content grep) via `become`.
+# Fuzzy filename picker -- terminal counterpart to nvim's <leader>ff; ctrl-g swaps to fw (content grep) via `become`.
 ff() {
   local files
   local -a nav_binds
@@ -74,13 +74,13 @@ ff() {
   )"})
   (( $#files )) || return
   if (( $#files == 1 )); then
-    _open_in_vim "$files[1]"
+    _open_in_nvim "$files[1]"
   else
-    vim -- "${files[@]}"
+    nvim -- "${files[@]}"
   fi
 }
 
-# Ctrl+F in any non-vim pane (tmux/mappings.conf's is_vim + fzf-insert-picker.sh): runs in a
+# Ctrl+F in any non-nvim pane (tmux/mappings.conf's is_vim + fzf-insert-picker.sh): runs in a
 # tmux popup since the pane's foreground process (shell, claude, whatever) isn't one we can run
 # fzf in directly, then types the pick back into that pane as a relative path -- no Enter, so
 # it doesn't auto-submit whatever input the pane's app is showing.
@@ -103,7 +103,7 @@ _fzf_insert_picker() {
   tmux send-keys -t "$pane" -l -- "${file} "
 }
 
-# Live content grep -- terminal counterpart to vim's <leader>fw (:Rg); ctrl-f toggles between rg-reload mode and a local fuzzy filter, stashing each mode's query so switching back restores it.
+# Live content grep -- terminal counterpart to nvim's <leader>fw; ctrl-f toggles between rg-reload mode and a local fuzzy filter, stashing each mode's query so switching back restores it.
 fw() {
   local cmd='rg --column --line-number --no-heading --color=always -- %s || true'
   local hidden_cmd='rg --column --line-number --no-heading --color=always --hidden --no-ignore -- %s || true'
@@ -138,5 +138,5 @@ fw() {
   local file="${selection%%:*}"
   local rest="${selection#*:}"
   local line="${rest%%:*}"
-  _open_in_vim "$file" "$line"
+  _open_in_nvim "$file" "$line"
 }

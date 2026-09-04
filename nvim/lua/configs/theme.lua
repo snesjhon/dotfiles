@@ -21,39 +21,23 @@ local function system_appearance()
   return result:match("^Dark") and "dark" or "light"
 end
 
-local function name_for(appearance)
-  return appearance == "dark" and "gitlab_dark" or "gitlab_light"
-end
-
-local function apply(name)
+---Apply whichever colorscheme macOS's appearance calls for. macOS is the only
+---source of truth -- there's no manual override to preserve, so this just
+---no-ops when the right scheme is already active. M.name is read by
+---configs/bufferline.lua for its highlight overrides.
+function M.sync()
+  local name = system_appearance() == "dark" and "gitlab_dark" or "gitlab_light"
+  if M.name == name then
+    return
+  end
   M.name = name
   vim.cmd.colorscheme(name)
 end
 
--- Track the system appearance we last synced to, separate from M.name, so a
--- manual M.toggle() below isn't immediately clobbered by FocusGained syncing
--- -- only an actual OS-level appearance change should override a manual pick.
-M.last_system = system_appearance()
-apply(name_for(M.last_system))
-
----Flip light/dark by hand. Sticks until the system's own appearance changes.
-function M.toggle()
-  apply(M.name == "gitlab_dark" and "gitlab_light" or "gitlab_dark")
-end
-
----Re-check the system appearance and follow it if it changed.
-function M.sync()
-  local appearance = system_appearance()
-  if appearance and appearance ~= M.last_system then
-    M.last_system = appearance
-    apply(name_for(appearance))
-  end
-end
+M.sync()
 
 -- The system can flip appearance (Dark Mode schedule, manual toggle in
 -- System Settings) while the terminal isn't focused, so re-check on focus.
 vim.api.nvim_create_autocmd("FocusGained", { callback = M.sync })
-
-vim.keymap.set("n", "<leader>ut", M.toggle, { desc = "Toggle light/dark theme" })
 
 return M

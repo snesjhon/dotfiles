@@ -1,20 +1,11 @@
-# One-shot check at startup (see vim/configs/theme.vim); honors vim's manual <leader>tt toggle until System Settings actually changes.
+# macOS's own light/dark appearance is the single source of truth. nvim's <leader>ut
+# toggle is in-memory only, so there's nothing to reconcile against here.
 _resolve_theme() {
-  local os_appearance state_file="$HOME/.vim/gitlab-theme-state"
   if [[ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" == "Dark" ]]; then
-    os_appearance=dark
+    echo dark
   else
-    os_appearance=light
+    echo light
   fi
-  if [[ -f "$state_file" ]]; then
-    local chosen os_stamp
-    { read -r chosen; read -r os_stamp; } < "$state_file"
-    if [[ -n "$os_stamp" && "$os_stamp" == "$os_appearance" ]]; then
-      echo "$chosen"
-      return
-    fi
-  fi
-  echo "$os_appearance"
 }
 
 # fzf's own UI colors (no auto:system equivalent like bat), re-resolved by fzf-pickers.zsh on every invocation so an already-open shell doesn't go stale when macOS's appearance changes.
