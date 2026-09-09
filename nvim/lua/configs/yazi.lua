@@ -20,8 +20,6 @@ local function chooser()
       position = "float",
       width = 0.99,
       height = 0.99,
-      -- width = 1.0,
-      -- height = 1.0,
       border = "rounded",
       title = " Yazi ",
       title_pos = "center",

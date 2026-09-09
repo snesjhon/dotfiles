@@ -58,16 +58,9 @@ vim.keymap.set("n", "<leader>ft", function() require("snacks").picker.colorschem
 vim.keymap.set("n", "<leader>fu", function() require("snacks").picker.undo() end, { desc = "Find undo history" })
 vim.keymap.set("n", "<leader>fw", function() require("snacks").picker.grep() end, { desc = "Find words" })
 vim.keymap.set("n", "<leader>fW", function() require("snacks").picker.grep({ hidden = true, ignored = true }) end, { desc = "Find words in all files" })
-
 vim.keymap.set({"n", "t"}, "<C-S-o>", function() require("snacks").terminal.toggle(nil, {
   win = {
     position = "right",
-    -- backdrop = false,       -- Prevents dimming/blurring the code behind it
-    -- height = 0.96,          -- Almost full screen height (leaves a tiny gap)
-    -- width = 0.35,           -- Takes up 35% of the screen width
-    -- row = 1,                -- Align near the top edge
-    -- col = vim.o.columns,              -- Forces it to anchor to the far right edge
-    -- border = "rounded",      -- Adds a clean visual boundary ("single", "double", "rounded")
   }
 }) end, {}) 
 
