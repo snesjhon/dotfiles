@@ -4,9 +4,9 @@
 
 # --- vi mode (built-in, no plugin) ---
 bindkey -v
-export KEYTIMEOUT=1
-bindkey "^H" backward-delete-char
-bindkey "^?" backward-delete-char
+# export KEYTIMEOUT=1
+# bindkey "^H" backward-delete-char
+# bindkey "^?" backward-delete-char
 
 # --- completion (built-in) ---
 bindkey '^ ' menu-complete

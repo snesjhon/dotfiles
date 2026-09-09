@@ -14,10 +14,8 @@ macos-titlebar-style = "hidden"
 cursor-opacity = 1
 cursor-color = "cell-foreground"
 cursor-invert-fg-bg = true
-mouse-hide-while-typing = "true"
+mouse-hide-while-typing = true
 adjust-cell-height = "20%"
-#minimum-contrast = 1.5
 
 window-colorspace = "display-p3"
 window-padding-balance = true
-#window-decoration = "none"
