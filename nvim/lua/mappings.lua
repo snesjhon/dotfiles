@@ -12,18 +12,3 @@ vim.keymap.set("n", "H", "^")
 -- UI --------------------------------------------------
 vim.keymap.set("n", "<leader>uw", "<cmd>set wrap!<CR>", { desc = "Toggle wrap" })
 vim.keymap.set("n", "gf", function() require("conform").format { async = true, lsp_fallback = true } end, { desc = "Format buffer" })
-
--- Smart-Splits
--- local function nav(wincmd, tmux_dir)
---   return function()
---     local win = vim.api.nvim_get_current_win()
---     vim.cmd("wincmd " .. wincmd)
---     if vim.env.TMUX and vim.api.nvim_get_current_win() == win then
---       vim.system({ "tmux", "select-pane", tmux_dir })
---     end
---   end
--- end
--- vim.keymap.set({"n", "t"}, "<C-h>", nav("h", "-L"), { desc = "Window/pane left" })
--- vim.keymap.set({"n", "t"}, "<C-j>", nav("j", "-D"), { desc = "Window/pane down" })
--- vim.keymap.set({"n", "t"}, "<C-k>", nav("k", "-U"), { desc = "Window/pane up" })
--- vim.keymap.set({"n", "t"}, "<C-l>", nav("l", "-R"), { desc = "Window/pane right" })

@@ -77,28 +77,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
     vim.keymap.set("n", "gr", function() require("snacks").picker.lsp_references() end, opts)
     vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts)
-    -- native hover() focuses an already-open float on a second call; defer a
-    -- second call so `gl` opens-and-focuses in one keypress instead of two.
-    vim.keymap.set("n", "gl", function()
-      vim.lsp.buf.hover()
-      vim.defer_fn(vim.lsp.buf.hover, 50)
-    end, opts)
     vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, opts)
     vim.keymap.set("n", "]d", function() vim.diagnostic.jump { count = 1, float = true } end, opts)
     vim.keymap.set("n", "[d", function() vim.diagnostic.jump { count = -1, float = true } end, opts)
+
+    local function diagnostic_peek(forward)
+      return function()
+        local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+        local diag = vim.diagnostic.get(0, { lnum = lnum })[1]
+          or (forward and vim.diagnostic.get_next or vim.diagnostic.get_prev)({ wrap = true })
+        if diag then vim.diagnostic.open_float { pos = { diag.lnum, diag.col }, bufnr = diag.bufnr } end
+      end
+    end
+    vim.keymap.set("n", "]g", diagnostic_peek(true), opts)
+    vim.keymap.set("n", "[g", diagnostic_peek(false), opts)
     vim.keymap.set("n", "<leader>d", function() require("snacks").picker.diagnostics_buffer() end, opts)
     vim.keymap.set("n", "<leader>lD", function() require("snacks").picker.diagnostics() end, opts)
     vim.keymap.set("n", "<leader>ls", function() require("snacks").picker.lsp_symbols() end, opts)
-    -- Insert-mode <C-Space> is handled by blink.cmp's own "default" keymap
-    -- preset (lua/configs/blink.lua); only the normal-mode entry point lives
-    -- here since it needs the diagnostic-float fallback.
     vim.keymap.set("n", "<C-Space>", function()
-      local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
-      if #vim.diagnostic.get(0, { lnum = lnum }) > 0 then
-        vim.diagnostic.open_float()
-        return
-      end
       vim.cmd("startinsert!") -- append, not insert -- keeps the cursor after the current char
       require("blink.cmp").show()
     end, opts)
