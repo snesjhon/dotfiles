@@ -1,7 +1,5 @@
-local Snacks = require("snacks")
 
 local active
-
 local function chooser()
   if active and active:buf_valid() then
     active:focus()
@@ -14,7 +12,7 @@ local function chooser()
   local current_file = vim.fn.expand("%:p")
   if current_file ~= "" then table.insert(cmd, current_file) end
 
-  local terminal = Snacks.terminal.open(cmd, {
+  local terminal = require("snacks").terminal.open(cmd, {
     auto_close = false,
     win = {
       position = "float",
@@ -42,6 +40,22 @@ local function chooser()
   end, { buf = true })
 end
 
-vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
 
+vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
 vim.keymap.set({ "n", "t" }, "<F6>", chooser, { desc = "Open yazi" })
+
+vim.keymap.set({ "n", "t" }, "<C-S-o>", function() require("snacks").terminal.toggle(nil, {
+  win = {
+    position = "right",
+    wo = {
+      wrap = true,
+      sidescrolloff = 0
+    },
+    keys = {
+      ["<ScrollWheelLeft>"] = { "<Nop>", mode = { "n", "t" } },
+      ["<ScrollWheelRight>"] = { "<Nop>", mode = { "n", "t" } },
+    },
+  }
+}) end, { desc = "Toggle terminal" })
+
+

@@ -1,0 +1,7 @@
+require("mappings.general")
+require("mappings.ui")
+require("mappings.buffers")
+require("mappings.snacks")
+require("mappings.find")
+require("mappings.git")
+require("mappings.lsp")

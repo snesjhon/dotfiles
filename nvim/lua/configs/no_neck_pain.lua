@@ -16,5 +16,3 @@ require("no-neck-pain").setup({
     wo = { fillchars = "eob: ,vert: " }
   }
 })
-
-vim.keymap.set("n", "<leader>z", "<cmd>NoNeckPain<CR>", { desc = "Toggle zen mode" })
