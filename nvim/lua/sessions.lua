@@ -1,8 +1,3 @@
--- Mux mode: nvim as a tmux replacement ---------------------------------------
--- Only active when started by `nv` (which passes `--cmd "let g:mux = 1"`), so
--- plain nvim and the nvims nested inside mux terminals are untouched.
--- Every tab is a shell (a tmux "window"); the only UI is a bottom bar:
---   dev │ code  agent  server
 local M = {}
 
 if not vim.g.mux then return M end
@@ -66,19 +61,40 @@ function M.close_tab()
   end
 end
 
--- Is the terminal in the current window running nvim in the foreground? Same
--- idea as tmux's is_vim check: look at the foreground process on its pty.
-function M.fg_is_nvim()
+-- Foreground process name of the terminal in the current window, read from its
+-- pty (same idea as tmux's is_vim check).
+function M.fg_comm()
   local chan = vim.bo.channel
-  if chan == 0 then return false end
+  if chan == 0 then return nil end
   local pty = vim.api.nvim_get_chan_info(chan).pty
-  if not pty then return false end
+  if not pty then return nil end
   local out = vim.system({ "ps", "-o", "stat=,comm=", "-t", vim.fs.basename(pty) }):wait().stdout or ""
   for line in out:gmatch("[^\n]+") do
     local stat, comm = line:match("^%s*(%S+)%s+(.+)$")
-    if stat and stat:find("+", 1, true) and vim.fs.basename(comm):match("^n?vim$") then return true end
+    if stat and stat:find("+", 1, true) then return (vim.fs.basename(comm):gsub("^%-", "")) end
   end
-  return false
+  return nil
+end
+
+function M.fg_is_nvim()
+  local comm = M.fg_comm()
+  return comm ~= nil and comm:match("^n?vim$") ~= nil
+end
+
+-- Tool launchers (yazi, lazygit, file/grep pickers). A nested nvim gets its own
+-- command as keys; an idle shell gets the shell command typed in; anything else
+-- (claude, a server) is left alone, so the tool opens in a new tab.
+function M.launch(nvim_keys, shell_cmd)
+  if M.fg_is_nvim() then
+    vim.api.nvim_chan_send(vim.bo.channel, nvim_keys)
+    return
+  end
+  local comm = M.fg_comm()
+  if not (comm and comm:match("^[zb]?a?sh$")) then M.new_tab() end
+  -- Wait for a new tab's shell to start before typing into it.
+  vim.defer_fn(function()
+    if vim.bo.buftype == "terminal" then vim.api.nvim_chan_send(vim.bo.channel, shell_cmd .. "\r") end
+  end, comm and 0 or 300)
 end
 
 vim.o.showtabline = 0

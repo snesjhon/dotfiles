@@ -22,3 +22,12 @@ vim.keymap.set("t", "<C-\\>", function()
     vim.cmd.stopinsert()
   end
 end, { desc = "Copy mode / pass to nested nvim" })
+
+-- Tool launchers that used to be tmux-only keys.
+local function launcher(lhs, nvim_keys, shell_cmd, desc)
+  vim.keymap.set("t", lhs, function() mux.launch(nvim_keys, shell_cmd) end, { desc = desc })
+end
+launcher("<C-S-y>", "\27[17~", "y", "Yazi") -- F6
+launcher("<C-S-u>", "\27:Files\r", "ff", "Find files")
+launcher("<C-S-i>", "\27:RG\r", "fw", "Grep")
+launcher("<C-S-n>", "\27:LazyGit\r", "gg", "LazyGit")

@@ -5,7 +5,8 @@ require("no-neck-pain").setup({
   },
   integrations = {
     dashboard = {
-      enabled = true,
+      -- Enabling this makes the plugin turn itself on at startup, so skip it in the mux.
+      enabled = not vim.g.mux,
       filetypes = { "snacks_dashboard" },
     }
   },

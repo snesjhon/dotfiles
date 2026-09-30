@@ -28,10 +28,20 @@ vim.lsp.config("vtsls", {
 
 vim.lsp.enable("vtsls")
 
+vim.lsp.config("jsonls", {
+  cmd = { "vscode-json-language-server", "--stdio" },
+  filetypes = { "json", "jsonc" },
+  root_markers = { ".git" },
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
+
+vim.lsp.enable("jsonls")
+
 
 local lsp_progress_ignore = {
   "^Publish Diagnostics$",
   "^Analyzing .+ and its dependencies$",
+  "^Validate documents$",
 }
 
 vim.api.nvim_create_autocmd("LspProgress", {

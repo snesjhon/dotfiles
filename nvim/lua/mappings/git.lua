@@ -9,7 +9,7 @@ vim.keymap.set("n", "<leader>gcC", function() require("snacks").picker.git_log({
 vim.keymap.set("n", "<leader>gs", function() require("snacks").picker.git_status() end, { desc = "Git status" })
 vim.keymap.set("n", "<leader>gp", function() require("snacks").picker.git_diff() end, { desc = "Git diff" })
 
-vim.api.nvim_create_user_command("LazyGit", function() require("snacks").lazygit() end, { desc = "Open yazi to pick a file" })
+vim.api.nvim_create_user_command("LazyGit", function() require("snacks").lazygit() end, { desc = "Open LazyGit" })
 vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "LazyGit" })
 
 local pr_base_active = false

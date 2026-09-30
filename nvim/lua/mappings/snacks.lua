@@ -54,6 +54,9 @@ vim.keymap.set({ "n", "t" }, "<C-S-o>", function() require("snacks").terminal.to
     keys = {
       ["<ScrollWheelLeft>"] = { "<Nop>", mode = { "n", "t" } },
       ["<ScrollWheelRight>"] = { "<Nop>", mode = { "n", "t" } },
+      -- The mux forwards a single <C-\> to a nested nvim. Treat it as copy mode
+      -- here; the default <C-\><C-n> still works too.
+      ["<C-\\>"] = { function() vim.cmd.stopinsert() end, mode = "t" },
     },
   }
 }) end, { desc = "Toggle terminal" })
