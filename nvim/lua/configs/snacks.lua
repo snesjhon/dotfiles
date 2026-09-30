@@ -17,7 +17,7 @@ require("snacks").setup({
       },
     },
   dashboard = {
-    enabled = true,
+    enabled = not vim.g.mux, -- no dashboard in the mux (sessions.lua)
     preset = {
       header = [[
 ██╗   ██╗

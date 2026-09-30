@@ -1,3 +1,6 @@
+-- The mux (sessions.lua) has its own bottom bar instead.
+if vim.g.mux then return end
+
 require("bufferline").setup({
   options = {
     diagnostics_update_on_event = false,
