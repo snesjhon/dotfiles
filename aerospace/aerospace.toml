@@ -182,8 +182,9 @@ shift-ctrl-alt-z = [
   'workspace 7',
 ]
 
-# tmux-session.sh myapp ~/projects/myapp code agent server:~/projects/myapp/web
-shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/tmux/tmux-session.sh dev $HOME/Developer/ dots:$HOME/Developer/dotfiles me:$HOME/Developer/me"'
+# nv-session.sh <name> opens Ghostty running that nvim session (nvim/lua/session_defs.lua)
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/nv-session.sh dev"'
+
 shift-ctrl-alt-j = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-j.local.sh"'
 shift-ctrl-alt-u = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-u.local.sh"'
 shift-ctrl-alt-i = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-i.local.sh"'

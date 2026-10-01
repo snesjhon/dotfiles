@@ -7,16 +7,42 @@ local function open_shell()
   vim.bo.buflisted = false
 end
 
+local function set_highlights()
+  local fill = vim.api.nvim_get_hl(0, { name = "StatusLine", link = false })
+  local dim = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+  vim.api.nvim_set_hl(0, "MuxFill", { fg = fill.fg, bg = fill.bg })
+  vim.api.nvim_set_hl(0, "MuxTab", { fg = dim.fg, bg = fill.bg })
+  vim.api.nvim_set_hl(0, "MuxTabSel", { fg = fill.fg, bg = fill.bg, bold = true })
+end
+
+-- Like the tmux bar: session on the left, tabs centered, clock on the right.
+-- The tabs are padded by hand so they stay centered in the window even though
+-- the left and right text differ in width; %= then pushes the clock to the edge.
 function M.statusline()
-  local parts = { "%#TabLineFill# " .. (vim.g.session_name or "") .. " │" }
+  local left = " \u{e795} " .. (vim.g.session_name or "") -- terminal icon
+  local right = os.date("%I:%M %p") .. " 󰥔 "
+  local sep = " • "
+
+  local names = {}
   local current = vim.api.nvim_get_current_tabpage()
+  local tabs, tabs_width = {}, 0
   for i, tab in ipairs(vim.api.nvim_list_tabpages()) do
     local ok, name = pcall(vim.api.nvim_tabpage_get_var, tab, "name")
-    local hl = tab == current and "%#TabLineSel#" or "%#TabLine#"
-    table.insert(parts, hl .. " " .. (ok and name or tostring(i)) .. " ")
+    name = ok and name or tostring(i)
+    table.insert(names, name)
+    tabs_width = tabs_width + vim.fn.strdisplaywidth(name)
+    local hl = tab == current and "%#MuxTabSel#" or "%#MuxTab#"
+    table.insert(tabs, hl .. name:gsub("%%", "%%%%"))
   end
-  table.insert(parts, "%#TabLineFill#")
-  return table.concat(parts)
+  tabs_width = tabs_width + vim.fn.strdisplaywidth(sep) * (#names - 1)
+
+  local pad_left = math.floor((vim.o.columns - tabs_width) / 2) - vim.fn.strdisplaywidth(left)
+  return table.concat({
+    "%#MuxFill#" .. left:gsub("%%", "%%%%"),
+    string.rep(" ", math.max(pad_left, 1)),
+    table.concat(tabs, "%#MuxTab#" .. sep),
+    "%#MuxFill#%=" .. right,
+  })
 end
 
 function M.start(name)
@@ -97,10 +123,75 @@ function M.launch(nvim_keys, shell_cmd)
   end, comm and 0 or 300)
 end
 
+-- Every session is a headless nvim server listening on <sock_dir>/<name>.sock
+-- (same layout as zsh/functions/nv.zsh). A window is just a UI attached to one
+-- of them, so `:connect` moves the window to another session and closing the
+-- window leaves the session running.
+local function sock_dir()
+  return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "nv-sessions")
+end
+
+local function sock_path(name) return vim.fs.joinpath(sock_dir(), name .. ".sock") end
+
+local function alive(sock)
+  local ok, chan = pcall(vim.fn.sockconnect, "pipe", sock, { rpc = true })
+  if not ok or chan == 0 then return false end
+  vim.fn.chanclose(chan)
+  return true
+end
+
+-- Moves this window to session `name`, starting it first if needed. Must run
+-- from the UI's own input (a keymap); :connect from an RPC call or autocmd has
+-- no UI to move.
+function M.switch(name)
+  local sock = sock_path(name)
+  if vim.fs.normalize(vim.v.servername) == sock then return end
+  if not alive(sock) then
+    if not require("session_defs")[name] then
+      vim.notify("No session named " .. name, vim.log.levels.ERROR)
+      return
+    end
+    vim.fn.mkdir(sock_dir(), "p")
+    vim.fn.jobstart(
+      { vim.v.progpath, "--headless", "--listen", sock, "--cmd", "let g:mux = 1", "+Session " .. name },
+      { detach = true }
+    )
+    if not vim.wait(5000, function() return alive(sock) end, 50) then
+      vim.notify("Session " .. name .. " did not start", vim.log.levels.ERROR)
+      return
+    end
+  end
+  vim.cmd({ cmd = "connect", args = { sock } })
+end
+
+-- nv-session.sh (window-manager hotkeys, and `nv <name>` inside a session)
+-- leaves the wanted session name in a file and sends a key to the focused
+-- window, so the switch runs from the UI's own input.
+function M.switch_wanted()
+  local file = vim.fs.joinpath(sock_dir(), "want")
+  local f = io.open(file)
+  if not f then return end
+  local name = vim.trim(f:read("*a"))
+  f:close()
+  os.remove(file)
+  if name ~= "" then M.switch(name) end
+end
+
 vim.o.showtabline = 0
 vim.o.laststatus = 3
 vim.o.statusline = "%!v:lua.require'sessions'.statusline()"
 vim.o.scrollback = 100000 -- max; the outer terminal's scrollback is copy mode
+
+set_highlights()
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimResized" }, {
+  group = vim.api.nvim_create_augroup("mux_bar", { clear = true }),
+  callback = function(ev)
+    if ev.event == "ColorScheme" then set_highlights() end
+    vim.cmd.redrawstatus()
+  end,
+})
+-- Keep the clock current.
+vim.uv.new_timer():start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstatus() end))
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
