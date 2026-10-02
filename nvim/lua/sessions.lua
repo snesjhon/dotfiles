@@ -87,24 +87,30 @@ function M.close_tab()
   end
 end
 
--- Foreground process name of the terminal in the current window, read from its
--- pty.
-function M.fg_comm()
+-- Names of the foreground processes of the terminal in the current window, read
+-- from its pty. A tool's children share its process group, so nvim opened from
+-- yazi shows up alongside yazi.
+local function fg_comms()
   local chan = vim.bo.channel
-  if chan == 0 then return nil end
+  if chan == 0 then return {} end
   local pty = vim.api.nvim_get_chan_info(chan).pty
-  if not pty then return nil end
+  if not pty then return {} end
   local out = vim.system({ "ps", "-o", "stat=,comm=", "-t", vim.fs.basename(pty) }):wait().stdout or ""
+  local comms = {}
   for line in out:gmatch("[^\n]+") do
     local stat, comm = line:match("^%s*(%S+)%s+(.+)$")
-    if stat and stat:find("+", 1, true) then return (vim.fs.basename(comm):gsub("^%-", "")) end
+    if stat and stat:find("+", 1, true) then table.insert(comms, (vim.fs.basename(comm):gsub("^%-", ""))) end
   end
-  return nil
+  return comms
 end
 
+function M.fg_comm() return fg_comms()[1] end
+
 function M.fg_is_nvim()
-  local comm = M.fg_comm()
-  return comm ~= nil and comm:match("^n?vim$") ~= nil
+  for _, comm in ipairs(fg_comms()) do
+    if comm:match("^n?vim$") then return true end
+  end
+  return false
 end
 
 -- Tool launchers (yazi, lazygit, file/grep pickers). A nested nvim gets its own
@@ -175,6 +181,15 @@ function M.switch_wanted()
   f:close()
   os.remove(file)
   if name ~= "" then M.switch(name) end
+end
+
+-- Ptys of this session's terminals, one per line, for `nv kill`.
+function M.ptys()
+  local ptys = {}
+  for _, chan in ipairs(vim.api.nvim_list_chans()) do
+    if chan.pty and chan.pty ~= "" then table.insert(ptys, chan.pty) end
+  end
+  return table.concat(ptys, "\n")
 end
 
 vim.o.showtabline = 0
