@@ -20,6 +20,11 @@ vim.opt.fillchars = { eob = " " }
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99 -- start with everything unfolded
+-- Terminals have no parser, and the fold expression would otherwise run on
+-- every line of output, nearly doubling the time to print it.
+vim.api.nvim_create_autocmd("TermOpen", {
+  callback = function() vim.opt_local.foldmethod = "manual" end,
+})
 vim.opt.winborder = "rounded" -- border on all floats: hover, diagnostics, signature help, etc.
 vim.opt.cmdheight = 0 -- no reserved command-line row; messages show as an overlay
 vim.opt.laststatus = 0 -- no statusline; bufferline already covers filename/diagnostics

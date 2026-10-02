@@ -8,25 +8,12 @@ require("gitlab-theme").setup({
   transparent = false,
 })
 
----Read macOS's current appearance. Returns "dark"/"light", or nil off-macOS
----(or if the read fails), so callers can fall back sensibly.
-local function system_appearance()
-  if vim.fn.has("mac") ~= 1 then
-    return nil
-  end
-  local ok, result = pcall(vim.fn.system, { "defaults", "read", "-g", "AppleInterfaceStyle" })
-  if not ok then
-    return nil
-  end
-  return result:match("^Dark") and "dark" or "light"
-end
+-- Last appearance seen, so startup can pick the scheme without waiting on
+-- `defaults` (30-40ms).
+local cache = vim.fn.stdpath("state") .. "/appearance"
 
----Apply whichever colorscheme macOS's appearance calls for. macOS is the only
----source of truth -- there's no manual override to preserve, so this just
----no-ops when the right scheme is already active. M.name is read by
----configs/bufferline.lua for its highlight overrides.
-function M.sync()
-  local name = system_appearance() == "dark" and "gitlab_dark" or "gitlab_light"
+local function apply(appearance)
+  local name = appearance == "dark" and "gitlab_dark" or "gitlab_light"
   if M.name == name then
     return
   end
@@ -34,6 +21,39 @@ function M.sync()
   vim.cmd.colorscheme(name)
 end
 
+local function read_cache()
+  local f = io.open(cache)
+  if not f then
+    return nil
+  end
+  local appearance = f:read("*l")
+  f:close()
+  return appearance
+end
+
+---Apply whichever colorscheme macOS's appearance calls for. macOS is the only
+---source of truth, so this no-ops when the right scheme is already active.
+---The check runs in the background so startup and focus changes don't wait on
+---it. M.name is read by configs/bufferline.lua for its highlight overrides.
+function M.sync()
+  if vim.fn.has("mac") ~= 1 then
+    apply(nil)
+    return
+  end
+  vim.system({ "defaults", "read", "-g", "AppleInterfaceStyle" }, { text = true }, vim.schedule_wrap(function(out)
+    local appearance = (out.stdout or ""):match("^Dark") and "dark" or "light"
+    if appearance ~= read_cache() then
+      local f = io.open(cache, "w")
+      if f then
+        f:write(appearance, "\n")
+        f:close()
+      end
+    end
+    apply(appearance)
+  end))
+end
+
+apply(read_cache())
 M.sync()
 
 -- The system can flip appearance (Dark Mode schedule, manual toggle in

@@ -180,7 +180,9 @@ end
 vim.o.showtabline = 0
 vim.o.laststatus = 3
 vim.o.statusline = "%!v:lua.require'sessions'.statusline()"
-vim.o.scrollback = 100000 -- max; the outer terminal's scrollback is copy mode
+-- The outer terminal's scrollback is copy mode, but each kept line slows output:
+-- at 100000, printing 300k lines takes about 4x as long as at 10000.
+vim.o.scrollback = 10000
 
 set_highlights()
 vim.api.nvim_create_autocmd({ "ColorScheme", "VimResized" }, {
