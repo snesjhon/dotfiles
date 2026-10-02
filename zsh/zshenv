@@ -1,5 +1,5 @@
 # .zshenv - sourced for all zsh invocations (login, interactive, scripts)
-# This ensures PATH is set correctly even in tmux and other non-interactive contexts
+# This ensures PATH is set correctly even in non-interactive contexts
 
 # ZSH config directory - resolve symlink to get dotfiles location
 ZSH_CONFIG_DIR="$HOME/.zshenv"

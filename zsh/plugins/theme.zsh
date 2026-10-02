@@ -18,18 +18,3 @@ _fzf_theme_opts() {
 }
 
 export FZF_DEFAULT_OPTS="$(_fzf_theme_opts)"
-
-if [[ "$(_resolve_theme)" == dark ]]; then
-  _popup_style="bg=#28262B,fg=#FFFFFF"
-  _popup_border_style="fg=#5D5277"
-else
-  _popup_style="bg=#FAFAFF,fg=#303030"
-  _popup_border_style="fg=#E2DEF8"
-fi
-
-# Overrides just these two options so tmux-powerkit's hardcoded dark popup doesn't flash before fzf repaints it with FZF_DEFAULT_OPTS.
-if [[ -n "$TMUX" ]]; then
-  tmux set -g popup-style "$_popup_style" 2>/dev/null
-  tmux set -g popup-border-style "$_popup_border_style" 2>/dev/null
-fi
-unset _popup_style _popup_border_style

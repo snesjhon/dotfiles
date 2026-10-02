@@ -15,7 +15,7 @@ local function set_highlights()
   vim.api.nvim_set_hl(0, "MuxTabSel", { fg = fill.fg, bg = fill.bg, bold = true })
 end
 
--- Like the tmux bar: session on the left, tabs centered, clock on the right.
+-- Session on the left, tabs centered, clock on the right.
 -- The tabs are padded by hand so they stay centered in the window even though
 -- the left and right text differ in width; %= then pushes the clock to the edge.
 function M.statusline()
@@ -69,7 +69,7 @@ function M.new_tab()
   open_shell()
 end
 
--- Close the tab and kill its shells, like tmux kill-window. The last tab takes
+-- Close the tab and kill its shells. The last tab takes
 -- the whole session with it.
 function M.close_tab()
   if #vim.api.nvim_list_tabpages() == 1 then
@@ -88,7 +88,7 @@ function M.close_tab()
 end
 
 -- Foreground process name of the terminal in the current window, read from its
--- pty (same idea as tmux's is_vim check).
+-- pty.
 function M.fg_comm()
   local chan = vim.bo.channel
   if chan == 0 then return nil end
@@ -208,7 +208,7 @@ end, { nargs = 1, desc = "Rename the current tab" })
 
 local group = vim.api.nvim_create_augroup("mux", { clear = true })
 
--- Terminals behave like tmux panes: typing goes straight to the shell.
+-- Typing in a terminal goes straight to the shell.
 vim.api.nvim_create_autocmd("TermOpen", {
   group = group,
   callback = function()
@@ -225,7 +225,7 @@ vim.api.nvim_create_autocmd({ "TabEnter", "VimEnter" }, {
   end,
 })
 
--- `exit` in a shell closes its tab, like tmux. nvim's own TermClose default
+-- `exit` in a shell closes its tab. nvim's own TermClose default
 -- deletes the buffer first (leaving an empty window in the tab), so drop it
 -- and handle every exit here.
 for _, au in ipairs(vim.api.nvim_get_autocmds({ group = "nvim.terminal", event = "TermClose" })) do

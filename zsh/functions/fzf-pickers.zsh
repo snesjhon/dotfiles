@@ -12,30 +12,8 @@ if ! typeset -f _fzf_theme_opts >/dev/null; then
   source "$ZSH_CONFIG_DIR/plugins/theme.zsh"
 fi
 
-# Reuses an existing nvim pane in the tmux window instead of nesting nvim in :terminal; multi-file selections open a fresh nvim instead.
 _open_in_nvim() {
   local file="$1" line="$2"
-  if [[ -n "$TMUX" ]]; then
-    local pane id tty
-    while IFS=' ' read -r id tty; do
-      if ps -o state= -o comm= -t "$tty" 2>/dev/null | grep -qiE '^[^TXZ ]+ +(\S+/)?g?(view|n?vim?x?)(diff)?$'; then
-        pane="$id"
-        break
-      fi
-    done < <(tmux list-panes -F '#{pane_id} #{pane_tty}' 2>/dev/null)
-    if [[ -n "$pane" ]]; then
-      local escaped="${file//\\/\\\\}"
-      escaped="${escaped// /\\ }"
-      escaped="${escaped//\%/\\%}"
-      escaped="${escaped//\#/\\#}"
-      local keys=":e ${escaped}"
-      [[ -n "$line" ]] && keys="${keys} | ${line}"
-      tmux send-keys -t "$pane" Escape
-      tmux send-keys -t "$pane" "$keys" Enter
-      tmux select-pane -t "$pane"
-      return
-    fi
-  fi
   if [[ -n "$line" ]]; then
     nvim "+${line}" -- "$file"
   else
@@ -61,7 +39,7 @@ ff() {
   local -a nav_binds
   nav_binds=("${(0)$(_fzf_modal_nav_binds)}")
   nav_binds=("${nav_binds[@]:#}")
-  files=(${(f)"$(FZF_DEFAULT_OPTS="$(_fzf_theme_opts)" fzf --tmux 90%,70% -m \
+  files=(${(f)"$(FZF_DEFAULT_OPTS="$(_fzf_theme_opts)" fzf -m --height 40% \
     --prompt '> ' \
     --border-label ' Files ' --border-label-pos 2 \
     --preview "$FZF_PREVIEW_SCRIPT {}" \
@@ -78,29 +56,6 @@ ff() {
   else
     nvim -- "${files[@]}"
   fi
-}
-
-# Ctrl+F in any non-nvim pane (tmux/mappings.conf's is_vim + fzf-insert-picker.sh): runs in a
-# tmux popup since the pane's foreground process (shell, claude, whatever) isn't one we can run
-# fzf in directly, then types the pick back into that pane as a relative path -- no Enter, so
-# it doesn't auto-submit whatever input the pane's app is showing.
-_fzf_insert_picker() {
-  local pane="$1"
-  local file
-  local -a nav_binds
-  nav_binds=("${(0)$(_fzf_modal_nav_binds)}")
-  nav_binds=("${nav_binds[@]:#}")
-  file=$(FZF_DEFAULT_OPTS="$(_fzf_theme_opts)" fzf \
-    --prompt '> ' \
-    --border-label ' Insert File ' --border-label-pos 2 \
-    --preview "$FZF_PREVIEW_SCRIPT {}" \
-    --preview-window 'right,50%' \
-    --preview-label ' Preview ' \
-    --bind 'focus:transform-preview-label:echo [ {} ]' \
-    --bind "alt-.:transform:[[ \$FZF_PROMPT != *hidden* ]] && echo \"reload(rg --files --hidden --no-ignore)+change-prompt(hidden> )\" || echo \"reload(\$FZF_DEFAULT_COMMAND)+change-prompt(Insert> )\"" \
-    "${nav_binds[@]}")
-  [[ -n "$file" && -n "$pane" ]] || return
-  tmux send-keys -t "$pane" -l -- "${file} "
 }
 
 # Live content grep -- terminal counterpart to nvim's <leader>fw; ctrl-f toggles between rg-reload mode and a local fuzzy filter, stashing each mode's query so switching back restores it.
@@ -120,10 +75,9 @@ fw() {
   local -a nav_binds
   nav_binds=("${(0)$(_fzf_modal_nav_binds)}")
   nav_binds=("${nav_binds[@]:#}")
-  selection=$(FZF_DEFAULT_COMMAND="$initial" FZF_DEFAULT_OPTS="$(_fzf_theme_opts)" fzf --ansi --disabled --prompt 'Rg> ' \
+  selection=$(FZF_DEFAULT_COMMAND="$initial" FZF_DEFAULT_OPTS="$(_fzf_theme_opts)" fzf --ansi --disabled --height 40% --prompt 'Rg> ' \
     --query "$query" \
     --delimiter : \
-    --tmux 90%,70% \
     --border-label ' Rg ' --border-label-pos 2 \
     --bind "change:reload:$(printf "$cmd" '{q}')" \
     --bind "alt-.:transform:[[ \$FZF_PROMPT != *hidden* ]] && echo \"change-prompt(Rg [hidden]> )+reload($(printf "$hidden_cmd" '{q}'))\" || echo \"change-prompt(Rg> )+reload($(printf "$cmd" '{q}'))\"" \

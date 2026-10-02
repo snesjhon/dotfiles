@@ -13,10 +13,9 @@ setopt NO_BEEP
 setopt IGNORE_EOF
 
 # Blank the prompt EOL mark (zsh defaults it to a bold inverse "%"). PROMPT_SP
-# sizes its padding to the terminal width, so a pane that changes width -- tmux
-# zen mode adding or dropping its margins, say -- can strand that mark partway
-# up the pane. Empty keeps the partial-line preservation, minus the visible
-# marker. See tmux/tmux-zen.sh.
+# sizes its padding to the terminal width, so a terminal that changes width
+# (an nvim split opening or closing, say) can strand that mark partway up the
+# window. Empty keeps the partial-line preservation, minus the visible marker.
 PROMPT_EOL_MARK=''
 
 source "$ZSH_CONFIG_DIR/plugins.zsh"

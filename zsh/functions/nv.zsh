@@ -1,9 +1,8 @@
 # nv [session] -- attach this terminal to an nvim "mux" session (see
-# nvim/lua/sessions.lua): every tab is a shell, like a tmux session with
-# windows. Each session is a headless nvim server, so it keeps running when the
-# terminal closes. With no argument, pick a session from nvim/lua/session_defs.lua
-# with fzf. Inside a session, nv switches that window to another session.
-# nv kill -- stop every running mux session, like tmux kill-server.
+# nvim/lua/sessions.lua): every tab is a shell. Each session is a headless nvim
+# server, so it keeps running when the terminal closes. With no argument, pick a
+# session from nvim/lua/session_defs.lua with fzf. Inside a session, nv switches that window to another session.
+# nv kill -- stop every running mux session.
 _nv_sessions() {
   # io.stdout, not print: `nvim -l` sends print() to stderr.
   command nvim --clean -l <(print -r 'for k in pairs(dofile(_G.arg[1])) do io.stdout:write(k, "\n") end') \

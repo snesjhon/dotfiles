@@ -15,7 +15,7 @@ vim.keymap.set({ "n", "t" }, "<C-M-S-q>", mux.close_tab, { desc = "Close tab" })
 -- Sent by scripts/nv-session.sh, not typed.
 vim.keymap.set({ "n", "t" }, "<C-M-S-F12>", mux.switch_wanted, { desc = "Switch to the session in the want file" })
 
--- Smart C-\ (tmux's is_vim trick): a nested nvim gets the key; otherwise it
+-- Smart C-\: a nested nvim gets the key; otherwise it
 -- drops into normal mode over the scrollback, i.e. copy mode.
 vim.keymap.set("t", "<C-\\>", function()
   if mux.fg_is_nvim() then
@@ -25,7 +25,7 @@ vim.keymap.set("t", "<C-\\>", function()
   end
 end, { desc = "Copy mode / pass to nested nvim" })
 
--- Tool launchers that used to be tmux-only keys.
+-- Tool launchers: nvim's own picker when nvim is in front, else the shell tool.
 local function launcher(lhs, nvim_keys, shell_cmd, desc)
   vim.keymap.set("t", lhs, function() mux.launch(nvim_keys, shell_cmd) end, { desc = desc })
 end
