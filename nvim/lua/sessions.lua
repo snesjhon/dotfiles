@@ -69,6 +69,11 @@ function M.new_tab()
   open_shell()
 end
 
+function M.vsplit()
+  vim.cmd.vsplit()
+  open_shell()
+end
+
 -- Close the tab and kill its shells. The last tab takes
 -- the whole session with it.
 function M.close_tab()
@@ -192,6 +197,38 @@ function M.ptys()
   return table.concat(ptys, "\n")
 end
 
+-- Re-run the config in this session, keeping its shells, for `nv restart`.
+-- Autocmds the config made are removed first, or each reload would add another
+-- copy. Returns the error, or "" when it worked.
+function M.reload()
+  local config = vim.fn.resolve(vim.fn.stdpath("config"))
+  local function in_config(path) return vim.startswith(vim.fn.resolve(path), config .. "/") end
+
+  for _, au in ipairs(vim.api.nvim_get_autocmds({})) do
+    if type(au.callback) == "function" then
+      local src = debug.getinfo(au.callback, "S").source
+      if src:sub(1, 1) == "@" and in_config(src:sub(2)) then pcall(vim.api.nvim_del_autocmd, au.id) end
+    end
+  end
+  -- require() returns cached modules, so drop every module from lua/ to run it again.
+  for path, kind in vim.fs.dir(config .. "/lua", { depth = math.huge }) do
+    if kind == "file" and path:match("%.lua$") then
+      local mod = path:gsub("%.lua$", ""):gsub("/init$", ""):gsub("/", ".")
+      package.loaded[mod] = nil
+    end
+  end
+
+  -- snacks refuses a second setup() and shows an error unless this is reset.
+  if package.loaded.snacks then package.loaded.snacks.did_setup = false end
+
+  local ok, err = pcall(vim.cmd.source, vim.env.MYVIMRC)
+  if not ok then
+    vim.notify("Config reload failed: " .. err, vim.log.levels.ERROR)
+    return err
+  end
+  return ""
+end
+
 vim.o.showtabline = 0
 vim.o.laststatus = 3
 vim.o.statusline = "%!v:lua.require'sessions'.statusline()"
@@ -207,8 +244,10 @@ vim.api.nvim_create_autocmd({ "ColorScheme", "VimResized" }, {
     vim.cmd.redrawstatus()
   end,
 })
--- Keep the clock current.
-vim.uv.new_timer():start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstatus() end))
+-- Keep the clock current. The timer is kept in _G so a config reload restarts it
+-- instead of adding a second one.
+_G.mux_clock = _G.mux_clock or vim.uv.new_timer()
+_G.mux_clock:start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstatus() end))
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
@@ -230,6 +269,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.wo.number = false
     vim.wo.signcolumn = "no"
     vim.wo.cursorline = false
+    -- With the global nowrap, a line wider than the window lets the view scroll sideways.
+    -- [0][0] is :setlocal, so a file opened later in this window keeps nowrap.
+    vim.wo[0][0].wrap = true
     vim.cmd.startinsert()
   end,
 })

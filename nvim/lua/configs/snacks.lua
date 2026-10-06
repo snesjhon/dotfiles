@@ -9,6 +9,10 @@ require("snacks").setup({
     },
   },
   notifier = { enabled = true },
+  lazygit = {
+    -- FloatBorder is too faint for the unfocused panels and tab names; matches lazygit/gitlab-*.yml.
+    theme = { inactiveBorderColor = { fg = "Comment" } },
+  },
   terminal = {
       win = {
         wo = {

@@ -9,6 +9,9 @@ vim.keymap.set("n", "<leader>gcC", function() require("snacks").picker.git_log({
 vim.keymap.set("n", "<leader>gs", function() require("snacks").picker.git_status() end, { desc = "Git status" })
 vim.keymap.set("n", "<leader>gp", function() require("snacks").picker.git_diff() end, { desc = "Git diff" })
 
+-- snacks adds its colorscheme theme after these files, so this only brings the
+-- edit settings that open files in the current tab (lazygit/nvim.yml in the dotfiles).
+vim.env.LG_CONFIG_FILE = vim.fs.joinpath(vim.fn.resolve(vim.fn.stdpath("config")), "..", "lazygit", "nvim.yml")
 vim.api.nvim_create_user_command("LazyGit", function() require("snacks").lazygit() end, { desc = "Open LazyGit" })
 vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "LazyGit" })
 

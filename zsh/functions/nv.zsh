@@ -2,8 +2,8 @@
 # nvim/lua/sessions.lua): every tab is a shell. Each session is a headless nvim
 # server, so it keeps running when the terminal closes. With no argument, pick a
 # session from nvim/lua/session_defs.lua with fzf. Inside a session, nv switches that window to another session.
-# nv restart -- stop every running mux session; the next nv starts it fresh.
-# nv kill -- same, but first stop every process running in the sessions' shells.
+# nv restart -- reload the nvim config in every running session; shells keep running.
+# nv kill -- stop every process in the sessions' shells, then quit the sessions.
 _nv_sessions() {
   # io.stdout, not print: `nvim -l` sends print() to stderr.
   command nvim --clean -l <(print -r 'for k in pairs(dofile(_G.arg[1])) do io.stdout:write(k, "\n") end') \
@@ -33,9 +33,28 @@ _nv_ensure() {
   return 1
 }
 
+# Re-run the nvim config in every running session (see reload in sessions.lua).
+_nv_restart() {
+  local sock err n=0
+  for sock in $_nv_dir/*.sock(N=); do
+    _nv_alive $sock || continue
+    err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'sessions'.reload()" </dev/null 2>&1)
+    if [[ -n $err ]]; then
+      print -u2 "nv: ${sock:t:r}: $err"
+    else
+      (( n++ ))
+    fi
+  done
+  if (( ! n )); then
+    print -u2 "nv: no sessions reloaded"
+    return 1
+  fi
+  print "nv: reloaded config in $n session(s)"
+}
+
 # Quit every session's server. Each shell gets a hangup, but anything that
 # outlives it (background jobs, tools that ignore the hangup) keeps running.
-_nv_restart() {
+_nv_quit() {
   local sock own n=0
   for sock in $_nv_dir/*.sock(N=); do
     if _nv_alive $sock; then
@@ -93,7 +112,7 @@ _nv_kill() {
   fi
   print "nv: killed $n session(s) and $#pids process(es)"
   # A session quits by itself once its last shell exits, so this only catches the rest.
-  _nv_restart &>/dev/null
+  _nv_quit &>/dev/null
   return 0
 }
 

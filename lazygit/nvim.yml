@@ -1,0 +1,6 @@
+# Used by lazygit opened from nvim (mappings/git.lua). Opens files in that nvim's
+# current tab: quit lazygit, then open. Snacks' nvim-remote preset uses
+# --remote-tab, and an explicit edit/editAtLine takes priority over the preset.
+os:
+  edit: nvim --server "$NVIM" --remote-send q && nvim --server "$NVIM" --remote {{filename}}
+  editAtLine: nvim --server "$NVIM" --remote-send q && nvim --server "$NVIM" --remote {{filename}} && nvim --server "$NVIM" --remote-send ":{{line}}<CR>"

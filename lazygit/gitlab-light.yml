@@ -1,0 +1,12 @@
+# GitLab Light, the same colors snacks gives lazygit inside nvim.
+gui:
+  theme:
+    activeBorderColor: ["#00798a", bold]
+    inactiveBorderColor: ["#7878a8"]
+    searchingActiveBorderColor: ["#00798a", bold]
+    optionsTextColor: ["#006cd8"]
+    selectedLineBgColor: ["#e2def8"]
+    cherryPickedCommitBgColor: ["#303030"]
+    cherryPickedCommitFgColor: ["#006cd8"]
+    unstagedChangesColor: ["#a31700"]
+    defaultFgColor: ["#303030"]

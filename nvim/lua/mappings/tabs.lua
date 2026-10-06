@@ -12,6 +12,7 @@ vim.keymap.set({ "n", "t" }, "<C-S-,>", "<cmd>tabprevious<CR>", { desc = "Previo
 vim.keymap.set({ "n", "t" }, "<C-S-.>", "<cmd>tabnext<CR>", { desc = "Next tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-n>", mux.new_tab, { desc = "New tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-q>", mux.close_tab, { desc = "Close tab" })
+vim.keymap.set({ "n", "t" }, "<C-M-S-v>", mux.vsplit, { desc = "Split with a new shell" })
 -- Sent by scripts/nv-session.sh, not typed.
 vim.keymap.set({ "n", "t" }, "<C-M-S-F12>", mux.switch_wanted, { desc = "Switch to the session in the want file" })
 
