@@ -1,12 +1,12 @@
 #!/bin/bash
-# Shows nvim session <name> (see nvim/lua/session_defs.lua) in Ghostty. If a window is already attached to a session, that window switches to <name>; otherwise a new window starts it. Usage: nv-session.sh <name>
+# Shows nvim session <name> (see nvim/lua/session_defs.lua) in Ghostty. If a window is already attached to a session, that window switches to <name>; otherwise a new window starts it. Usage: mux-session.sh <name>
 
 NAME=$1
-[ -z "$NAME" ] && { echo "usage: nv-session.sh <name>" >&2; exit 1; }
+[ -z "$NAME" ] && { echo "usage: mux-session.sh <name>" >&2; exit 1; }
 
 NVIM_BIN=/opt/homebrew/bin/nvim
 DIR=${TMPDIR:-/tmp}
-DIR=${DIR%/}/nv-sessions
+DIR=${DIR%/}/mux-sessions
 
 # A server with a UI attached means a Ghostty window is showing a session.
 attached=
@@ -48,7 +48,7 @@ on run argv
       if (count of windows) > 0 then set blank to window 1
     end if
     set cfg to new surface configuration
-    set command of cfg to "/bin/zsh -lic 'nv " & item 1 of argv & "'"
+    set command of cfg to "/bin/zsh -lic 'mux " & item 1 of argv & "'"
     new window with configuration cfg
     if blank is not missing value then close window blank
   end tell

@@ -135,11 +135,11 @@ function M.launch(nvim_keys, shell_cmd)
 end
 
 -- Every session is a headless nvim server listening on <sock_dir>/<name>.sock
--- (same layout as zsh/functions/nv.zsh). A window is just a UI attached to one
+-- (same layout as zsh/functions/mux.zsh). A window is just a UI attached to one
 -- of them, so `:connect` moves the window to another session and closing the
 -- window leaves the session running.
 local function sock_dir()
-  return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "nv-sessions")
+  return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "mux-sessions")
 end
 
 local function sock_path(name) return vim.fs.joinpath(sock_dir(), name .. ".sock") end
@@ -175,7 +175,7 @@ function M.switch(name)
   vim.cmd({ cmd = "connect", args = { sock } })
 end
 
--- nv-session.sh (window-manager hotkeys, and `nv <name>` inside a session)
+-- mux-session.sh (window-manager hotkeys, and `mux <name>` inside a session)
 -- leaves the wanted session name in a file and sends a key to the focused
 -- window, so the switch runs from the UI's own input.
 function M.switch_wanted()
@@ -188,7 +188,7 @@ function M.switch_wanted()
   if name ~= "" then M.switch(name) end
 end
 
--- Ptys of this session's terminals, one per line, for `nv kill`.
+-- Ptys of this session's terminals, one per line, for `mux kill`.
 function M.ptys()
   local ptys = {}
   for _, chan in ipairs(vim.api.nvim_list_chans()) do
@@ -197,7 +197,7 @@ function M.ptys()
   return table.concat(ptys, "\n")
 end
 
--- Re-run the config in this session, keeping its shells, for `nv restart`.
+-- Re-run the config in this session, keeping its shells, for `mux restart`.
 -- Autocmds the config made are removed first, or each reload would add another
 -- copy. Returns the error, or "" when it worked.
 function M.reload()

@@ -23,7 +23,7 @@ Then symlink the configs you want into place.
 ```
 dotfiles/
 ├── nvim/          Neovim config (native vim.pack, built-in LSP, snacks pickers, terminal sessions)
-├── zsh/           Shell config, vi mode, fzf pickers, nv session launcher
+├── zsh/           Shell config, vi mode, fzf pickers, mux session launcher
 ├── ghostty/       Terminal emulator (GitLab theme, ligatures, no titlebar)
 ├── aerospace/     Tiling window manager + app/session hotkeys
 ├── starship/      Minimal cross-shell prompt
@@ -38,7 +38,7 @@ dotfiles/
 ```mermaid
 graph LR
     subgraph Terminal["🖥 Terminal"]
-        Ghostty --> Sessions["nv sessions"]
+        Ghostty --> Sessions["mux sessions"]
         Sessions --> Zsh
         Sessions --> Nvim
     end

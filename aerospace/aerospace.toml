@@ -182,8 +182,8 @@ shift-ctrl-alt-z = [
   'workspace 7',
 ]
 
-# nv-session.sh <name> opens Ghostty running that nvim session (nvim/lua/session_defs.lua)
-shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/nv-session.sh dev"'
+# mux-session.sh <name> opens Ghostty running that nvim session (nvim/lua/session_defs.lua)
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/mux-session.sh dev"'
 
 shift-ctrl-alt-j = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-j.local.sh"'
 shift-ctrl-alt-u = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-u.local.sh"'

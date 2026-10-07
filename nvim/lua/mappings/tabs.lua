@@ -13,7 +13,7 @@ vim.keymap.set({ "n", "t" }, "<C-S-.>", "<cmd>tabnext<CR>", { desc = "Next tab" 
 vim.keymap.set({ "n", "t" }, "<C-M-S-n>", mux.new_tab, { desc = "New tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-q>", mux.close_tab, { desc = "Close tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-v>", mux.vsplit, { desc = "Split with a new shell" })
--- Sent by scripts/nv-session.sh, not typed.
+-- Sent by scripts/mux-session.sh, not typed.
 vim.keymap.set({ "n", "t" }, "<C-M-S-F12>", mux.switch_wanted, { desc = "Switch to the session in the want file" })
 
 -- Smart C-\: a nested nvim gets the key; otherwise it
@@ -34,4 +34,4 @@ launcher("<C-S-y>", "\27[17~", "y", "Yazi") -- F6
 launcher("<C-S-u>", "\27:Files\r", "ff", "Find files")
 launcher("<C-S-i>", "\27:RG\r", "fw", "Grep")
 launcher("<C-S-n>", "\27:LazyGit\r", "gg", "LazyGit")
-launcher("<C-M-S-s>", "", "nv", "Switch session")
+launcher("<C-M-S-s>", "", "mux", "Switch session")
