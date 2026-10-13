@@ -46,18 +46,25 @@ function M.statusline()
 end
 
 function M.start(name)
-  local session = require("session_defs")[name]
+  local session = require("mux.defs")[name]
   if not session then
     vim.notify("No session named " .. name, vim.log.levels.ERROR)
     return
   end
   vim.g.session_name = name
-  vim.cmd.cd(vim.fn.expand(session.path))
+  local root = vim.fn.expand(session.path)
+  vim.cmd.cd(root)
 
   for i, tab in ipairs(session.tabs) do
     -- The first tab reuses the tabpage nvim started with.
     if i > 1 then vim.cmd.tabnew() end
-    vim.t.name = tab
+    if type(tab) == "string" then tab = { tab } end
+    vim.t.name = tab[1]
+    -- :tcd, so later splits and shells in this tab start there too.
+    if tab.path then
+      local path = vim.fn.expand(tab.path)
+      vim.cmd.tcd(vim.startswith(path, "/") and path or vim.fs.joinpath(root, path))
+    end
     open_shell()
   end
   vim.cmd.tabfirst()
@@ -74,6 +81,46 @@ function M.vsplit()
   open_shell()
 end
 
+-- A shell on the right of the tab. Toggling it off only hides it, so the shell
+-- and its scrollback are still there when it comes back.
+function M.toggle_sidebar()
+  local buf = vim.t.sidebar
+  if buf and vim.api.nvim_buf_is_valid(buf) then
+    local win = vim.fn.bufwinid(buf)
+    if win ~= -1 then
+      -- Closing the tab's only window would close the tab, so leave it.
+      if #vim.api.nvim_tabpage_list_wins(0) > 1 then vim.api.nvim_win_close(win, false) end
+      return
+    end
+    vim.cmd("botright vsplit")
+    vim.api.nvim_win_set_buf(0, buf)
+    vim.cmd.startinsert()
+    return
+  end
+  vim.cmd("botright vsplit")
+  open_shell()
+  vim.bo.bufhidden = "hide"
+  vim.t.sidebar = vim.api.nvim_get_current_buf()
+end
+
+-- Moves to the next pane in direction dir (h/j/k/l), for C-hjkl in a shell and
+-- for a nested nvim at its last split (mappings/general.lua). Returns false
+-- when there is no pane that way.
+function M.move(dir)
+  local win = vim.api.nvim_get_current_win()
+  vim.cmd.wincmd(dir)
+  if vim.api.nvim_get_current_win() == win then return false end
+  if vim.bo.buftype == "terminal" then vim.cmd.startinsert() end
+  return true
+end
+
+-- The tab's hidden sidebar shell, which no window shows, so it has to be
+-- deleted by hand when the tab goes away or its shell keeps running.
+local function hidden_sidebar(tab)
+  local ok, buf = pcall(vim.api.nvim_tabpage_get_var, tab, "sidebar")
+  if ok and vim.api.nvim_buf_is_valid(buf) and #vim.fn.win_findbuf(buf) == 0 then return buf end
+end
+
 -- Close the tab and kill its shells. The last tab takes
 -- the whole session with it.
 function M.close_tab()
@@ -81,7 +128,7 @@ function M.close_tab()
     vim.cmd("qa!")
     return
   end
-  local terms = {}
+  local terms = { hidden_sidebar(0) }
   for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     local buf = vim.api.nvim_win_get_buf(win)
     if vim.bo[buf].buftype == "terminal" then table.insert(terms, buf) end
@@ -158,7 +205,7 @@ function M.switch(name)
   local sock = sock_path(name)
   if vim.fs.normalize(vim.v.servername) == sock then return end
   if not alive(sock) then
-    if not require("session_defs")[name] then
+    if not require("mux.defs")[name] then
       vim.notify("No session named " .. name, vim.log.levels.ERROR)
       return
     end
@@ -175,7 +222,7 @@ function M.switch(name)
   vim.cmd({ cmd = "connect", args = { sock } })
 end
 
--- mux-session.sh (window-manager hotkeys, and `mux <name>` inside a session)
+-- mux.sh (window-manager hotkeys, and `mux <name>` inside a session)
 -- leaves the wanted session name in a file and sends a key to the focused
 -- window, so the switch runs from the UI's own input.
 function M.switch_wanted()
@@ -231,7 +278,7 @@ end
 
 vim.o.showtabline = 0
 vim.o.laststatus = 3
-vim.o.statusline = "%!v:lua.require'sessions'.statusline()"
+vim.o.statusline = "%!v:lua.require'mux'.statusline()"
 -- The outer terminal's scrollback is copy mode, but each kept line slows output:
 -- at 100000, printing 300k lines takes about 4x as long as at 10000.
 vim.o.scrollback = 10000
@@ -251,7 +298,7 @@ _G.mux_clock:start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstat
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
-  complete = function() return vim.tbl_keys(require("session_defs")) end,
+  complete = function() return vim.tbl_keys(require("mux.defs")) end,
   desc = "Start a named session",
 })
 
@@ -299,7 +346,9 @@ vim.api.nvim_create_autocmd("TermClose", {
           vim.cmd("qa!")
           return
         end
+        local sidebar = hidden_sidebar(tab)
         vim.cmd.tabclose(vim.api.nvim_tabpage_get_number(tab))
+        if sidebar then vim.api.nvim_buf_delete(sidebar, { force = true }) end
       end
       if vim.api.nvim_buf_is_valid(ev.buf) then vim.api.nvim_buf_delete(ev.buf, { force = true }) end
     end)

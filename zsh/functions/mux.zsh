@@ -1,13 +1,13 @@
 # mux [session] -- attach this terminal to an nvim session (see
-# nvim/lua/sessions.lua): every tab is a shell. Each session is a headless nvim
+# nvim/lua/mux): every tab is a shell. Each session is a headless nvim
 # server, so it keeps running when the terminal closes. With no argument, pick a
-# session from nvim/lua/session_defs.lua with fzf. Inside a session, mux switches that window to another session.
+# session from nvim/lua/mux/defs.lua with fzf. Inside a session, mux switches that window to another session.
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 _mux_sessions() {
   # io.stdout, not print: `nvim -l` sends print() to stderr.
   command nvim --clean -l <(print -r 'for k in pairs(dofile(_G.arg[1])) do io.stdout:write(k, "\n") end') \
-    "$HOME/.config/nvim/lua/session_defs.lua"
+    "$HOME/.config/nvim/lua/mux/defs.lua"
 }
 
 _mux_dir=${TMPDIR:-/tmp}
@@ -33,12 +33,12 @@ _mux_ensure() {
   return 1
 }
 
-# Re-run the nvim config in every running session (see reload in sessions.lua).
+# Re-run the nvim config in every running session (see reload in nvim/lua/mux).
 _mux_restart() {
   local sock err n=0
   for sock in $_mux_dir/*.sock(N=); do
     _mux_alive $sock || continue
-    err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'sessions'.reload()" </dev/null 2>&1)
+    err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.reload()" </dev/null 2>&1)
     if [[ -n $err ]]; then
       print -u2 "mux: ${sock:t:r}: $err"
     else
@@ -83,7 +83,7 @@ _mux_kill() {
   for sock in $_mux_dir/*.sock(N=); do
     _mux_alive $sock || continue
     (( n++ ))
-    for pty in ${(f)"$(command nvim --headless --server $sock --remote-expr "v:lua.require'sessions'.ptys()" </dev/null 2>/dev/null)"}; do
+    for pty in ${(f)"$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.ptys()" </dev/null 2>/dev/null)"}; do
       queue+=(${=$(ps -o pid= -t ${pty:t})})
     done
   done
@@ -116,7 +116,7 @@ _mux_kill() {
   return 0
 }
 
-# fzf list of the sessions in session_defs.lua; ▶ marks the one this window is on.
+# fzf list of the sessions in mux/defs.lua; ▶ marks the one this window is on.
 _mux_pick() {
   local name current=${NVIM:t:r}
   for name in ${(o)${(f)"$(_mux_sessions)"}}; do
@@ -132,8 +132,8 @@ mux() {
   [[ -z $name ]] && return
   if [[ -n $NVIM ]]; then
     # Moving the window to another session has to run from the UI's own input,
-    # which a shell can't send. mux-session.sh presses a key that nvim maps to it.
-    "${ZSH_CONFIG_DIR:h}/scripts/mux-session.sh" $name
+    # which a shell can't send. mux.sh presses a key that nvim maps to it.
+    "${ZSH_CONFIG_DIR:h}/scripts/mux.sh" $name
     return
   fi
   _mux_ensure $name || return 1

@@ -1,4 +1,4 @@
--- The mux (sessions.lua) has its own bottom bar instead.
+-- The mux (nvim/lua/mux) has its own bottom bar instead.
 if vim.g.mux then return end
 
 require("bufferline").setup({

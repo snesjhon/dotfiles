@@ -42,9 +42,9 @@ end
 
 
 vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
-vim.keymap.set({ "n", "t" }, "<F6>", chooser, { desc = "Open yazi" })
+vim.keymap.set({ "n", "t" }, "<C-S-y>", chooser, { desc = "Open yazi" })
 
-vim.keymap.set({ "n", "t" }, "<C-S-o>", function() require("snacks").terminal.toggle(nil, {
+local function toggle_terminal() require("snacks").terminal.toggle(nil, {
   win = {
     position = "right",
     wo = {
@@ -59,6 +59,8 @@ vim.keymap.set({ "n", "t" }, "<C-S-o>", function() require("snacks").terminal.to
       ["<C-\\>"] = { function() vim.cmd.stopinsert() end, mode = "t" },
     },
   }
-}) end, { desc = "Toggle terminal" })
+}) end
+
+vim.keymap.set({ "n", "t" }, "<C-S-o>", toggle_terminal, { desc = "Toggle terminal" })
 
 

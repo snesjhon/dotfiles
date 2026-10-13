@@ -1,14 +1,14 @@
 #!/bin/bash
-# Shows nvim session <name> (see nvim/lua/session_defs.lua) in Ghostty. If a window is already attached to a session, that window switches to <name>; otherwise a new window starts it. Usage: mux-session.sh <name>
+# Shows nvim session <name> (see nvim/lua/mux/defs.lua) in the terminal. If a window is already attached to a session, that window switches to <name>; otherwise a new window starts it. Usage: mux.sh <name>
 
 NAME=$1
-[ -z "$NAME" ] && { echo "usage: mux-session.sh <name>" >&2; exit 1; }
+[ -z "$NAME" ] && { echo "usage: mux.sh <name>" >&2; exit 1; }
 
 NVIM_BIN=/opt/homebrew/bin/nvim
 DIR=${TMPDIR:-/tmp}
 DIR=${DIR%/}/mux-sessions
 
-# A server with a UI attached means a Ghostty window is showing a session.
+# A server with a UI attached means a terminal window is showing a session.
 attached=
 for sock in "$DIR"/*.sock; do
   [ -S "$sock" ] || continue
@@ -33,7 +33,7 @@ EOF
   exit 0
 fi
 
-# A cold-started Ghostty opens its own blank window. It is closed once the session window exists, so only one is left.
+# A cold-started terminal app opens its own blank window. It is closed once the session window exists, so only one is left.
 osascript - "$NAME" <<'EOF'
 on run argv
   set wasRunning to application "Ghostty" is running
