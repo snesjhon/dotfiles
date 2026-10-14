@@ -5,7 +5,7 @@
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
-# mux ticket <id or URL> [-b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
+# mux ticket <id or URL> [-n name | -b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
 # mux rm [name] -- stop a worktree session and remove the worktree (see _mux_rm).
 
 # One line per session: name, folder, worktree folder (repo sessions), parent
@@ -227,33 +227,56 @@ _mux_new() {
   _mux_worktree $1 $2 && mux $REPLY
 }
 
-# Creates a worktree for a ticket on branch -b <branch> (default: the ticket
-# id), starts its session without switching to it, and runs /ticket <id> with
-# claude in the session's first tab. The window stays put, so several tickets
-# can start in a row. The ticket is an id (IGN-123) or a URL containing one.
-# Any words after it are instructions for the agent, saved to ticket-notes.md
-# in the worktree's git folder, where /ticket reads them.
+# Lowercase words joined by hyphens, at most 30 characters, for branch names.
+_mux_slug() {
+  setopt local_options extended_glob
+  local s=${(L)1//[^A-Za-z0-9]##/-}
+  s=${s[1,30]}
+  s=${s##-##}
+  print -r -- ${s%%-##}
+}
+
+# Creates a worktree for a ticket, starts its session without switching to it,
+# and runs /ticket <id> with claude in the session's first tab. The window stays
+# put, so several tickets, or several ideas for one ticket, can start in a row.
+# The ticket is an id (IGN-123) or a URL containing one. Any words after it are
+# instructions for the agent, saved to ticket-notes.md in the worktree's git
+# folder, where /ticket reads them. The branch and session are <id>-<name>, with
+# the name from -n, else a short slug Haiku makes from the instructions, else
+# just <id>. -b sets the whole branch name instead.
 _mux_ticket() {
-  local usage="usage: mux ticket <id or URL> [-b branch] [instructions...]"
-  local id branch name notes err
-  # Only the id goes into the quoted nvim expression below, so it must be plain.
+  setopt local_options extended_glob
+  local usage="usage: mux ticket <id or URL> [-n name | -b branch] [instructions...]"
+  local id branch label name notes err
+  # Only the id and the session name go into the quoted nvim expression below,
+  # so both must be plain.
   [[ ${(U)1} =~ '(^|/)([A-Z][A-Z0-9]*-[0-9]+)(/|$)' ]] && id=$match[2]
   [[ -z $id ]] && { print -u2 $usage; return 1 }
   shift
-  if [[ $1 == -b ]]; then
+  while [[ $1 == -[bn] ]]; do
     [[ -z $2 ]] && { print -u2 $usage; return 1 }
-    branch=$2
+    [[ $1 == -b ]] && branch=$2 || label=$(_mux_slug $2)
     shift 2
-  fi
+  done
   notes="$*"
-  _mux_worktree ${branch:-$id} || return 1
+  if [[ -z $branch && -z $label && -n $notes ]]; then
+    print "mux: naming the branch..."
+    label=$(_mux_slug "$(command claude -p --model haiku \
+      "Reply with only a 1 to 3 word name for a git branch doing this work, nothing else: $notes" 2>/dev/null)")
+  fi
+  [[ -z $branch ]] && branch=$id${label:+-$label}
+  _mux_worktree $branch || return 1
   name=$REPLY
+  if [[ $name != [A-Za-z0-9._-]## ]]; then
+    print -u2 "mux: session name $name has characters mux ticket can't pass on"
+    return 1
+  fi
   if [[ -n $notes ]]; then
     print -r -- $notes > "$(git -C $reply[1] rev-parse --absolute-git-dir)/ticket-notes.md" || return 1
   fi
   _mux_ensure $name || return 1
   err=$(command nvim --headless --server $_mux_dir/$name.sock \
-    --remote-expr "v:lua.require'mux'.send('claude --permission-mode auto -n $id \"/ticket $id\"')" </dev/null 2>&1)
+    --remote-expr "v:lua.require'mux'.send('claude --permission-mode auto -n $name \"/ticket $id\"')" </dev/null 2>&1)
   [[ -n $err ]] && { print -u2 "mux: $name: $err"; return 1 }
   print "mux: started /ticket $id in session $name"
 }
