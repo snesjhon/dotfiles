@@ -6,6 +6,7 @@
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
 # mux ticket <id or URL> [-n name | -b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
+# mux plan [name] -- open a /ticket plan in nvim (see _mux_plan).
 # mux rm [name] -- stop a worktree session and remove the worktree (see _mux_rm).
 
 # One line per session: name, folder, worktree folder (repo sessions), parent
@@ -285,9 +286,27 @@ _mux_ticket() {
   print "mux: started /ticket $id in session $name"
 }
 
+# Opens the /ticket plan of session <name>'s folder in nvim, by default the
+# plan of the git worktree this shell is in.
+_mux_plan() {
+  local dir line
+  if [[ -n $1 ]]; then
+    for line in ${(f)"$(_mux_sessions)"}; do
+      _mux_fields $line
+      [[ $reply[1] == $1 ]] && dir=$reply[2]
+    done
+    [[ -z $dir ]] && { print -u2 "mux: no session named $1"; return 1 }
+  else
+    dir=$(git rev-parse --show-toplevel 2>/dev/null) || { print -u2 "mux: not in a git worktree"; return 1 }
+  fi
+  [[ -f $dir/.ticket/plan.md ]] || { print -u2 "mux: no plan in $dir"; return 1 }
+  command nvim $dir/.ticket/plan.md
+}
+
 mux() {
   [[ $1 == new ]] && { _mux_new $2 $3; return }
   [[ $1 == ticket ]] && { _mux_ticket "${@:2}"; return }
+  [[ $1 == plan ]] && { _mux_plan $2; return }
   [[ $1 == rm ]] && { _mux_rm $2; return }
   [[ $1 == kill ]] && { _mux_kill; return }
   [[ $1 == restart ]] && { _mux_restart; return }
@@ -304,5 +323,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill new restart rm ticket $(_mux_names) }
+_mux() { compadd -- kill new plan restart rm ticket $(_mux_names) }
 compdef _mux mux
