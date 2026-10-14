@@ -4,6 +4,7 @@
 # session from nvim/lua/mux/defs.lua with fzf. Inside a session, mux switches that window to another session.
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
+# mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
 
 # One line per session: name, folder, worktree folder (repo sessions), parent
 # session (worktree sessions), separated by tabs.
@@ -142,7 +143,47 @@ _mux_pick() {
     | cut -f1 | awk '{print $NF}'
 }
 
+# Creates a worktree for <branch> in the worktree folder of the repo this shell
+# is in, or of the only repo with one when the shell is in none. An existing
+# branch (local or on origin) is checked out; a new one starts from origin's
+# [base], by default origin's default branch. Then switches to its session.
+_mux_new() {
+  local branch=$1 base=$2 repo dir name p w line
+  [[ -z $branch ]] && { print -u2 "usage: mux new <branch> [base]"; return 1 }
+  local -A dirs # repo folder -> its worktree folder
+  for line in ${(f)"$(_mux_sessions)"}; do
+    IFS=$'\t' read -r _ p w _ <<< $line
+    [[ -n $w ]] && dirs[$p]=$w
+  done
+  repo=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+  repo=${repo:h}
+  if [[ -z ${dirs[$repo]} ]]; then
+    if (( $#dirs != 1 )); then
+      print -u2 "mux: run inside a repo with worktrees set in mux/defs.lua: ${(kj:, :)dirs}"
+      return 1
+    fi
+    repo=${(k)dirs}
+  fi
+  dir=${dirs[$repo]}
+  name=${branch:t}
+  [[ -e $dir/$name ]] && { print -u2 "mux: $dir/$name already exists"; return 1 }
+  if git -C $repo show-ref -q --verify refs/heads/$branch ||
+    git -C $repo show-ref -q --verify refs/remotes/origin/$branch; then
+    git -C $repo worktree add $dir/$name $branch || return 1
+  else
+    if [[ -z $base ]]; then
+      base=$(git -C $repo symbolic-ref --short refs/remotes/origin/HEAD) || return 1
+      base=${base#origin/}
+    fi
+    git -C $repo fetch -q origin $base || return 1
+    # --no-track: the branch is pushed under its own name, not to base.
+    git -C $repo worktree add --no-track -b $branch $dir/$name origin/$base || return 1
+  fi
+  mux $name
+}
+
 mux() {
+  [[ $1 == new ]] && { _mux_new $2 $3; return }
   [[ $1 == kill ]] && { _mux_kill; return }
   [[ $1 == restart ]] && { _mux_restart; return }
   local name=$1
@@ -158,5 +199,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill restart $(_mux_names) }
+_mux() { compadd -- kill new restart $(_mux_names) }
 compdef _mux mux
