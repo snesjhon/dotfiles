@@ -241,6 +241,22 @@ function M.switch_wanted()
   if name ~= "" then M.switch(name) end
 end
 
+-- Types text and Enter into the shell of this session's first tab, for
+-- `mux ticket`, which starts a command in a session no window shows. Waits for
+-- the prompt so the shell doesn't get the text while still starting. Returns
+-- the error, or "" when it worked.
+function M.send(text)
+  local tab = vim.api.nvim_list_tabpages()[1]
+  local buf = vim.api.nvim_win_get_buf(vim.api.nvim_tabpage_list_wins(tab)[1])
+  local chan = vim.bo[buf].channel
+  if vim.bo[buf].buftype ~= "terminal" or chan == 0 then return "no shell in the first tab" end
+  vim.wait(5000, function()
+    return table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false)):match("%S") ~= nil
+  end, 50)
+  vim.api.nvim_chan_send(chan, text .. "\r")
+  return ""
+end
+
 -- Ptys of this session's terminals, one per line, for `mux kill`.
 function M.ptys()
   local ptys = {}
