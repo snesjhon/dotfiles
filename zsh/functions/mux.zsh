@@ -174,7 +174,7 @@ _mux_rm() {
 }
 
 # fzf list of the sessions in mux/defs.lua; ▶ marks the one this window is on
-# and ● the other running ones. The preview shows the folder's git state and PR.
+# and ● the other running ones. The preview shows the folder's git state.
 _mux_pick() {
   local name dir mark current=${NVIM:t:r}
   _mux_sessions | sort | while IFS=$'\t' read -r name dir _; do
