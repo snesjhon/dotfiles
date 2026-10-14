@@ -5,7 +5,7 @@
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
-# mux ticket <id> [branch] -- create a worktree and run /ticket <id> in its session (see _mux_ticket).
+# mux ticket <id or URL> [-b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
 # mux rm [name] -- stop a worktree session and remove the worktree (see _mux_rm).
 
 # One line per session: name, folder, worktree folder (repo sessions), parent
@@ -183,7 +183,7 @@ _mux_pick() {
 # is in, or of the only repo with one when the shell is in none. An existing
 # branch (local or on origin) is checked out; a new one starts from [base] on
 # upstream (or origin when there is no upstream), by default that remote's
-# default branch. Sets REPLY to the new session's name.
+# default branch. Sets REPLY to the new session's name and reply to its folder.
 _mux_worktree() {
   local branch=$1 base=$2 repo dir name line remote=origin
   local -A dirs # repo folder -> its worktree folder
@@ -218,6 +218,7 @@ _mux_worktree() {
     git -C $repo worktree add --no-track -b $branch $dir/$name $remote/$base || return 1
   fi
   REPLY=$name
+  reply=($dir/$name)
 }
 
 # Creates a worktree (see _mux_worktree) and switches to its session.
@@ -226,18 +227,30 @@ _mux_new() {
   _mux_worktree $1 $2 && mux $REPLY
 }
 
-# Creates a worktree for ticket <id> on [branch] (default: the id), starts its
-# session without switching to it, and runs /ticket <id> with claude in the
-# session's first tab. The window stays put, so several tickets can start in a row.
+# Creates a worktree for a ticket on branch -b <branch> (default: the ticket
+# id), starts its session without switching to it, and runs /ticket <id> with
+# claude in the session's first tab. The window stays put, so several tickets
+# can start in a row. The ticket is an id (IGN-123) or a URL containing one.
+# Any words after it are instructions for the agent, saved to ticket-notes.md
+# in the worktree's git folder, where /ticket reads them.
 _mux_ticket() {
-  local id=$1 name err
-  # The id ends up inside a quoted nvim expression, so only plain ids are allowed.
-  if [[ ! $id =~ '^[A-Za-z]+-[0-9]+$' ]]; then
-    print -u2 "usage: mux ticket <id like IGN-123> [branch]"
-    return 1
+  local usage="usage: mux ticket <id or URL> [-b branch] [instructions...]"
+  local id branch name notes err
+  # Only the id goes into the quoted nvim expression below, so it must be plain.
+  [[ ${(U)1} =~ '(^|/)([A-Z][A-Z0-9]*-[0-9]+)(/|$)' ]] && id=$match[2]
+  [[ -z $id ]] && { print -u2 $usage; return 1 }
+  shift
+  if [[ $1 == -b ]]; then
+    [[ -z $2 ]] && { print -u2 $usage; return 1 }
+    branch=$2
+    shift 2
   fi
-  _mux_worktree ${2:-$id} || return 1
+  notes="$*"
+  _mux_worktree ${branch:-$id} || return 1
   name=$REPLY
+  if [[ -n $notes ]]; then
+    print -r -- $notes > "$(git -C $reply[1] rev-parse --absolute-git-dir)/ticket-notes.md" || return 1
+  fi
   _mux_ensure $name || return 1
   err=$(command nvim --headless --server $_mux_dir/$name.sock \
     --remote-expr "v:lua.require'mux'.send('claude --permission-mode auto -n $id \"/ticket $id\"')" </dev/null 2>&1)
@@ -247,7 +260,7 @@ _mux_ticket() {
 
 mux() {
   [[ $1 == new ]] && { _mux_new $2 $3; return }
-  [[ $1 == ticket ]] && { _mux_ticket $2 $3; return }
+  [[ $1 == ticket ]] && { _mux_ticket "${@:2}"; return }
   [[ $1 == rm ]] && { _mux_rm $2; return }
   [[ $1 == kill ]] && { _mux_kill; return }
   [[ $1 == restart ]] && { _mux_restart; return }
