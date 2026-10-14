@@ -1,11 +1,3 @@
--- Session definitions for `mux` (zsh/functions/mux.zsh). Kept apart from the
--- config so `mux` can list the names without loading the whole config.
--- Every tab is a shell started in `path`. A tab written as { "name", path = ... }
--- starts in its own path instead (relative paths are under the session's).
--- A session with worktrees = <dir> is a git repo whose other worktrees each
--- become a session too, named after the worktree's folder, with the same tabs.
--- `mux new` creates worktrees in <dir>.
--- Machine-specific sessions go in defs.local.lua next to this file (gitignored).
 local sessions = {
   dev = {
     path = "~/Developer",

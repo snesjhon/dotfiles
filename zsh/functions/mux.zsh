@@ -180,10 +180,11 @@ _mux_pick() {
 
 # Creates a worktree for <branch> in the worktree folder of the repo this shell
 # is in, or of the only repo with one when the shell is in none. An existing
-# branch (local or on origin) is checked out; a new one starts from origin's
-# [base], by default origin's default branch. Then switches to its session.
+# branch (local or on origin) is checked out; a new one starts from [base] on
+# upstream (or origin when there is no upstream), by default that remote's
+# default branch. Then switches to its session.
 _mux_new() {
-  local branch=$1 base=$2 repo dir name line
+  local branch=$1 base=$2 repo dir name line remote=origin
   [[ -z $branch ]] && { print -u2 "usage: mux new <branch> [base]"; return 1 }
   local -A dirs # repo folder -> its worktree folder
   for line in ${(f)"$(_mux_sessions)"}; do
@@ -206,13 +207,15 @@ _mux_new() {
     git -C $repo show-ref -q --verify refs/remotes/origin/$branch; then
     git -C $repo worktree add $dir/$name $branch || return 1
   else
+    # In a fork setup origin is the fork, whose base branch can be behind.
+    git -C $repo remote get-url upstream &>/dev/null && remote=upstream
     if [[ -z $base ]]; then
-      base=$(git -C $repo symbolic-ref --short refs/remotes/origin/HEAD) || return 1
-      base=${base#origin/}
+      base=$(git -C $repo symbolic-ref --short refs/remotes/$remote/HEAD) || return 1
+      base=${base#$remote/}
     fi
-    git -C $repo fetch -q origin $base || return 1
+    git -C $repo fetch -q $remote $base || return 1
     # --no-track: the branch is pushed under its own name, not to base.
-    git -C $repo worktree add --no-track -b $branch $dir/$name origin/$base || return 1
+    git -C $repo worktree add --no-track -b $branch $dir/$name $remote/$base || return 1
   fi
   mux $name
 }
