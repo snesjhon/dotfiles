@@ -138,12 +138,14 @@ _mux_kill() {
 }
 
 # Stops worktree session <name> (default: this window's) and everything running
-# in it, then removes the worktree. The branch is kept.
+# in it, then removes the worktree. The branch is kept. Run inside that session,
+# the window moves to the repo's session first.
 _mux_rm() {
-  local name=${1:-${NVIM:t:r}} dir repo line
+  local name=${1:-${NVIM:t:r}} dir parent repo line i
+  local sock=$_mux_dir/$name.sock
   for line in ${(f)"$(_mux_sessions)"}; do
     _mux_fields $line
-    [[ $reply[1] == $name && -n $reply[4] ]] && dir=$reply[2]
+    [[ $reply[1] == $name && -n $reply[4] ]] && { dir=$reply[2] parent=$reply[4] }
   done
   [[ -z $dir ]] && { print -u2 "mux: ${name:-this window} is not a worktree session"; return 1 }
   # git refuses to remove a worktree with changes, so check before stopping anything.
@@ -153,12 +155,21 @@ _mux_rm() {
   fi
   repo=$(git -C $dir rev-parse --path-format=absolute --git-common-dir) || return 1
   repo=${repo:h}
-  _mux_kill_procs $_mux_dir/$name.sock
+  _mux_kill_procs $sock
   [[ $PWD == $dir(|/*) ]] && cd $repo
   git -C $repo worktree remove $dir || return 1
   print "mux: removed $name; its branch is kept"
-  # Run inside that session, this ends this shell and closes the window.
-  _mux_quit $_mux_dir/$name.sock &>/dev/null
+  if [[ $NVIM == $sock ]]; then
+    # Quitting the server a window is attached to closes the window, so move it
+    # to the repo's session and wait until no window is left on this one.
+    "${ZSH_CONFIG_DIR:h}/scripts/mux.sh" $parent
+    for i in {1..200}; do
+      [[ $(command nvim --headless --server $sock --remote-expr 'len(nvim_list_uis())' </dev/null 2>/dev/null) == 0 ]] && break
+      sleep 0.05
+    done
+  fi
+  # Run inside that session, this ends this shell.
+  _mux_quit $sock &>/dev/null
   return 0
 }
 
