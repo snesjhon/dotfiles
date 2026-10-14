@@ -17,6 +17,9 @@ _mux_sessions() {
     end') "$HOME/.config/nvim/lua/mux/defs.lua"
 }
 
+# Splits a _mux_sessions line into $reply. read would merge the tabs around an empty field.
+_mux_fields() { reply=("${(@ps:\t:)1}") }
+
 _mux_names() { print -l ${${(f)"$(_mux_sessions)"}%%$'\t'*} }
 
 _mux_dir=${TMPDIR:-/tmp}
@@ -148,12 +151,12 @@ _mux_pick() {
 # branch (local or on origin) is checked out; a new one starts from origin's
 # [base], by default origin's default branch. Then switches to its session.
 _mux_new() {
-  local branch=$1 base=$2 repo dir name p w line
+  local branch=$1 base=$2 repo dir name line
   [[ -z $branch ]] && { print -u2 "usage: mux new <branch> [base]"; return 1 }
   local -A dirs # repo folder -> its worktree folder
   for line in ${(f)"$(_mux_sessions)"}; do
-    IFS=$'\t' read -r _ p w _ <<< $line
-    [[ -n $w ]] && dirs[$p]=$w
+    _mux_fields $line
+    [[ -n $reply[3] ]] && dirs[$reply[2]]=$reply[3]
   done
   repo=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
   repo=${repo:h}
