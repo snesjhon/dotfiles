@@ -5,6 +5,7 @@
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
+# mux rm [name] -- stop a worktree session and remove the worktree (see _mux_rm).
 
 # One line per session: name, folder, worktree folder (repo sessions), parent
 # session (worktree sessions), separated by tabs.
@@ -64,11 +65,12 @@ _mux_restart() {
   print "mux: reloaded config in $n session(s)"
 }
 
-# Quit every session's server. Each shell gets a hangup, but anything that
+# Quit the given session sockets' servers (default: all). Each shell gets a hangup, but anything that
 # outlives it (background jobs, tools that ignore the hangup) keeps running.
 _mux_quit() {
-  local sock own n=0
-  for sock in $_mux_dir/*.sock(N=); do
+  local sock own n=0 socks=($@)
+  (( $# )) || socks=($_mux_dir/*.sock(N=))
+  for sock in $socks; do
     if _mux_alive $sock; then
       # Run inside a session, quitting its own server ends this shell, so that one goes last.
       [[ $sock == $NVIM ]] && { own=$sock; (( n++ )); continue }
@@ -86,23 +88,22 @@ _mux_quit() {
   return 0
 }
 
-# Stop every process on the sessions' ptys and their children (which catches
-# ones that moved off the pty), then quit the servers.
-_mux_kill() {
-  local sock pty p pp i n=0 pids=() queue=() alive=()
+# Stop every process on the given session sockets' ptys (default: all) and
+# their children, which catches ones that moved off the pty. Sets reply to the
+# number of sessions and processes; fails when no session is running.
+_mux_kill_procs() {
+  local sock pty p pp i n=0 pids=() queue=() alive=() socks=($@)
   local -A kids
+  (( $# )) || socks=($_mux_dir/*.sock(N=))
   ps -A -o pid=,ppid= | while read p pp; do kids[$pp]+=" $p"; done
-  for sock in $_mux_dir/*.sock(N=); do
+  for sock in $socks; do
     _mux_alive $sock || continue
     (( n++ ))
     for pty in ${(f)"$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.ptys()" </dev/null 2>/dev/null)"}; do
       queue+=(${=$(ps -o pid= -t ${pty:t})})
     done
   done
-  if (( ! n )); then
-    print -u2 "mux: no running sessions"
-    return 1
-  fi
+  (( n )) || return 1
   while (( $#queue )); do
     p=$queue[1]
     shift queue
@@ -122,9 +123,40 @@ _mux_kill() {
     done
     (( $#alive )) && kill -KILL $alive 2>/dev/null
   fi
-  print "mux: killed $n session(s) and $#pids process(es)"
+  reply=($n $#pids)
+}
+
+# Stop every process in the sessions, then quit the servers.
+_mux_kill() {
+  _mux_kill_procs || { print -u2 "mux: no running sessions"; return 1 }
+  print "mux: killed $reply[1] session(s) and $reply[2] process(es)"
   # A session quits by itself once its last shell exits, so this only catches the rest.
   _mux_quit &>/dev/null
+  return 0
+}
+
+# Stops worktree session <name> (default: this window's) and everything running
+# in it, then removes the worktree. The branch is kept.
+_mux_rm() {
+  local name=${1:-${NVIM:t:r}} dir repo line
+  for line in ${(f)"$(_mux_sessions)"}; do
+    _mux_fields $line
+    [[ $reply[1] == $name && -n $reply[4] ]] && dir=$reply[2]
+  done
+  [[ -z $dir ]] && { print -u2 "mux: ${name:-this window} is not a worktree session"; return 1 }
+  # git refuses to remove a worktree with changes, so check before stopping anything.
+  if [[ -n $(git -C $dir status --porcelain) ]]; then
+    print -u2 "mux: $name has uncommitted changes"
+    return 1
+  fi
+  repo=$(git -C $dir rev-parse --path-format=absolute --git-common-dir) || return 1
+  repo=${repo:h}
+  _mux_kill_procs $_mux_dir/$name.sock
+  [[ $PWD == $dir(|/*) ]] && cd $repo
+  git -C $repo worktree remove $dir || return 1
+  print "mux: removed $name; its branch is kept"
+  # Run inside that session, this ends this shell and closes the window.
+  _mux_quit $_mux_dir/$name.sock &>/dev/null
   return 0
 }
 
@@ -187,6 +219,7 @@ _mux_new() {
 
 mux() {
   [[ $1 == new ]] && { _mux_new $2 $3; return }
+  [[ $1 == rm ]] && { _mux_rm $2; return }
   [[ $1 == kill ]] && { _mux_kill; return }
   [[ $1 == restart ]] && { _mux_restart; return }
   local name=$1
@@ -202,5 +235,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill new restart $(_mux_names) }
+_mux() { compadd -- kill new restart rm $(_mux_names) }
 compdef _mux mux
