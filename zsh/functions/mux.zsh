@@ -4,11 +4,19 @@
 # session from nvim/lua/mux/defs.lua with fzf. Inside a session, mux switches that window to another session.
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
+
+# One line per session: name, folder, worktree folder (repo sessions), parent
+# session (worktree sessions), separated by tabs.
 _mux_sessions() {
   # io.stdout, not print: `nvim -l` sends print() to stderr.
-  command nvim --clean -l <(print -r 'for k in pairs(dofile(_G.arg[1])) do io.stdout:write(k, "\n") end') \
-    "$HOME/.config/nvim/lua/mux/defs.lua"
+  command nvim --clean -l <(print -r '
+    local function x(p) return p and vim.fn.expand(p) or "" end
+    for k, d in pairs(dofile(_G.arg[1])) do
+      io.stdout:write(table.concat({ k, x(d.path), x(d.worktrees), d.parent or "" }, "\t"), "\n")
+    end') "$HOME/.config/nvim/lua/mux/defs.lua"
 }
+
+_mux_names() { print -l ${${(f)"$(_mux_sessions)"}%%$'\t'*} }
 
 _mux_dir=${TMPDIR:-/tmp}
 _mux_dir=${_mux_dir%/}/mux-sessions
@@ -116,12 +124,22 @@ _mux_kill() {
   return 0
 }
 
-# fzf list of the sessions in mux/defs.lua; ▶ marks the one this window is on.
+# fzf list of the sessions in mux/defs.lua; ▶ marks the one this window is on
+# and ● the other running ones. The preview shows the folder's git state and PR.
 _mux_pick() {
-  local name current=${NVIM:t:r}
-  for name in ${(o)${(f)"$(_mux_sessions)"}}; do
-    [[ $name == $current ]] && print "▶ $name" || print "  $name"
-  done | fzf --height 40% --border-label ' Sessions ' --border-label-pos 2 | awk '{print $NF}'
+  local name dir mark current=${NVIM:t:r}
+  _mux_sessions | sort | while IFS=$'\t' read -r name dir _; do
+    if [[ $name == $current ]]; then
+      mark=▶
+    elif [[ -S $_mux_dir/$name.sock ]] && _mux_alive $_mux_dir/$name.sock; then
+      mark=●
+    else
+      mark=' '
+    fi
+    print -r -- "$mark $name"$'\t'"$dir"
+  done | fzf --height 60% --border-label ' Sessions ' --border-label-pos 2 \
+    --delimiter $'\t' --with-nth 1 --preview "${ZSH_CONFIG_DIR:h}/scripts/mux-preview.sh {2}" \
+    | cut -f1 | awk '{print $NF}'
 }
 
 mux() {
@@ -140,5 +158,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill restart ${(f)"$(_mux_sessions)"} }
+_mux() { compadd -- kill restart $(_mux_names) }
 compdef _mux mux
