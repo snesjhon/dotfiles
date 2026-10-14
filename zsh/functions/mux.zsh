@@ -240,10 +240,10 @@ _mux_slug() {
 # and runs /ticket <id> with claude in the session's first tab. The window stays
 # put, so several tickets, or several ideas for one ticket, can start in a row.
 # The ticket is an id (IGN-123) or a URL containing one. Any words after it are
-# instructions for the agent, saved to ticket-notes.md in the worktree's git
-# folder, where /ticket reads them. The branch and session are <id>-<name>, with
-# the name from -n, else a short slug Haiku makes from the instructions, else
-# just <id>. -b sets the whole branch name instead.
+# instructions for the agent, saved to .ticket/notes.md in the worktree, where
+# /ticket reads them and writes its plan. The branch and session are
+# <id>-<name>, with the name from -n, else a short slug Haiku makes from the
+# instructions, else just <id>. -b sets the whole branch name instead.
 _mux_ticket() {
   setopt local_options extended_glob
   local usage="usage: mux ticket <id or URL> [-n name | -b branch] [instructions...]"
@@ -271,8 +271,12 @@ _mux_ticket() {
     print -u2 "mux: session name $name has characters mux ticket can't pass on"
     return 1
   fi
+  # info/exclude, not .gitignore: it keeps .ticket out of every worktree's
+  # commits without changing a tracked file.
+  local exclude=$(git -C $reply[1] rev-parse --path-format=absolute --git-common-dir)/info/exclude
+  grep -qx '/.ticket/' $exclude 2>/dev/null || print '/.ticket/' >> $exclude
   if [[ -n $notes ]]; then
-    print -r -- $notes > "$(git -C $reply[1] rev-parse --absolute-git-dir)/ticket-notes.md" || return 1
+    mkdir -p $reply[1]/.ticket && print -r -- $notes > $reply[1]/.ticket/notes.md || return 1
   fi
   _mux_ensure $name || return 1
   err=$(command nvim --headless --server $_mux_dir/$name.sock \

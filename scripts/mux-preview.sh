@@ -17,6 +17,8 @@ if [[ -n "$base" ]]; then
   line+="  ↑${ahead:-?} ↓${behind:-?} $base"
 fi
 echo "$line"
+# Written by the /ticket skill.
+[[ -f .ticket/plan.md ]] && grep -m1 '^Status:' .ticket/plan.md
 
 echo
 changes=$(git -c color.status=always status --short)
