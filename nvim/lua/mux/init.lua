@@ -2,6 +2,12 @@ local M = {}
 
 if not vim.g.mux then return M end
 
+-- Loaded fresh each time: worktree sessions come and go while a server runs.
+local function defs()
+  package.loaded["mux.defs"] = nil
+  return require("mux.defs")
+end
+
 local function open_shell()
   vim.cmd.terminal()
   vim.bo.buflisted = false
@@ -46,7 +52,7 @@ function M.statusline()
 end
 
 function M.start(name)
-  local session = require("mux.defs")[name]
+  local session = defs()[name]
   if not session then
     vim.notify("No session named " .. name, vim.log.levels.ERROR)
     return
@@ -205,7 +211,7 @@ function M.switch(name)
   local sock = sock_path(name)
   if vim.fs.normalize(vim.v.servername) == sock then return end
   if not alive(sock) then
-    if not require("mux.defs")[name] then
+    if not defs()[name] then
       vim.notify("No session named " .. name, vim.log.levels.ERROR)
       return
     end
@@ -298,7 +304,7 @@ _G.mux_clock:start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstat
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
-  complete = function() return vim.tbl_keys(require("mux.defs")) end,
+  complete = function() return vim.tbl_keys(defs()) end,
   desc = "Start a named session",
 })
 
