@@ -4,6 +4,7 @@ M.width = 35
 
 local ns = vim.api.nvim_create_namespace("review.tree")
 local ns_current = vim.api.nvim_create_namespace("review.tree.current")
+local ns_counts = vim.api.nvim_create_namespace("review.tree.counts")
 
 local status_hl = { A = "Added", C = "Added", D = "Removed", M = "Changed", R = "Changed", T = "Changed" }
 
@@ -75,6 +76,21 @@ function M.create(state)
     review.select(i)
     vim.api.nvim_set_current_win(state.right)
   end, { buffer = buf, desc = "Open file" })
+end
+
+function M.update_counts(state)
+  vim.api.nvim_buf_clear_namespace(state.tree_buf, ns_counts, 0, -1)
+  local counts = {}
+  for _, c in ipairs(state.comments) do
+    counts[c.path] = (counts[c.path] or 0) + 1
+  end
+  for i, file in ipairs(state.files) do
+    if counts[file.path] then
+      vim.api.nvim_buf_set_extmark(state.tree_buf, ns_counts, state.rows[i] - 1, 0, {
+        virt_text = { { " " .. counts[file.path], "DiagnosticInfo" } },
+      })
+    end
+  end
 end
 
 function M.mark_current(state)

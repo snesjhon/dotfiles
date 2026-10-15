@@ -50,6 +50,21 @@ function M.changed_files(base, head)
   return files
 end
 
+-- Line ranges per side, one per hunk of `git diff -U3` (context included):
+-- the lines GitHub accepts review comments on. LEFT[i] and RIGHT[i] are the same hunk.
+function M.hunks(base, head, file)
+  local paths = file.old_path and { file.old_path, file.path } or { file.path }
+  local out = M.run(vim.list_extend({ "diff", "--no-color", "--no-ext-diff", "-M", "-U3", base, head, "--" }, paths))
+  local hunks = { LEFT = {}, RIGHT = {} }
+  for a, b, c, d in (out or ""):gmatch("\n@@ %-(%d+),?(%d*) %+(%d+),?(%d*) @@") do
+    a, c = tonumber(a), tonumber(c)
+    b, d = tonumber(b) or 1, tonumber(d) or 1 -- the count is left out when it's 1
+    table.insert(hunks.LEFT, { a, a + b - 1 })
+    table.insert(hunks.RIGHT, { c, c + d - 1 })
+  end
+  return hunks
+end
+
 -- Returns the file's lines at a commit, or nil and the reason it can't be shown.
 function M.show(sha, path)
   local key = sha .. ":" .. path

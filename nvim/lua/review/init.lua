@@ -1,6 +1,7 @@
 local git = require("review.git")
 local tree = require("review.tree")
 local diff = require("review.diff")
+local comments = require("review.comments")
 
 local M = {}
 
@@ -24,7 +25,12 @@ local function load_pr(number)
 
   local base, base_err = git.merge_base(pr.baseRefOid, pr.headRefOid)
   if not base then return nil, base_err end
-  return { pr = { number = pr.number, title = pr.title, repo = pr.repo }, base = base, head = pr.headRefOid }
+  return {
+    key = tostring(pr.number),
+    pr = { number = pr.number, title = pr.title, repo = pr.repo },
+    base = base,
+    head = pr.headRefOid,
+  }
 end
 
 local function load_branch(override)
@@ -33,7 +39,9 @@ local function load_branch(override)
   local head = git.rev_parse("HEAD")
   local base, err = git.merge_base(ref, head)
   if not base then return nil, err end
-  return { title = ref .. "...HEAD", base = base, head = head }
+  local branch = vim.trim(git.run({ "symbolic-ref", "--short", "-q", "HEAD" }) or "")
+  if branch == "" then branch = head:sub(1, 12) end
+  return { key = "branch-" .. branch:gsub("[^%w._-]", "_"), title = ref .. "...HEAD", base = base, head = head }
 end
 
 local function cleanup()
@@ -104,6 +112,8 @@ function M.open(arg)
     arg = arg,
     files = files,
     bufs = {},
+    buf_info = {},
+    store = comments.store_path(review.key),
     tab = vim.api.nvim_get_current_tabpage(),
     right = vim.api.nvim_get_current_win(),
   })
@@ -112,8 +122,10 @@ function M.open(arg)
   vim.cmd("topleft vsplit")
   state.tree_win = vim.api.nvim_get_current_win()
   M.state = state
+  comments.load(state)
 
   tree.create(state)
+  tree.update_counts(state)
   vim.api.nvim_win_set_width(state.tree_win, tree.width)
   M.select(1)
   vim.cmd.wincmd("=") -- tree keeps its width: winfixwidth

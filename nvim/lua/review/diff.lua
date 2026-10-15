@@ -1,8 +1,9 @@
 local git = require("review.git")
+local comments = require("review.comments")
 
 local M = {}
 
-local function side(state, label, sha, path, exists)
+local function side(state, file, label, sha, path, exists)
   local lines, ft = {}, nil
   if exists then
     local content, err = git.show(sha, path)
@@ -16,13 +17,15 @@ local function side(state, label, sha, path, exists)
   local buf = vim.api.nvim_create_buf(false, true)
   -- Named by the file's current path on both sides: it's unique across the
   -- PR, while an old path can repeat (a copy and its source both start there).
-  vim.api.nvim_buf_set_name(buf, "review://" .. label .. "/" .. state.files[state.current].path)
+  vim.api.nvim_buf_set_name(buf, "review://" .. label .. "/" .. file.path)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
   vim.bo[buf].modifiable = false
   if ft then vim.bo[buf].filetype = ft end
   table.insert(state.bufs, buf)
+  state.buf_info[buf] = { file = file, side = label == "base" and "LEFT" or "RIGHT" }
   require("review").map_common(buf)
-  return buf
+  comments.map(state, buf)
+  return buf, lines
 end
 
 local function winbar(label, path) return (" %s  %s"):format(label, path:gsub("%%", "%%%%")) end
@@ -32,10 +35,10 @@ function M.show(state)
   local first_visit = not file.bufs
   if first_visit then
     local old_path = file.old_path or file.path
-    file.bufs = {
-      side(state, "base", state.base, old_path, file.status ~= "A"),
-      side(state, "head", state.head, file.path, file.status ~= "D"),
-    }
+    local a, a_lines = side(state, file, "base", state.base, old_path, file.status ~= "A")
+    local b, b_lines = side(state, file, "head", state.head, file.path, file.status ~= "D")
+    file.bufs, file.lines = { a, b }, { a_lines, b_lines }
+    comments.render(state, file)
   end
 
   -- diffoff before swapping buffers: the diff options belong to the window,

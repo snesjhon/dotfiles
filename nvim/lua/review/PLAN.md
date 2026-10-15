@@ -27,8 +27,8 @@ Opens in its own tab. `q` closes it and wipes every buffer it created.
 - `gh.lua`: PR metadata, submit review.
 - `tree.lua`: file panel.
 - `diff.lua`: the two diff panes. Read-only scratch buffers filled from `git show`, compared with `:diffthis`.
-- `comments.lua` (phase 2): add/edit/delete, saved to `<git-common-dir>/review/<pr>.json` so every worktree shares one review.
-- `ui.lua` (phase 2): comment float, inline display, picker.
+- `comments.lua`: add/edit/delete, inline display, saved to `<git-common-dir>/review/<pr>.json` so every worktree shares one review.
+- `ui.lua`: comment float (`:w` saves, `q` cancels). The picker lands here in phase 3.
 
 ## State
 
@@ -36,8 +36,8 @@ Opens in its own tab. `q` closes it and wipes every buffer it created.
 state = {
   pr = { number, repo, title },
   base, head,     -- base is the merge-base sha, same diff GitHub shows
-  files = { { path, old_path, status, bufs, hunks = { LEFT = {}, RIGHT = {} }, viewed } },
-  comments = { { id, path, side, line, start_line, body } },
+  files = { { path, old_path, status, bufs, lines, hunks = { LEFT = {}, RIGHT = {} }, viewed } },
+  comments = { { path, side, line, start_line, body } },
 }
 ```
 
@@ -52,8 +52,8 @@ state = {
 | Tree | `<CR>` | Open file |
 | Tree | `x` | Toggle viewed (phase 4) |
 | Diff | `]c` / `[c` | Next/prev hunk (native) |
-| Diff | `c` (normal or visual) | Comment on the line or range (phase 2) |
-| Diff | `e` / `dc` | Edit / delete the comment under the cursor (phase 2) |
+| Diff | `c` (normal or visual) | Comment on the line or range |
+| Diff | `e` / `dc` | Edit / delete the comment under the cursor (saving an empty edit also deletes) |
 
 ## Phases
 
@@ -61,6 +61,10 @@ state = {
 2. **Comments.** Add, edit, delete, save to disk, inline display, counts in the tree. Comments outside a hunk are rejected when written, since GitHub returns a 422 for the whole review otherwise. Hunk ranges come from `git diff -U3` headers.
 3. **List and submit.** Snacks picker over the comments. Submit is one `gh api POST repos/{repo}/pulls/{n}/reviews` with `commit_id`, `event`, `body`, and every comment. Warn if the PR head moved since loading. Clear the saved file once it succeeds.
 4. **Extras.** Viewed marks, the real file on the right when the PR is checked out and clean (so LSP works), other people's comments shown read-only, a `mux review` launcher.
+
+## Comment display
+
+Comments show as a sign on their lines and virtual lines under the last one. Diff mode doesn't count virtual lines when it lines up the panes, so the other pane gets the same number of blank virtual lines at the matching line (found with `vim.text.diff`, the engine `:diffthis` uses).
 
 ## Known limits
 
