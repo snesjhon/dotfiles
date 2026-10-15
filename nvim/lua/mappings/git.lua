@@ -43,6 +43,11 @@ vim.api.nvim_create_user_command("PrDiff", M.pr_diff, { nargs = "?", desc = "Sho
 vim.keymap.set("n", "<C-S-m>", "<cmd>PrDiff<CR>", { desc = "Diff against PR base" })
 vim.keymap.set("n", "<leader>gd", M.pr_diff, { desc = "Diff against PR base" })
 
+vim.api.nvim_create_user_command("Review", function(opts) require("review").open(opts.args) end, {
+  nargs = "?",
+  desc = "Review a PR number, or the branch against its PR base or a given ref",
+})
+
 -- Passed to diffview.setup({ keymaps = ... }) by configs/diffview.lua.
 M.diffview_keymaps = {
   view = {

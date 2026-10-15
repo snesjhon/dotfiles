@@ -1,8 +1,3 @@
--- Session definitions for `mux` (zsh/functions/mux.zsh). Kept free of side
--- effects so `mux` can list the names without loading the whole config.
--- Every tab is a shell started in `path`. A tab written as { "name", path = ... }
--- starts in its own path instead (relative paths are under the session's).
--- Machine-specific sessions go in defs.local.lua next to this file (gitignored).
 local sessions = {
   dev = {
     path = "~/Developer",
@@ -18,5 +13,22 @@ local sessions = {
 local dir = debug.getinfo(1, "S").source:sub(2):match("^(.*)/[^/]*$")
 local ok, extra = pcall(dofile, dir .. "/defs.local.lua")
 if ok then sessions = vim.tbl_extend("force", sessions, extra) end
+
+local trees = {}
+for parent, def in pairs(sessions) do
+  if def.worktrees then
+    local out = vim.system({ "git", "-C", vim.fn.expand(def.path), "worktree", "list", "--porcelain" }):wait().stdout
+    local first = true
+    for path in (out or ""):gmatch("worktree ([^\n]+)") do
+      -- The first entry is the repo itself, which is already this session.
+      -- A worktree whose folder was deleted by hand stays listed until pruned.
+      if not first and vim.uv.fs_stat(path) then
+        trees[vim.fs.basename(path)] = { path = path, tabs = def.tabs, parent = parent }
+      end
+      first = false
+    end
+  end
+end
+sessions = vim.tbl_extend("keep", sessions, trees)
 
 return sessions
