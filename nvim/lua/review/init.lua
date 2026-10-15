@@ -27,7 +27,7 @@ local function load_pr(number)
   if not base then return nil, base_err end
   return {
     key = tostring(pr.number),
-    pr = { number = pr.number, title = pr.title, repo = pr.repo },
+    pr = { number = pr.number, title = pr.title, host = pr.host, repo = pr.repo },
     base = base,
     head = pr.headRefOid,
   }
@@ -77,6 +77,8 @@ function M.map_common(buf)
   map("q", M.close, "Close review")
   map("]f", function() M.select(M.state.current + 1) end, "Next file")
   map("[f", function() M.select(M.state.current - 1) end, "Previous file")
+  map("L", function() comments.list(M.state) end, "List comments")
+  map("S", function() require("review.submit")(M.state) end, "Submit review")
 end
 
 -- arg: a PR number, a base ref, or empty for the branch's PR base.

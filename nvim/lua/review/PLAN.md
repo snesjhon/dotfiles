@@ -24,17 +24,18 @@ Opens in its own tab. `q` closes it and wipes every buffer it created.
 
 - `init.lua`: `open`/`close`, session state, shared keymaps.
 - `git.lua`: changed files, file content at a commit, merge-base, hunk ranges.
-- `gh.lua`: PR metadata, submit review.
+- `gh.lua`: PR metadata, the submit API call.
+- `submit.lua`: the submit flow (head check, review type, summary).
 - `tree.lua`: file panel.
 - `diff.lua`: the two diff panes. Read-only scratch buffers filled from `git show`, compared with `:diffthis`.
-- `comments.lua`: add/edit/delete, inline display, saved to `<git-common-dir>/review/<pr>.json` so every worktree shares one review.
-- `ui.lua`: comment float (`:w` saves, `q` cancels). The picker lands here in phase 3.
+- `comments.lua`: add/edit/delete, inline display, the comment picker, saved to `<git-common-dir>/review/<pr>.json` so every worktree shares one review.
+- `ui.lua`: comment float (`:w` saves, `q` cancels).
 
 ## State
 
 ```lua
 state = {
-  pr = { number, repo, title },
+  pr = { number, host, repo, title },
   base, head,     -- base is the merge-base sha, same diff GitHub shows
   files = { { path, old_path, status, bufs, lines, hunks = { LEFT = {}, RIGHT = {} }, viewed } },
   comments = { { path, side, line, start_line, body } },
@@ -47,8 +48,8 @@ state = {
 |---|---|---|
 | Anywhere | `]f` / `[f` | Next/prev file |
 | Anywhere | `q` | Close |
-| Anywhere | `L` | Picker of all your comments (phase 3) |
-| Anywhere | `S` | Submit review (phase 3) |
+| Anywhere | `L` | Picker of all your comments, `<CR>` jumps to one |
+| Anywhere | `S` | Submit review |
 | Tree | `<CR>` | Open file |
 | Tree | `x` | Toggle viewed (phase 4) |
 | Diff | `]c` / `[c` | Next/prev hunk (native) |

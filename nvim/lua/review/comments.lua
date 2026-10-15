@@ -27,7 +27,7 @@ function M.load(state)
   end
 end
 
-local function save(state)
+function M.save(state)
   if #state.comments == 0 then
     os.remove(state.store)
     return
@@ -116,7 +116,7 @@ function M.render(state, file)
 end
 
 local function changed(state, file)
-  save(state)
+  M.save(state)
   M.render(state, file)
   require("review.tree").update_counts(state)
 end
@@ -177,6 +177,77 @@ function M.delete(state)
   if vim.fn.confirm("Delete this comment?", "&Yes\n&No", 2) ~= 1 then return end
   table.remove(state.comments, i)
   changed(state, file)
+end
+
+-- The commented lines with 5 lines around them, highlighted, with the comment under them.
+local function preview(state, file, c)
+  local sha, path = state.head, file.path
+  if c.side == "LEFT" then
+    sha, path = state.base, file.old_path or file.path
+  end
+  local lines = git.show(sha, path) or {}
+  local first = c.start_line or c.line
+  local from, to = math.max(1, first - 5), math.min(#lines, c.line + 5)
+
+  local extmarks = {}
+  for line = first, c.line do
+    table.insert(extmarks, { row = line - from + 1, col = 0, line_hl_group = "Visual" })
+  end
+  local virt = {}
+  for _, text in ipairs(vim.split(c.body, "\n")) do
+    table.insert(virt, { { "┃ ", "DiagnosticInfo" }, { text, "DiagnosticVirtualTextInfo" } })
+  end
+  table.insert(extmarks, { row = c.line - from + 1, col = 0, virt_lines = virt })
+
+  return {
+    text = table.concat(vim.list_slice(lines, from, to), "\n"),
+    ft = vim.filetype.match({ filename = path }),
+    extmarks = extmarks,
+    loc = false,
+  }
+end
+
+function M.list(state)
+  if #state.comments == 0 then return vim.notify("No comments yet") end
+  local index = {}
+  for i, file in ipairs(state.files) do
+    index[file.path] = i
+  end
+
+  local items = {}
+  for _, c in ipairs(state.comments) do
+    local file = state.files[index[c.path]]
+    local summary = vim.split(c.body, "\n")[1]
+    table.insert(items, {
+      text = ("%s:%d %s"):format(c.path, c.line, summary), -- what the picker matches against
+      comment = c,
+      file_index = index[c.path],
+      summary = summary,
+      preview = preview(state, file, c),
+    })
+  end
+
+  require("snacks").picker.pick({
+    title = "Review comments",
+    items = items,
+    preview = "preview",
+    format = function(item)
+      local c = item.comment
+      return {
+        { c.path, "Directory" },
+        { ":" .. c.line, "LineNr" },
+        { c.side == "LEFT" and " base " or " head ", "Comment" },
+        { item.summary },
+      }
+    end,
+    confirm = function(picker, item)
+      picker:close()
+      require("review").select(item.file_index)
+      local win = item.comment.side == "LEFT" and state.left or state.right
+      vim.api.nvim_set_current_win(win)
+      vim.api.nvim_win_set_cursor(win, { item.comment.line, 0 })
+    end,
+  })
 end
 
 function M.map(state, buf)
