@@ -15,6 +15,19 @@ function M.rev_parse(ref)
   return out and vim.trim(out)
 end
 
+function M.root() return vim.trim(M.run({ "rev-parse", "--show-toplevel" }) or "") end
+
+-- Paths with uncommitted changes in the worktree, as a set.
+function M.dirty()
+  local out = M.run({ "status", "--porcelain", "-z", "--untracked-files=no" }) or ""
+  local paths = {}
+  for entry in out:gmatch("[^%z]+") do
+    -- Entries are "XY path"; a rename adds its old path as the next entry, which is harmless here.
+    paths[entry:sub(4)] = true
+  end
+  return paths
+end
+
 function M.merge_base(a, b)
   local out, err = M.run({ "merge-base", a, b })
   return out and vim.trim(out), err

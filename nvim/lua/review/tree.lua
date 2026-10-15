@@ -4,11 +4,11 @@ M.width = 35
 
 local ns = vim.api.nvim_create_namespace("review.tree")
 local ns_current = vim.api.nvim_create_namespace("review.tree.current")
-local ns_counts = vim.api.nvim_create_namespace("review.tree.counts")
+local ns_marks = vim.api.nvim_create_namespace("review.tree.marks")
 
 local status_hl = { A = "Added", C = "Added", D = "Removed", M = "Changed", R = "Changed", T = "Changed" }
 
--- Puts files in the order the tree shows them, so ]f/[f walk it top to bottom.
+-- Puts files in the order the tree shows them, so . and , walk it top to bottom.
 function M.sort(files)
   for _, file in ipairs(files) do
     file.dir = vim.fs.dirname(file.path)
@@ -41,6 +41,7 @@ function M.create(state)
     end
     local indent = dir == "." and "" or "  "
     table.insert(lines, indent .. file.status .. " " .. file.name)
+    file.name_col = #indent + 2
     table.insert(marks, { #lines, #indent, #indent + 1, status_hl[file.status] or "Changed" })
     state.rows[i] = #lines
     state.file_at_row[#lines] = i
@@ -65,8 +66,6 @@ function M.create(state)
   }) do
     vim.wo[win][option] = value
   end
-  local title = state.pr and ("#" .. state.pr.number .. " " .. state.pr.title) or state.title
-  vim.wo[win].winbar = " " .. title:gsub("%%", "%%%%")
 
   local review = require("review")
   review.map_common(buf)
@@ -78,19 +77,39 @@ function M.create(state)
   end, { buffer = buf, desc = "Open file" })
 end
 
-function M.update_counts(state)
-  vim.api.nvim_buf_clear_namespace(state.tree_buf, ns_counts, 0, -1)
+-- Comment counts, viewed marks (dimmed name and a check), and viewed progress in the header.
+function M.refresh(state)
+  vim.api.nvim_buf_clear_namespace(state.tree_buf, ns_marks, 0, -1)
   local counts = {}
   for _, c in ipairs(state.comments) do
     counts[c.path] = (counts[c.path] or 0) + 1
   end
+
+  local viewed = 0
   for i, file in ipairs(state.files) do
-    if counts[file.path] then
-      vim.api.nvim_buf_set_extmark(state.tree_buf, ns_counts, state.rows[i] - 1, 0, {
-        virt_text = { { " " .. counts[file.path], "DiagnosticInfo" } },
+    local row = state.rows[i] - 1
+    local virt = {}
+    if counts[file.path] then table.insert(virt, { " " .. counts[file.path], "DiagnosticInfo" }) end
+    if state.viewed[file.path] then
+      viewed = viewed + 1
+      table.insert(virt, { " ✓", "Comment" })
+      vim.api.nvim_buf_set_extmark(state.tree_buf, ns_marks, row, file.name_col, {
+        end_col = file.name_col + #file.name,
+        hl_group = "Comment",
       })
     end
+    if #virt > 0 then vim.api.nvim_buf_set_extmark(state.tree_buf, ns_marks, row, 0, { virt_text = virt }) end
   end
+
+  local title = state.pr and ("#" .. state.pr.number .. " " .. state.pr.title) or state.title
+  vim.wo[state.tree_win].winbar = (" %s%%=%d/%d "):format(title:gsub("%%", "%%%%"), viewed, #state.files)
+end
+
+function M.toggle_viewed(state, i)
+  local file = state.files[i]
+  state.viewed[file.path] = not state.viewed[file.path] and require("review.store").blob(state, file) or nil
+  require("review.store").save(state)
+  M.refresh(state)
 end
 
 function M.mark_current(state)

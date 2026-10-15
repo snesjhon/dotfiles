@@ -1,40 +1,10 @@
 local git = require("review.git")
+local store = require("review.store")
 local ui = require("review.ui")
 
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("review.comments")
-
--- Saved under the common git dir so every worktree of the repo sees the same review.
-function M.store_path(key)
-  local dir = vim.trim(git.run({ "rev-parse", "--path-format=absolute", "--git-common-dir" }) or "")
-  return vim.fs.joinpath(dir, "review", key .. ".json")
-end
-
-function M.load(state)
-  state.comments = {}
-  local f = io.open(state.store)
-  if not f then return end
-  local ok, data = pcall(vim.json.decode, f:read("*a"))
-  f:close()
-  if not ok then return vim.notify("Couldn't read " .. state.store, vim.log.levels.WARN) end
-  state.comments = data.comments or {}
-  if data.head ~= state.head then
-    vim.notify(
-      ("%d saved comments were written against an older commit, so their lines may have moved"):format(#data.comments),
-      vim.log.levels.WARN
-    )
-  end
-end
-
-function M.save(state)
-  if #state.comments == 0 then
-    os.remove(state.store)
-    return
-  end
-  vim.fn.mkdir(vim.fs.dirname(state.store), "p")
-  vim.fn.writefile({ vim.json.encode({ head = state.head, comments = state.comments }) }, state.store)
-end
 
 -- GitHub rejects the whole review if any comment sits outside a hunk, so this
 -- is checked when the comment is written instead of at submit.
@@ -83,29 +53,66 @@ local function across(file, side, line)
   return line + offset
 end
 
+local function mine_lines(body)
+  local virt = {}
+  for _, text in ipairs(vim.split(body, "\n")) do
+    table.insert(virt, { { "┃ ", "DiagnosticInfo" }, { text, "DiagnosticVirtualTextInfo" } })
+  end
+  return virt
+end
+
+local function thread_lines(thread)
+  local virt = {}
+  for i, c in ipairs(thread.entries) do
+    if i > 1 then table.insert(virt, { { "│", "Comment" } }) end
+    table.insert(virt, { { "│ ", "Comment" }, { c.user and c.user.login or "ghost", "Title" } })
+    for _, text in ipairs(vim.split((c.body:gsub("\r", "")), "\n")) do
+      table.insert(virt, { { "│ ", "Comment" }, { text, "Comment" } })
+    end
+  end
+  return virt
+end
+
+-- Draws other people's threads (dimmed) and your comments as signs on their
+-- lines plus virtual lines under the last one.
+M.across = across
+
 function M.render(state, file)
   local bufs = { LEFT = file.bufs[1], RIGHT = file.bufs[2] }
   for _, buf in pairs(bufs) do
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
   end
 
+  local blocks = {}
+  for _, t in ipairs(state.remote) do
+    if t.path == file.path then
+      table.insert(blocks, { t.side, t.start_line or t.line, t.line, thread_lines(t), "Comment" })
+    end
+  end
   for _, c in ipairs(state.comments) do
     if c.path == file.path then
-      local buf = bufs[c.side]
-      for line = c.start_line or c.line, c.line do
-        vim.api.nvim_buf_set_extmark(buf, ns, line - 1, 0, { sign_text = "▎", sign_hl_group = "DiagnosticInfo" })
+      table.insert(blocks, { c.side, c.start_line or c.line, c.line, mine_lines(c.body), "DiagnosticInfo" })
+    end
+  end
+
+  for _, block in ipairs(blocks) do
+    local side, first, last, virt, sign_hl = unpack(block)
+    local buf = bufs[side]
+    -- Remote comments can point past the end when they're for a newer commit.
+    if last <= vim.api.nvim_buf_line_count(buf) then
+      for line = first, last do
+        vim.api.nvim_buf_set_extmark(buf, ns, line - 1, 0, { sign_text = "▎", sign_hl_group = sign_hl })
       end
-      local virt, pad = {}, {}
-      for _, text in ipairs(vim.split(c.body, "\n")) do
-        table.insert(virt, { { "┃ ", "DiagnosticInfo" }, { text, "DiagnosticVirtualTextInfo" } })
-        table.insert(pad, { { " " } })
-      end
-      vim.api.nvim_buf_set_extmark(buf, ns, c.line - 1, 0, { virt_lines = virt })
+      vim.api.nvim_buf_set_extmark(buf, ns, last - 1, 0, { virt_lines = virt })
 
       -- Blank lines in the other pane keep the rows below lined up; diff mode
       -- doesn't count virtual lines when it aligns the panes.
-      local other = c.side == "LEFT" and bufs.RIGHT or bufs.LEFT
-      local row = math.min(across(file, c.side, c.line), vim.api.nvim_buf_line_count(other))
+      local pad = {}
+      for i = 1, #virt do
+        pad[i] = { { " " } }
+      end
+      local other = side == "LEFT" and bufs.RIGHT or bufs.LEFT
+      local row = math.min(across(file, side, last), vim.api.nvim_buf_line_count(other))
       if row < 1 then
         vim.api.nvim_buf_set_extmark(other, ns, 0, 0, { virt_lines = pad, virt_lines_above = true })
       else
@@ -115,10 +122,12 @@ function M.render(state, file)
   end
 end
 
+function M.clear(buf) vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1) end
+
 local function changed(state, file)
-  M.save(state)
+  store.save(state)
   M.render(state, file)
-  require("review.tree").update_counts(state)
+  require("review.tree").refresh(state)
 end
 
 function M.add(state, first, last)
@@ -193,11 +202,7 @@ local function preview(state, file, c)
   for line = first, c.line do
     table.insert(extmarks, { row = line - from + 1, col = 0, line_hl_group = "Visual" })
   end
-  local virt = {}
-  for _, text in ipairs(vim.split(c.body, "\n")) do
-    table.insert(virt, { { "┃ ", "DiagnosticInfo" }, { text, "DiagnosticVirtualTextInfo" } })
-  end
-  table.insert(extmarks, { row = c.line - from + 1, col = 0, virt_lines = virt })
+  table.insert(extmarks, { row = c.line - from + 1, col = 0, virt_lines = mine_lines(c.body) })
 
   return {
     text = table.concat(vim.list_slice(lines, from, to), "\n"),
@@ -251,8 +256,8 @@ function M.list(state)
 end
 
 function M.map(state, buf)
-  local function map(mode, lhs, rhs, desc) vim.keymap.set(mode, lhs, rhs, { buffer = buf, desc = desc }) end
-  map("n", "c", function()
+  local function map(...) require("review").map(buf, ...) end
+  map("n", "cc", function()
     local line = vim.api.nvim_win_get_cursor(0)[1]
     M.add(state, line, line)
   end, "Comment on line")
@@ -261,8 +266,8 @@ function M.map(state, buf)
     vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
     M.add(state, math.min(a, b), math.max(a, b))
   end, "Comment on lines")
-  map("n", "e", function() M.edit(state) end, "Edit comment")
-  map("n", "dc", function() M.delete(state) end, "Delete comment")
+  map("n", "ce", function() M.edit(state) end, "Edit comment")
+  map("n", "cd", function() M.delete(state) end, "Delete comment")
 end
 
 return M

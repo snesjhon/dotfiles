@@ -26,11 +26,11 @@ local function send(state, event, body)
   if not result then return vim.notify("Review not submitted. " .. err, vim.log.levels.ERROR) end
 
   state.comments = {}
-  require("review.comments").save(state)
+  require("review.store").save(state)
   for _, file in ipairs(state.files) do
     if file.bufs then require("review.comments").render(state, file) end
   end
-  require("review.tree").update_counts(state)
+  require("review.tree").refresh(state)
   vim.notify("Review submitted: " .. result.html_url)
 end
 

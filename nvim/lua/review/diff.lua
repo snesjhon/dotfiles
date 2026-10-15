@@ -3,7 +3,33 @@ local comments = require("review.comments")
 
 local M = {}
 
+-- The worktree file itself when it matches head, so LSP and other file tools
+-- work in the right pane. Returns nil to fall back to a scratch copy.
+local function real_buffer(state, file)
+  if not state.root or file.status == "D" or state.dirty[file.path] then return end
+  local buf = vim.fn.bufadd(vim.fs.joinpath(state.root, file.path))
+  local loaded = vim.api.nvim_buf_is_loaded(buf)
+  if loaded and vim.bo[buf].modified then return end
+  vim.fn.bufload(buf)
+  state.real_bufs[buf] = not loaded -- true when the review loaded it, so close unloads it again
+  return buf
+end
+
+local function attach(state, file, buf, side_name)
+  state.buf_info[buf] = { file = file, side = side_name }
+  require("review").map_common(buf)
+  comments.map(state, buf)
+end
+
 local function side(state, file, label, sha, path, exists)
+  if label == "head" then
+    local buf = real_buffer(state, file)
+    if buf then
+      attach(state, file, buf, "RIGHT")
+      return buf, vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    end
+  end
+
   local lines, ft = {}, nil
   if exists then
     local content, err = git.show(sha, path)
@@ -22,9 +48,7 @@ local function side(state, file, label, sha, path, exists)
   vim.bo[buf].modifiable = false
   if ft then vim.bo[buf].filetype = ft end
   table.insert(state.bufs, buf)
-  state.buf_info[buf] = { file = file, side = label == "base" and "LEFT" or "RIGHT" }
-  require("review").map_common(buf)
-  comments.map(state, buf)
+  attach(state, file, buf, label == "base" and "LEFT" or "RIGHT")
   return buf, lines
 end
 

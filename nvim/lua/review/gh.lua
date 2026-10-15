@@ -7,9 +7,12 @@ local function run(args)
 end
 
 -- Adds `host` and `repo` ("owner/repo"), taken from the PR URL, so callers
--- know which remote to fetch from and where to submit.
+-- know which remote to fetch from and where to submit. Without a number, it's
+-- the current branch's PR.
 function M.pr(number)
-  local pr, err = run({ "pr", "view", number, "--json", "number,title,url,headRefOid,baseRefOid,baseRefName" })
+  local args = { "pr", "view", "--json", "number,title,url,headRefOid,baseRefOid,baseRefName" }
+  if number then table.insert(args, 3, number) end
+  local pr, err = run(args)
   if not pr then return nil, err end
   pr.host, pr.repo = pr.url:match("^https?://([^/]+)/([^/]+/[^/]+)/pull/")
   return pr
