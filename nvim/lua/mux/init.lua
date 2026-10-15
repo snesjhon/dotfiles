@@ -145,11 +145,11 @@ function M.close_tab()
   end
 end
 
--- Names of the foreground processes of the terminal in the current window, read
--- from its pty. A tool's children share its process group, so nvim opened from
--- yazi shows up alongside yazi.
-local function fg_comms()
-  local chan = vim.bo.channel
+-- Names of the foreground processes of the terminal in buffer `buf` (default:
+-- the current one), read from its pty. A tool's children share its process
+-- group, so nvim opened from yazi shows up alongside yazi.
+local function fg_comms(buf)
+  local chan = vim.bo[buf or 0].channel
   if chan == 0 then return {} end
   local pty = vim.api.nvim_get_chan_info(chan).pty
   if not pty then return {} end
@@ -241,20 +241,35 @@ function M.switch_wanted()
   if name ~= "" then M.switch(name) end
 end
 
--- Types text and Enter into the shell of this session's first tab, for
--- `mux ticket`, which starts a command in a session no window shows. Waits for
--- the prompt so the shell doesn't get the text while still starting. Returns
--- the error, or "" when it worked.
-function M.send(text)
+local function first_buf()
   local tab = vim.api.nvim_list_tabpages()[1]
-  local buf = vim.api.nvim_win_get_buf(vim.api.nvim_tabpage_list_wins(tab)[1])
+  return vim.api.nvim_win_get_buf(vim.api.nvim_tabpage_list_wins(tab)[1])
+end
+
+-- Types text and Enter into the terminal of this session's first tab, for
+-- `mux ticket`, `mux revise`, and `mux test`, which start commands in a session
+-- no window shows. Waits for the prompt so the shell doesn't get the text while
+-- still starting. Enter goes separately because claude reads a fast burst as a
+-- paste, where Enter adds a newline instead of submitting. Returns the error, or
+-- "" when it worked.
+function M.send(text)
+  local buf = first_buf()
   local chan = vim.bo[buf].channel
-  if vim.bo[buf].buftype ~= "terminal" or chan == 0 then return "no shell in the first tab" end
+  if vim.bo[buf].buftype ~= "terminal" or chan == 0 then return "no terminal in the first tab" end
   vim.wait(5000, function()
     return table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false)):match("%S") ~= nil
   end, 50)
-  vim.api.nvim_chan_send(chan, text .. "\r")
+  vim.api.nvim_chan_send(chan, text)
+  vim.wait(200)
+  vim.api.nvim_chan_send(chan, "\r")
   return ""
+end
+
+-- What runs in this session's first tab, for `mux revise` and `mux test`:
+-- "claude" when claude is among the foreground processes, else the first of them.
+function M.first_fg()
+  local comms = fg_comms(first_buf())
+  return vim.tbl_contains(comms, "claude") and "claude" or (comms[1] or "")
 end
 
 -- Ptys of this session's terminals, one per line, for `mux kill`.
