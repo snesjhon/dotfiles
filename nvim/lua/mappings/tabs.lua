@@ -3,7 +3,7 @@ local mux = require("mux")
 
 -- The outer nvim owns only these keys; everything else in a terminal must reach
 -- the shell or the nvim nested in it. So drop every global terminal-mode map
--- the rest of the config set (smart-splits C-hjkl, <C-S-o>, <C-S-y>, ...).
+-- the rest of the config set (C-hjkl, <C-S-o>, <C-S-y>, ...).
 for _, map in ipairs(vim.api.nvim_get_keymap("t")) do
   vim.keymap.del("t", map.lhs)
 end
@@ -49,6 +49,8 @@ for key, dir in pairs({ ["<C-h>"] = "h", ["<C-j>"] = "j", ["<C-k>"] = "k", ["<C-
     end
   end, { desc = "Move to pane " .. dir })
 end
+vim.keymap.set({ "n", "t" }, "<C-S-h>", function() require("splits").resize("h") end, { desc = "Resize pane left" })
+vim.keymap.set({ "n", "t" }, "<C-S-l>", function() require("splits").resize("l") end, { desc = "Resize pane right" })
 
 -- Tool launchers: nvim's own picker when nvim is in front, else the shell tool.
 local function launcher(lhs, nvim_keys, shell_cmd, desc)

@@ -32,32 +32,10 @@ vim.keymap.set("n", "<leader>gtp", function()
   vim.notify("Gitsigns base set to " .. base)
 end, { desc = "Toggle inline diff against PR base" })
 
-function M.pr_diff(opts)
-  opts = opts or {}
-  local base = require("configs.git_pr_base")(opts.args)
-  if not base then return end
-  vim.cmd.DiffviewOpen(base .. "...HEAD")
-end
-
-vim.api.nvim_create_user_command("PrDiff", M.pr_diff, { nargs = "?", desc = "Show diff against the PR base" })
-vim.keymap.set("n", "<C-S-m>", "<cmd>PrDiff<CR>", { desc = "Diff against PR base" })
-vim.keymap.set("n", "<leader>gd", M.pr_diff, { desc = "Diff against PR base" })
-
 vim.api.nvim_create_user_command("Review", function(opts) require("review").open(opts.args) end, {
   nargs = "?",
   desc = "Review a PR number, or the branch against its PR base or a given ref",
 })
-
--- Passed to diffview.setup({ keymaps = ... }) by configs/diffview.lua.
-M.diffview_keymaps = {
-  view = {
-    { "n", "<C-S-q>", function() require("diffview.actions").close() end, { desc = "Close Diffview" } },
-  },
-  file_panel = {
-    { "n", "e", function() require("diffview.actions").goto_file_edit() end, { desc = "Open the file in the previous tabpage" } },
-    { "n", "<C-S-q>", function() require("diffview.actions").close() end, { desc = "Close Diffview" } },
-  },
-}
 
 -- Passed to gitsigns.setup({ on_attach = ... }) by configs/gitsigns.lua.
 function M.on_attach(bufnr)

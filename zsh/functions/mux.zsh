@@ -8,6 +8,7 @@
 # mux ticket <id or URL> [-n name | -b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
 # mux plan [name] -- open a /ticket plan in nvim (see _mux_plan).
 # mux revise [name] -- run /ticket revise in a session once its draft PR is reviewed (see _mux_ticket_run).
+# mux respond [name] [PR URL] -- run /ticket respond in a session to triage a teammate's PR review (see _mux_ticket_run).
 # mux test [name] -- run /ticket test in a session to build a test project and tags (see _mux_ticket_run).
 # mux rm [name] -- stop a worktree session and remove the worktree (see _mux_rm).
 
@@ -317,15 +318,18 @@ _mux_plan() {
 }
 
 # Runs /ticket <sub> in worktree session <name> (default: this window's), where
-# sub is revise (address the draft PR's review) or test (build a test project
-# and tags in the worktree's gateway-launcher). It types into the first tab,
-# where mux ticket started claude. A claude still open there is cleared first,
-# so the run works from the plan file and the PR, not the old conversation. The
-# window stays put.
+# sub is revise (address the user's review of the draft PR), respond (triage a
+# teammate's review; takes a PR URL when the worktree has no plan yet), or test
+# (build a test project and tags in the worktree's gateway-launcher). It types
+# into the first tab, where mux ticket started claude. A claude still open there
+# is cleared first, so the run works from the plan file and the PR, not the old
+# conversation. The window stays put.
 _mux_ticket_run() {
   setopt local_options extended_glob
-  local sub=$1 name=${2:-${NVIM:t:r}} dir line state fg err text
+  local sub=$1 name=$2 url=$3 dir line state fg err text
   local -a texts
+  [[ $name == https://* ]] && { url=$name; name= }
+  name=${name:-${NVIM:t:r}}
   for line in ${(f)"$(_mux_sessions)"}; do
     _mux_fields $line
     [[ $reply[1] == $name && -n $reply[4] ]] && dir=$reply[2]
@@ -333,9 +337,13 @@ _mux_ticket_run() {
   [[ -z $dir ]] && { print -u2 "mux: ${name:-this window} is not a worktree session"; return 1 }
   # The name goes into the quoted nvim expression below, so it must be plain.
   [[ $name == [A-Za-z0-9._-]## ]] || { print -u2 "mux: session name $name has characters mux $sub can't pass on"; return 1 }
-  # Typing into a claude that is still working would interrupt it.
+  [[ -z $url || $url == https://[A-Za-z0-9./_-]## ]] || { print -u2 "mux: $url has characters mux $sub can't pass on"; return 1 }
+  # Typing into a claude that is still working would interrupt it. A worktree
+  # with no plan is idle, so respond can start there from a PR URL.
   state=$(grep -m1 '^Status:' $dir/.ticket/plan.md 2>/dev/null)
-  if [[ $state != 'Status: pr-open' ]]; then
+  if [[ $sub == respond && -z $state && -n $url ]]; then
+    :
+  elif [[ $state != 'Status: pr-open' ]]; then
     print -u2 "mux: $name has no draft PR open yet (${state:-no plan})"
     return 1
   fi
@@ -343,8 +351,8 @@ _mux_ticket_run() {
   local sock=$_mux_dir/$name.sock
   fg=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.first_fg()" </dev/null 2>&1)
   case $fg in
-  claude) texts=(/clear "/ticket $sub") ;;
-  zsh | bash | sh) texts=("claude --permission-mode auto -n $name \"/ticket $sub\"") ;;
+  claude) texts=(/clear "/ticket $sub${url:+ $url}") ;;
+  zsh | bash | sh) texts=("claude --permission-mode auto -n $name \"/ticket $sub${url:+ $url}\"") ;;
   *)
     print -u2 "mux: $name: the first tab runs ${fg:-nothing}, not claude or a shell"
     return 1
@@ -362,6 +370,7 @@ _mux_ticket_run() {
 mux() {
   [[ $1 == new ]] && { _mux_new $2 $3; return }
   [[ $1 == revise ]] && { _mux_ticket_run revise $2; return }
+  [[ $1 == respond ]] && { _mux_ticket_run respond $2 $3; return }
   [[ $1 == test ]] && { _mux_ticket_run test $2; return }
   [[ $1 == ticket ]] && { _mux_ticket "${@:2}"; return }
   [[ $1 == plan ]] && { _mux_plan $2; return }
@@ -381,5 +390,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill new plan restart revise rm test ticket $(_mux_names) }
+_mux() { compadd -- kill new plan respond restart revise rm test ticket $(_mux_names) }
 compdef _mux mux
