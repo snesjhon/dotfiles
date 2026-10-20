@@ -2,7 +2,8 @@
 # nvim/lua/mux): every tab is a shell. Each session is a headless nvim
 # server, so it keeps running when the terminal closes. Inside a session, mux
 # switches that window to another session; with no argument it opens a picker
-# of the sessions in nvim/lua/mux/defs.lua.
+# of the sessions in nvim/lua/mux/defs.lua. Outside one, no argument attaches to
+# the last session a window showed (dev the first time).
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
@@ -414,7 +415,11 @@ mux() {
     command nvim --headless --server $NVIM --remote-expr "v:lua.require'mux'.pick()" </dev/null >/dev/null
     return
   fi
-  [[ -z $name ]] && { print -u2 "usage: mux <session>, or mux alone inside a session"; return 1 }
+  # Like tmux attach: with no name, go back to the last session a window showed.
+  if [[ -z $name ]]; then
+    name=$(<$_mux_dir/last) 2>/dev/null
+    (( ${${(f)"$(_mux_names)"}[(Ie)$name]} )) || name=dev
+  fi
   if [[ -n $NVIM ]]; then
     # Moving the window to another session has to run from the UI's own input,
     # which a shell can't send. mux.sh presses a key that nvim maps to it.
@@ -422,6 +427,7 @@ mux() {
     return
   fi
   _mux_ensure $name || return 1
+  print -r -- $name > $_mux_dir/last
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 

@@ -225,6 +225,12 @@ function M.switch(name)
       return
     end
   end
+  -- Plain `mux` outside a session attaches to this one next.
+  local f = io.open(vim.fs.joinpath(sock_dir(), "last"), "w")
+  if f then
+    f:write(name, "\n")
+    f:close()
+  end
   vim.cmd({ cmd = "connect", args = { sock } })
 end
 
