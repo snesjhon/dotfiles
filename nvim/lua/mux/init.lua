@@ -2,11 +2,7 @@ local M = {}
 
 if not vim.g.mux then return M end
 
--- Loaded fresh each time: worktree sessions come and go while a server runs.
-local function defs()
-  package.loaded["mux.defs"] = nil
-  return require("mux.defs")
-end
+local cli = require("mux.cli")
 
 local function open_shell()
   vim.cmd.terminal()
@@ -52,7 +48,7 @@ function M.statusline()
 end
 
 function M.start(name)
-  local session = defs()[name]
+  local session = cli.defs()[name]
   if not session then
     vim.notify("No session named " .. name, vim.log.levels.ERROR)
     return
@@ -187,51 +183,19 @@ function M.launch(nvim_keys, shell_cmd)
   end, comm and 0 or 300)
 end
 
--- Every session is a headless nvim server listening on <sock_dir>/<name>.sock
--- (same layout as zsh/functions/mux.zsh). A window is just a UI attached to one
--- of them, so `:connect` moves the window to another session and closing the
--- window leaves the session running.
-local function sock_dir()
-  return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "mux-sessions")
-end
-
-local function sock_path(name) return vim.fs.joinpath(sock_dir(), name .. ".sock") end
-
-local function alive(sock)
-  local ok, chan = pcall(vim.fn.sockconnect, "pipe", sock, { rpc = true })
-  if not ok or chan == 0 then return false end
-  vim.fn.chanclose(chan)
-  return true
-end
-
 -- Moves this window to session `name`, starting it first if needed. :connect
 -- moves the window that last attached to or focused this server, so a shell
 -- can call this too (`mux <name>`, hotkeys). Returns the error, or "" when it
 -- worked.
 function M.switch(name)
-  local sock = sock_path(name)
+  local sock = cli.sock(name)
   if vim.fs.normalize(vim.v.servername) == sock then return "" end
-  if not alive(sock) then
-    if not defs()[name] then
-      vim.notify("No session named " .. name, vim.log.levels.ERROR)
-      return "no session named " .. name
-    end
-    vim.fn.mkdir(sock_dir(), "p")
-    vim.fn.jobstart(
-      { vim.v.progpath, "--headless", "--listen", sock, "--cmd", "let g:mux = 1", "+Session " .. name },
-      { detach = true }
-    )
-    if not vim.wait(5000, function() return alive(sock) end, 50) then
-      vim.notify("Session " .. name .. " did not start", vim.log.levels.ERROR)
-      return "session " .. name .. " did not start"
-    end
+  local ok, err = cli.ensure(name)
+  if not ok then
+    vim.notify(err, vim.log.levels.ERROR)
+    return err
   end
-  -- Plain `mux` outside a session attaches to this one next.
-  local f = io.open(vim.fs.joinpath(sock_dir(), "last"), "w")
-  if f then
-    f:write(name, "\n")
-    f:close()
-  end
+  cli.remember(name)
   vim.cmd({ cmd = "connect", args = { sock } })
   return ""
 end
@@ -277,8 +241,8 @@ end
 -- Returns "" so it can be called with --remote-expr.
 function M.pick()
   local items = {}
-  for name, def in pairs(defs()) do
-    local mark = name == vim.g.session_name and "▶" or alive(sock_path(name)) and "●" or " "
+  for name, def in pairs(cli.defs()) do
+    local mark = name == vim.g.session_name and "▶" or cli.alive(cli.sock(name)) and "●" or " "
     table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path) })
   end
   table.sort(items, function(a, b) return a.text < b.text end)
@@ -394,7 +358,7 @@ _G.mux_clock:start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstat
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
-  complete = function() return vim.tbl_keys(defs()) end,
+  complete = function() return vim.tbl_keys(cli.defs()) end,
   desc = "Start a named session",
 })
 

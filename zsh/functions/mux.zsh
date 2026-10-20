@@ -1,13 +1,6 @@
-# mux [session] -- attach this terminal to an nvim session (see
-# nvim/lua/mux): every tab is a shell. Each session is a headless nvim
-# server, so it keeps running when the terminal closes. Inside a session, mux
-# switches that window to another session; with no argument it opens a picker
-# of the sessions in nvim/lua/mux/defs.lua. Outside one, no argument attaches to
-# the last session a window showed (dev the first time).
-# Run with no terminal (an aerospace hotkey), mux <name> moves the open
-# window to that session, or opens a Ghostty window on it.
-# mux restart -- reload the nvim config in every running session; shells keep running.
-# mux kill -- stop every process in the sessions' shells, then quit the sessions.
+# mux runs in Lua (nvim/lua/mux/cli.lua, see there for the commands). The
+# worktree commands below (mux new, ticket, adopt, plan, revise, respond, test,
+# rm) are still zsh.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
 # mux ticket <id or URL> [-n name | -b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
 # mux adopt <PR URL> [instructions...] -- create a worktree for one of your open PRs and run /ticket adopt in its session (see _mux_adopt).
@@ -66,59 +59,6 @@ _mux_switch() {
   err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.switch('$name')" </dev/null 2>&1)
   [[ -n $err ]] && { print -u2 "mux: $err"; return 1 }
   return 0
-}
-
-# For hotkeys, which run mux with no terminal: moves the window showing a
-# session to <name>, or opens a new Ghostty window on it when none is open.
-_mux_show() {
-  local name=$1 sock
-  for sock in $_mux_dir/*.sock(N=); do
-    if [[ $(command nvim --headless --server $sock --remote-expr 'len(nvim_list_uis())' </dev/null 2>/dev/null) == <1-> ]]; then
-      _mux_switch $sock $name && open -a Ghostty
-      return
-    fi
-  done
-  # A cold-started Ghostty opens its own blank window. It is closed once the
-  # session window exists, so only one is left.
-  osascript - $name >/dev/null <<'APPLESCRIPT'
-on run argv
-  set wasRunning to application "Ghostty" is running
-  tell application "Ghostty"
-    activate
-    set blank to missing value
-    if not wasRunning then
-      repeat 50 times
-        if (count of windows) > 0 then exit repeat
-        delay 0.1
-      end repeat
-      if (count of windows) > 0 then set blank to window 1
-    end if
-    set cfg to new surface configuration
-    set command of cfg to "/bin/zsh -lic 'mux " & item 1 of argv & "'"
-    new window with configuration cfg
-    if blank is not missing value then close window blank
-  end tell
-end run
-APPLESCRIPT
-}
-
-# Re-run the nvim config in every running session (see reload in nvim/lua/mux).
-_mux_restart() {
-  local sock err n=0
-  for sock in $_mux_dir/*.sock(N=); do
-    _mux_alive $sock || continue
-    err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.reload()" </dev/null 2>&1)
-    if [[ -n $err ]]; then
-      print -u2 "mux: ${sock:t:r}: $err"
-    else
-      (( n++ ))
-    fi
-  done
-  if (( ! n )); then
-    print -u2 "mux: no sessions reloaded"
-    return 1
-  fi
-  print "mux: reloaded config in $n session(s)"
 }
 
 # Quit the given session sockets' servers (default: all). Each shell gets a hangup, but anything that
@@ -180,15 +120,6 @@ _mux_kill_procs() {
     (( $#alive )) && kill -KILL $alive 2>/dev/null
   fi
   reply=($n $#pids)
-}
-
-# Stop every process in the sessions, then quit the servers.
-_mux_kill() {
-  _mux_kill_procs || { print -u2 "mux: no running sessions"; return 1 }
-  print "mux: killed $reply[1] session(s) and $reply[2] process(es)"
-  # A session quits by itself once its last shell exits, so this only catches the rest.
-  _mux_quit &>/dev/null
-  return 0
 }
 
 # Stops worktree session <name> (default: this window's) and everything running
@@ -446,6 +377,20 @@ _mux_ticket_run() {
   print "mux: started /ticket $sub in session $name"
 }
 
+# Runs a Lua command with `nvim -l`, then the step it prints for this shell:
+# attach this terminal to a session, cd, or open a file in nvim.
+_mux_run() {
+  local out step arg
+  out=$(command nvim -l "$@") || return
+  [[ -z $out ]] && return
+  step=${out%%$'\t'*} arg=${out#*$'\t'}
+  case $step in
+  attach) command nvim --remote-ui --server $arg ;;
+  cd) cd $arg ;;
+  edit) command nvim $arg ;;
+  esac
+}
+
 mux() {
   [[ $1 == new ]] && { _mux_new $2 $3; return }
   [[ $1 == revise ]] && { _mux_ticket_run revise $2; return }
@@ -455,27 +400,7 @@ mux() {
   [[ $1 == adopt ]] && { _mux_adopt "${@:2}"; return }
   [[ $1 == plan ]] && { _mux_plan $2; return }
   [[ $1 == rm ]] && { _mux_rm $2; return }
-  [[ $1 == kill ]] && { _mux_kill; return }
-  [[ $1 == restart ]] && { _mux_restart; return }
-  local name=$1
-  # Inside a session, the picker opens in the session's own nvim, which then does the switch.
-  if [[ -z $name && $NVIM == $_mux_dir/*.sock ]]; then
-    command nvim --headless --server $NVIM --remote-expr "v:lua.require'mux'.pick()" </dev/null >/dev/null
-    return
-  fi
-  # Like tmux attach: with no name, go back to the last session a window showed.
-  if [[ -z $name ]]; then
-    name=$(<$_mux_dir/last) 2>/dev/null
-    (( ${${(f)"$(_mux_names)"}[(Ie)$name]} )) || name=dev
-  fi
-  if [[ $NVIM == $_mux_dir/*.sock ]]; then
-    _mux_switch $NVIM $name
-    return
-  fi
-  [[ -t 0 ]] || { _mux_show $name; return }
-  _mux_ensure $name || return 1
-  print -r -- $name > $_mux_dir/last
-  command nvim --remote-ui --server $_mux_dir/$name.sock
+  _mux_run $HOME/.config/nvim/lua/mux/cli.lua "$@"
 }
 
 _mux() { compadd -- adopt kill new plan respond restart revise rm test ticket $(_mux_names) }

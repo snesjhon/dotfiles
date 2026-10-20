@@ -162,7 +162,7 @@ shift-ctrl-alt-z = [
 ]
 
 # mux <name> moves the open terminal window to that nvim session (nvim/lua/mux/defs.lua), or opens one on it
-shift-ctrl-alt-k = 'exec-and-forget zsh -lic "mux dev"'
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "nvim -l ~/.config/nvim/lua/mux/cli.lua dev"'
 
 shift-ctrl-alt-j = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-j.local.sh"'
 shift-ctrl-alt-u = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-u.local.sh"'
