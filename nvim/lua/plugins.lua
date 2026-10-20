@@ -1,4 +1,8 @@
 -- Plugins (native vim.pack, no plugin manager) ------------------------------
+-- Local plugins in the dotfiles' plugins/ folder, loaded straight from there.
+local dotfiles = vim.fs.dirname(vim.uv.fs_realpath(vim.fn.stdpath("config")))
+vim.opt.rtp:prepend(vim.fs.joinpath(dotfiles, "plugins", "mux"))
+
 vim.pack.add({
   "https://github.com/nvim-treesitter/nvim-treesitter",
   "https://github.com/folke/snacks.nvim",

@@ -1,6 +1,14 @@
 -- The wt command: git worktrees, each shown as its own mux session (see
--- mux/defs.lua), and the /wt skill run in them. zsh/functions/mux.zsh runs it
--- with `nvim -l`, and it writes steps for the shell the same way mux/cli.lua does.
+-- sessions.lua), and the /wt skill run in them. zsh/functions/mux.zsh runs it
+-- with `nvim -l` and runs the step it prints (cd, or open a file in nvim).
+
+-- mux's Lua, found through the mux command on PATH.
+local mux_bin = vim.uv.fs_realpath(vim.fn.exepath("mux"))
+if not mux_bin then
+  io.stderr:write("wt: needs mux on PATH\n")
+  os.exit(1)
+end
+vim.opt.rtp:prepend(vim.fs.dirname(vim.fs.dirname(mux_bin)))
 local mux = require("mux.cli")
 
 local usage = [[
@@ -45,10 +53,10 @@ local function plan_status(dir)
 end
 
 -- The repo this shell is in, or the only repo with a worktree folder in
--- mux/defs.lua when the shell is in none, and that worktree folder.
+-- the sessions when the shell is in none, and that worktree folder.
 local function repo()
   local dirs = {} -- repo folder -> its worktree folder
-  for _, def in pairs(mux.defs()) do
+  for _, def in pairs(mux.sessions()) do
     if def.worktrees then dirs[vim.fn.expand(def.path)] = vim.fn.expand(def.worktrees) end
   end
   local common = run({ "git", "rev-parse", "--path-format=absolute", "--git-common-dir" })
@@ -56,7 +64,7 @@ local function repo()
   if here and dirs[here] then return here, dirs[here] end
   local repos = vim.tbl_keys(dirs)
   if #repos ~= 1 then
-    fail("run inside a repo with worktrees set in mux/defs.lua: " .. table.concat(repos, ", "))
+    fail("run inside a repo with worktrees set in sessions.lua: " .. table.concat(repos, ", "))
   end
   return repos[1], dirs[repos[1]]
 end
@@ -66,7 +74,7 @@ end
 local function session(name)
   local current = mux.current()
   name = name or (current and (vim.fs.basename(current):gsub("%.sock$", "")))
-  local def = name and mux.defs()[name]
+  local def = name and mux.sessions()[name]
   if not def or not def.parent then fail((name or "this window") .. " is not a worktree session") end
   return name, def.path, def.parent
 end
@@ -212,7 +220,7 @@ end
 local function plan(name)
   local dir
   if name then
-    local def = mux.defs()[name]
+    local def = mux.sessions()[name]
     if not def then fail("no session named " .. name) end
     dir = vim.fn.expand(def.path)
   else
@@ -309,7 +317,7 @@ local function main(args)
   if cmd == "rm" then return rm(args[1]) end
   if cmd == "names" then -- worktree sessions, for tab completion
     local names = {}
-    for name, def in pairs(mux.defs()) do
+    for name, def in pairs(mux.sessions()) do
       if def.parent then table.insert(names, name) end
     end
     return io.stdout:write(table.concat(names, "\n"), "\n")

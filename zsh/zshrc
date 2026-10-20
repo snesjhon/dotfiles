@@ -24,6 +24,8 @@ PROMPT_EOL_MARK=''
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"
 
+# Completions shipped with the dotfiles' plugins (plugins/*/zsh).
+fpath=(${ZSH_CONFIG_DIR:h}/plugins/*/zsh(N) $fpath)
 autoload -Uz compinit
 compinit
 

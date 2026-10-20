@@ -1,25 +1,24 @@
--- The mux command: attach a terminal to a session, pick or switch sessions,
--- open one from a hotkey, restart, and kill. zsh/functions/mux.zsh runs it with
--- `nvim -l`; init.lua and wt use its session helpers.
+-- The mux command (bin/mux): attach a terminal to a session, pick or switch
+-- sessions, open one from a hotkey, restart, and kill. init.lua and wt use its
+-- session helpers.
 --
 -- Every session is a headless nvim server listening on <dir>/<name>.sock. A
 -- window is just a UI attached to one of them, so `:connect` moves the window to
 -- another session and closing the window leaves the session running.
 --
--- Run as a script, it writes at most one step to stdout for what only the
--- calling shell can do: "attach\t<socket>" connects the terminal to a session,
--- "cd\t<folder>" changes its folder, "edit\t<file>" opens nvim there. Messages go
--- to stderr.
+-- Sessions come from a `sessions` Lua module on the runtimepath (for example
+-- ~/.config/nvim/lua/sessions.lua), returning name -> { path, tabs, ... }.
+-- Messages go to stderr.
 local M = {}
 
 function M.dir() return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "mux-sessions") end
 
 function M.sock(name) return vim.fs.joinpath(M.dir(), name .. ".sock") end
 
--- Loaded fresh each time: worktree sessions come and go while a server runs.
-function M.defs()
-  package.loaded["mux.defs"] = nil
-  return require("mux.defs")
+-- Loaded fresh each time: sessions can come and go while a server runs.
+function M.sessions()
+  package.loaded["sessions"] = nil
+  return require("sessions")
 end
 
 -- Socket files of every session started so far, running or not.
@@ -62,7 +61,7 @@ end
 function M.ensure(name)
   local sock = M.sock(name)
   if M.alive(sock) then return true end
-  if not M.defs()[name] then return false, "no session named " .. name end
+  if not M.sessions()[name] then return false, "no session named " .. name end
   os.remove(sock)
   vim.fn.mkdir(M.dir(), "p")
   -- detach: the server keeps running after whatever started it exits.
@@ -189,7 +188,17 @@ function M.fail(msg)
   os.exit(1)
 end
 
+-- Writes a step for the zsh wrapper that runs wt: "cd\t<folder>" or "edit\t<file>".
 function M.emit(step, arg) io.stdout:write(step, "\t", arg, "\n") end
+
+-- Hands this terminal to `cmd` until it exits, then exits with its code.
+function M.exec(cmd)
+  local code
+  local handle = vim.uv.spawn(cmd[1], { args = vim.list_slice(cmd, 2), stdio = { 0, 1, 2 } }, function(c) code = c end)
+  if not handle then M.fail("could not start " .. cmd[1]) end
+  vim.wait(math.huge, function() return code ~= nil end, 50)
+  os.exit(code)
+end
 
 -- A cold-started Ghostty opens its own blank window. It is closed once the
 -- session window exists, so only one is left.
@@ -241,7 +250,7 @@ function M.open(name)
   local ok, err = M.ensure(name)
   if not ok then M.fail("mux: " .. err) end
   M.remember(name)
-  M.emit("attach", M.sock(name))
+  M.exec({ vim.v.progpath, "--remote-ui", "--server", M.sock(name) })
 end
 
 -- Re-runs the nvim config in every running session (see reload in init.lua).
@@ -278,13 +287,13 @@ mux [session]  attach this terminal to a session, or switch this window to one
 mux restart    reload the nvim config in every running session
 mux kill       stop every process in the sessions' shells, then quit them]]
 
-local function main(args)
+function M.main(args)
   local cmd = args[1]
   if cmd == "restart" then return restart() end
   if cmd == "kill" then return kill() end
   if cmd == "-h" or cmd == "--help" then return M.say(usage) end
   if cmd == "names" then -- for tab completion
-    return io.stdout:write(table.concat(vim.tbl_keys(M.defs()), "\n"), "\n")
+    return io.stdout:write(table.concat(vim.tbl_keys(M.sessions()), "\n"), "\n")
   end
 
   local current = M.current()
@@ -294,18 +303,21 @@ local function main(args)
     return
   end
   local name = cmd
-  -- Like tmux attach: with no name, go back to the last session a window showed.
+  -- Like tmux attach: with no name, go back to the last session a window showed,
+  -- or the session marked default = true the first time.
+  local sessions = M.sessions()
   if not name then
     local f = io.open(vim.fs.joinpath(M.dir(), "last"))
     name = f and vim.trim(f:read("*a")) or ""
     if f then f:close() end
-    if not M.defs()[name] then name = "dev" end
+    if not sessions[name] then
+      for n, s in pairs(sessions) do
+        if s.default then name = n end
+      end
+    end
   end
-  if not M.defs()[name] then M.fail("mux: no session named " .. name) end
+  if not sessions[name] then M.fail("mux: no session named " .. name) end
   M.open(name)
 end
-
--- Required as a module, `...` is the module name; run with `nvim -l`, it is empty.
-if not ... then main(_G.arg) end
 
 return M

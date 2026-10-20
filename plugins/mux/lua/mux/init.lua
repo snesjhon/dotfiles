@@ -48,7 +48,7 @@ function M.statusline()
 end
 
 function M.start(name)
-  local session = cli.defs()[name]
+  local session = cli.sessions()[name]
   if not session then
     vim.notify("No session named " .. name, vim.log.levels.ERROR)
     return
@@ -236,12 +236,12 @@ local function preview_lines(dir)
   return lines
 end
 
--- Snacks picker over the sessions in mux/defs.lua, for `mux` with no name run
+-- Snacks picker over the sessions (see cli.lua), for `mux` with no name run
 -- inside a session. ▶ marks this window's session and ● the other running ones.
 -- Returns "" so it can be called with --remote-expr.
 function M.pick()
   local items = {}
-  for name, def in pairs(cli.defs()) do
+  for name, def in pairs(cli.sessions()) do
     local mark = name == vim.g.session_name and "▶" or cli.alive(cli.sock(name)) and "●" or " "
     table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path) })
   end
@@ -358,7 +358,7 @@ _G.mux_clock:start(30000, 30000, vim.schedule_wrap(function() vim.cmd.redrawstat
 
 vim.api.nvim_create_user_command("Session", function(opts) M.start(opts.args) end, {
   nargs = 1,
-  complete = function() return vim.tbl_keys(cli.defs()) end,
+  complete = function() return vim.tbl_keys(cli.sessions()) end,
   desc = "Start a named session",
 })
 

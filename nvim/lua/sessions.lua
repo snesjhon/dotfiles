@@ -1,6 +1,10 @@
+-- Sessions for mux (plugins/mux): name -> { path, tabs }. A session with
+-- `worktrees` also gets one session per git worktree of its repo, which is
+-- where wt (plugins/wt) creates them.
 local sessions = {
   dev = {
     path = "~/Developer",
+    default = true, -- what plain `mux` attaches to before any other session
     tabs = {
       { "dots", path = "~/Developer/dotfiles" },
       { "me", path = "~/Developer/me" },
@@ -8,10 +12,9 @@ local sessions = {
   },
 }
 
--- dofile, not require: `mux` loads this file under `nvim --clean`, where this
--- directory isn't on package.path.
+-- Machine-specific sessions, from the gitignored sessions.local.lua next to this file.
 local dir = debug.getinfo(1, "S").source:sub(2):match("^(.*)/[^/]*$")
-local ok, extra = pcall(dofile, dir .. "/defs.local.lua")
+local ok, extra = pcall(dofile, dir .. "/sessions.local.lua")
 if ok then sessions = vim.tbl_extend("force", sessions, extra) end
 
 local trees = {}
