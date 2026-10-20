@@ -270,7 +270,7 @@ local function first_buf()
 end
 
 -- Types text and Enter into the terminal of this session's first tab, for
--- `mux ticket`, `mux revise`, and `mux test`, which start commands in a session
+-- `wt ticket`, `wt revise`, and `wt test`, which start commands in a session
 -- no window shows. Waits for the prompt so the shell doesn't get the text while
 -- still starting. Enter goes separately because claude reads a fast burst as a
 -- paste, where Enter adds a newline instead of submitting. Returns the error, or
@@ -288,14 +288,14 @@ function M.send(text)
   return ""
 end
 
--- What runs in this session's first tab, for `mux revise` and `mux test`:
+-- What runs in this session's first tab, for `wt revise` and `wt test`:
 -- "claude" when claude is among the foreground processes, else the first of them.
 function M.first_fg()
   local comms = fg_comms(first_buf())
   return vim.tbl_contains(comms, "claude") and "claude" or (comms[1] or "")
 end
 
--- Ptys of this session's terminals, one per line, for `mux kill`.
+-- Ptys of this session's terminals, one per line, for `mux kill` and `wt rm`.
 function M.ptys()
   local ptys = {}
   for _, chan in ipairs(vim.api.nvim_list_chans()) do

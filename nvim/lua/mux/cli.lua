@@ -228,6 +228,22 @@ local function show(name)
   vim.system({ "osascript", "-", name }, { stdin = new_window }):wait()
 end
 
+-- Shows session `name`: inside a session, switches this window; from a
+-- hotkey, the open window; otherwise attaches this terminal.
+function M.open(name)
+  local current = M.current()
+  if current then
+    local ok, err = M.switch(current, name)
+    if not ok then M.fail("mux: " .. err) end
+    return
+  end
+  if vim.uv.guess_handle(0) ~= "tty" then return show(name) end
+  local ok, err = M.ensure(name)
+  if not ok then M.fail("mux: " .. err) end
+  M.remember(name)
+  M.emit("attach", M.sock(name))
+end
+
 -- Re-runs the nvim config in every running session (see reload in init.lua).
 local function restart()
   local n = 0
@@ -286,17 +302,7 @@ local function main(args)
     if not M.defs()[name] then name = "dev" end
   end
   if not M.defs()[name] then M.fail("mux: no session named " .. name) end
-
-  if current then
-    local ok, err = M.switch(current, name)
-    if not ok then M.fail("mux: " .. err) end
-    return
-  end
-  if vim.uv.guess_handle(0) ~= "tty" then return show(name) end
-  local ok, err = M.ensure(name)
-  if not ok then M.fail("mux: " .. err) end
-  M.remember(name)
-  M.emit("attach", M.sock(name))
+  M.open(name)
 end
 
 -- Required as a module, `...` is the module name; run with `nvim -l`, it is empty.
