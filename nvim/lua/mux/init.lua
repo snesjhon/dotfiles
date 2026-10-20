@@ -236,12 +236,46 @@ function M.switch(name)
   return ""
 end
 
+-- The session folder's branch, how far it is from its PR base, uncommitted
+-- changes, and /wt plan status, for the picker preview. Only local git calls, so
+-- it shows quickly.
+local function preview_lines(dir)
+  local function run(cmd, env)
+    local r = vim.system(cmd, { cwd = dir, text = true, env = env }):wait()
+    return r.code == 0 and vim.trim(r.stdout) or nil
+  end
+  if not vim.uv.fs_stat(dir) then return { "Folder not found: " .. dir } end
+  local lines = { vim.fn.fnamemodify(dir, ":~") }
+  if not run({ "git", "rev-parse", "--git-dir" }) then return lines end
+
+  local line = run({ "git", "symbolic-ref", "--short", "-q", "HEAD" })
+    or ("detached at " .. (run({ "git", "rev-parse", "--short", "HEAD" }) or "?"))
+  -- Skip gh: a network call would hold up the preview.
+  local script = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "scripts", "git-pr-base.sh")
+  local base = run({ script }, { GIT_PR_BASE_SKIP_GH = "1" })
+  if base and base ~= "" then
+    local behind, ahead = (run({ "git", "rev-list", "--left-right", "--count", base .. "...HEAD" }) or ""):match("(%d+)%s+(%d+)")
+    line = ("%s  ↑%s ↓%s %s"):format(line, ahead or "?", behind or "?", base)
+  end
+  table.insert(lines, line)
+
+  -- -uno: scanning for untracked files is most of git status's time in a large repo.
+  local changed = run({ "git", "status", "--short", "-uno" }) or ""
+  line = (changed == "" and 0 or #vim.split(changed, "\n")) .. " changed"
+  local plan = io.open(vim.fs.joinpath(dir, ".ticket", "plan.md"))
+  if plan then
+    local status = ("\n" .. plan:read("*a")):match("\nStatus: ([^\n]+)") or ""
+    plan:close()
+    if status ~= "" then line = line .. " · plan: " .. status end
+  end
+  table.insert(lines, line)
+  return lines
+end
+
 -- Snacks picker over the sessions in mux/defs.lua, for `mux` with no name run
 -- inside a session. ▶ marks this window's session and ● the other running ones.
--- The preview shows the folder's git state. Returns "" so it can be
--- called with --remote-expr.
+-- Returns "" so it can be called with --remote-expr.
 function M.pick()
-  local script = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "scripts", "mux-preview.sh")
   local items = {}
   for name, def in pairs(defs()) do
     local mark = name == vim.g.session_name and "▶" or alive(sock_path(name)) and "●" or " "
@@ -252,7 +286,10 @@ function M.pick()
     title = "Sessions",
     items = items,
     format = function(item) return { { item.mark .. " ", "Special" }, { item.text } } end,
-    preview = function(ctx) return require("snacks").picker.preview.cmd({ script, ctx.item.dir }, ctx) end,
+    preview = function(ctx)
+      ctx.preview:reset()
+      ctx.preview:set_lines(preview_lines(ctx.item.dir))
+    end,
     layout = { preset = "select", preview = true },
     -- Runs from the Enter keypress, so :connect has the UI to move.
     confirm = function(picker, item)
