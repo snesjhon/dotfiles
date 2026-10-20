@@ -11,9 +11,10 @@
 --   path       the session's folder
 --   tabs       one shell per tab: "name", or { "name", path = <folder> }
 --   default    true for what plain `mux` attaches to before any other session
+--   status     a function(folder) returning a short text for the picker preview
 --   worktrees  a folder: also adds one session per git worktree of the repo at
 --              path (wt creates them there), named after the worktree's folder,
---              with the same tabs and `parent` set to this session
+--              with the same tabs and status, and `parent` set to this session
 -- Messages go to stderr.
 local M = {}
 
@@ -36,7 +37,7 @@ function M.sessions()
         -- The first entry is the repo itself, which is already this session.
         -- A worktree whose folder was deleted by hand stays listed until pruned.
         if not first and vim.uv.fs_stat(path) then
-          trees[vim.fs.basename(path)] = { path = path, tabs = s.tabs, parent = parent }
+          trees[vim.fs.basename(path)] = { path = path, tabs = s.tabs, status = s.status, parent = parent }
         end
         first = false
       end

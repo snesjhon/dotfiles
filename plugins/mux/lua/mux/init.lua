@@ -200,12 +200,12 @@ function M.switch(name)
   return ""
 end
 
--- The session folder's branch, how far it is from its PR base, uncommitted
--- changes, and /wt plan status, for the picker preview. Only local git calls, so
--- it shows quickly.
-local function preview_lines(dir)
-  local function run(cmd, env)
-    local r = vim.system(cmd, { cwd = dir, text = true, env = env }):wait()
+-- The session folder's branch, how far it is from the default branch, uncommitted
+-- changes, and the session's own status (see cli.lua), for the picker preview.
+-- Only local git calls, so it shows quickly.
+local function preview_lines(dir, session)
+  local function run(cmd)
+    local r = vim.system(cmd, { cwd = dir, text = true }):wait()
     return r.code == 0 and vim.trim(r.stdout) or nil
   end
   if not vim.uv.fs_stat(dir) then return { "Folder not found: " .. dir } end
@@ -214,9 +214,9 @@ local function preview_lines(dir)
 
   local line = run({ "git", "symbolic-ref", "--short", "-q", "HEAD" })
     or ("detached at " .. (run({ "git", "rev-parse", "--short", "HEAD" }) or "?"))
-  -- Skip gh: a network call would hold up the preview.
-  local script = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "scripts", "git-pr-base.sh")
-  local base = run({ script }, { GIT_PR_BASE_SKIP_GH = "1" })
+  -- In a fork setup upstream is the source repo; origin is the fork.
+  local remote = run({ "git", "remote", "get-url", "upstream" }) and "upstream" or "origin"
+  local base = run({ "git", "rev-parse", "--abbrev-ref", remote .. "/HEAD" })
   if base and base ~= "" then
     local behind, ahead = (run({ "git", "rev-list", "--left-right", "--count", base .. "...HEAD" }) or ""):match("(%d+)%s+(%d+)")
     line = ("%s  ↑%s ↓%s %s"):format(line, ahead or "?", behind or "?", base)
@@ -226,12 +226,8 @@ local function preview_lines(dir)
   -- -uno: scanning for untracked files is most of git status's time in a large repo.
   local changed = run({ "git", "status", "--short", "-uno" }) or ""
   line = (changed == "" and 0 or #vim.split(changed, "\n")) .. " changed"
-  local plan = io.open(vim.fs.joinpath(dir, ".ticket", "plan.md"))
-  if plan then
-    local status = ("\n" .. plan:read("*a")):match("\nStatus: ([^\n]+)") or ""
-    plan:close()
-    if status ~= "" then line = line .. " · plan: " .. status end
-  end
+  local ok, status = pcall(session.status or function() end, dir)
+  if ok and status and status ~= "" then line = line .. " · " .. status end
   table.insert(lines, line)
   return lines
 end
@@ -243,7 +239,7 @@ function M.pick()
   local items = {}
   for name, def in pairs(cli.sessions()) do
     local mark = name == vim.g.session_name and "▶" or cli.alive(cli.sock(name)) and "●" or " "
-    table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path) })
+    table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path), session = def })
   end
   table.sort(items, function(a, b) return a.text < b.text end)
   require("snacks").picker({
@@ -252,7 +248,7 @@ function M.pick()
     format = function(item) return { { item.mark .. " ", "Special" }, { item.text } } end,
     preview = function(ctx)
       ctx.preview:reset()
-      ctx.preview:set_lines(preview_lines(ctx.item.dir))
+      ctx.preview:set_lines(preview_lines(ctx.item.dir, ctx.item.session))
     end,
     layout = { preset = "select", preview = true },
     -- Runs from the Enter keypress, so :connect has the UI to move.
