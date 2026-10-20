@@ -232,9 +232,10 @@ local function preview_lines(dir, session)
   return lines
 end
 
--- Snacks picker over the sessions (see cli.lua), for `mux` with no name run
--- inside a session. ▶ marks this window's session and ● the other running ones.
--- Returns "" so it can be called with --remote-expr.
+-- Picker over the sessions (see cli.lua), for `mux` with no name run inside a
+-- session. ▶ marks this window's session and ● the other running ones. Uses
+-- snacks when it is installed, for the preview, else vim.ui.select. Returns ""
+-- so it can be called with --remote-expr.
 function M.pick()
   local items = {}
   for name, def in pairs(cli.sessions()) do
@@ -242,7 +243,17 @@ function M.pick()
     table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path), session = def })
   end
   table.sort(items, function(a, b) return a.text < b.text end)
-  require("snacks").picker({
+  local has_snacks, snacks = pcall(require, "snacks")
+  if not has_snacks then
+    vim.ui.select(items, {
+      prompt = "Sessions",
+      format_item = function(item) return item.mark .. " " .. item.text end,
+    }, function(item)
+      if item then M.switch(item.text) end
+    end)
+    return ""
+  end
+  snacks.picker({
     title = "Sessions",
     items = items,
     format = function(item) return { { item.mark .. " ", "Special" }, { item.text } } end,
