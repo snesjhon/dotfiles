@@ -4,6 +4,16 @@ if not vim.g.mux then return M end
 
 local cli = require("mux.cli")
 
+-- Shells fill their window: no gutter, no cursorline.
+local function terminal_look(win)
+  vim.wo[win].number = false
+  vim.wo[win].signcolumn = "no"
+  vim.wo[win].cursorline = false
+  -- With the global nowrap, a line wider than the window lets the view scroll sideways.
+  -- [0] is :setlocal, so a file opened later in this window keeps nowrap.
+  vim.wo[win][0].wrap = true
+end
+
 local function open_shell()
   vim.cmd.terminal()
   vim.bo.buflisted = false
@@ -344,6 +354,11 @@ function M.reload()
     vim.notify("Config reload failed: " .. err, vim.log.levels.ERROR)
     return err
   end
+  -- options.lua sets number/signcolumn/cursorline with vim.opt, which also
+  -- changes the current window, so a shell there would get a gutter back.
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].buftype == "terminal" then terminal_look(win) end
+  end
   return ""
 end
 
@@ -384,12 +399,7 @@ local group = vim.api.nvim_create_augroup("mux", { clear = true })
 vim.api.nvim_create_autocmd("TermOpen", {
   group = group,
   callback = function()
-    vim.wo.number = false
-    vim.wo.signcolumn = "no"
-    vim.wo.cursorline = false
-    -- With the global nowrap, a line wider than the window lets the view scroll sideways.
-    -- [0][0] is :setlocal, so a file opened later in this window keeps nowrap.
-    vim.wo[0][0].wrap = true
+    terminal_look(0)
     vim.cmd.startinsert()
   end,
 })
