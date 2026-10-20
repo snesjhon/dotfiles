@@ -1,15 +1,8 @@
--- The wt command: git worktrees, each shown as its own mux session (see
--- sessions.lua), and the /wt skill run in them. zsh/functions/mux.zsh runs it
--- with `nvim -l` and runs the step it prints (cd, or open a file in nvim).
-
--- mux's Lua, found through the mux command on PATH.
-local mux_bin = vim.uv.fs_realpath(vim.fn.exepath("mux"))
-if not mux_bin then
-  io.stderr:write("wt: needs mux on PATH\n")
-  os.exit(1)
-end
-vim.opt.rtp:prepend(vim.fs.dirname(vim.fs.dirname(mux_bin)))
+-- The wt command (bin/wt): git worktrees, each shown as its own mux session,
+-- and the /wt skill run in them. Uses mux's Lua (mux.cli) to start sessions and
+-- type into them; the mux session list says which repos get worktrees.
 local mux = require("mux.cli")
+local M = {}
 
 local usage = [[
 wt new <branch> [base]       create a worktree and switch to its session
@@ -53,7 +46,7 @@ local function plan_status(dir)
 end
 
 -- The repo this shell is in, or the only repo with a worktree folder in
--- the sessions when the shell is in none, and that worktree folder.
+-- the mux sessions when the shell is in none, and that worktree folder.
 local function repo()
   local dirs = {} -- repo folder -> its worktree folder
   for _, def in pairs(mux.sessions()) do
@@ -64,7 +57,7 @@ local function repo()
   if here and dirs[here] then return here, dirs[here] end
   local repos = vim.tbl_keys(dirs)
   if #repos ~= 1 then
-    fail("run inside a repo with worktrees set in sessions.lua: " .. table.concat(repos, ", "))
+    fail("run inside a repo with worktrees set in the mux sessions: " .. table.concat(repos, ", "))
   end
   return repos[1], dirs[repos[1]]
 end
@@ -228,7 +221,7 @@ local function plan(name)
   end
   local file = vim.fs.joinpath(dir, ".ticket", "plan.md")
   if not vim.uv.fs_stat(file) then fail("no plan in " .. dir) end
-  mux.emit("edit", file)
+  mux.exec({ vim.v.progpath, file })
 end
 
 -- Runs /wt <sub> in worktree session `name` (default: this window's), where sub
@@ -301,12 +294,13 @@ local function rm(name)
     if not ok then fail(err) end
     vim.wait(10000, function() return (mux.call(sock, "return #vim.api.nvim_list_uis()") or 0) == 0 end, 50)
   end
-  if cwd == dir or vim.startswith(cwd, dir .. "/") then mux.emit("cd", root) end
+  -- A command can't change its shell's folder, so say where to go.
+  if cwd == dir or vim.startswith(cwd, dir .. "/") then say("this shell's folder is gone; cd " .. root) end
   -- Run inside that session, this ends the calling shell.
   mux.quit_one(sock)
 end
 
-local function main(args)
+function M.main(args)
   local cmd = table.remove(args, 1)
   if cmd == "new" then return new(args[1], args[2]) end
   if cmd == "ticket" then return ticket(args) end
@@ -326,4 +320,4 @@ local function main(args)
   mux.fail(cmd and "wt: unknown command " .. cmd .. "\n" .. usage or usage)
 end
 
-main(vim.list_slice(_G.arg, 1))
+return M

@@ -1,0 +1,11 @@
+#!/usr/bin/env -S nvim -l
+-- `wt --help` lists the commands (see lua/wt/init.lua). Link this file onto
+-- PATH; it finds its Lua through the link, and mux's through the mux command.
+local function root(bin) return vim.fs.dirname(vim.fs.dirname(vim.uv.fs_realpath(bin))) end
+if vim.fn.exepath("mux") == "" then
+  io.stderr:write("wt: needs mux on PATH\n")
+  os.exit(1)
+end
+vim.opt.rtp:prepend(root(vim.fn.exepath("mux")))
+vim.opt.rtp:prepend(root(_G.arg[0]))
+require("wt").main(vim.list_slice(_G.arg, 1))

@@ -188,9 +188,6 @@ function M.fail(msg)
   os.exit(1)
 end
 
--- Writes a step for the zsh wrapper that runs wt: "cd\t<folder>" or "edit\t<file>".
-function M.emit(step, arg) io.stdout:write(step, "\t", arg, "\n") end
-
 -- Hands this terminal to `cmd` until it exits, then exits with its code.
 function M.exec(cmd)
   local code
