@@ -331,6 +331,10 @@ function M.reload()
       package.loaded[mod] = nil
     end
   end
+  -- mux's own modules live outside the config, so drop them too.
+  for mod in pairs(package.loaded) do
+    if mod == "mux" or vim.startswith(mod, "mux.") then package.loaded[mod] = nil end
+  end
 
   -- snacks refuses a second setup() and shows an error unless this is reset.
   if package.loaded.snacks then package.loaded.snacks.did_setup = false end
