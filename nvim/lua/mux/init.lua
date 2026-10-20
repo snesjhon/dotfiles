@@ -241,6 +241,33 @@ function M.switch_wanted()
   if name ~= "" then M.switch(name) end
 end
 
+-- Snacks picker over the sessions in mux/defs.lua, for `mux` with no name run
+-- inside a session. ▶ marks this window's session and ● the other running ones.
+-- The preview is the same script the fzf picker uses. Returns "" so it can be
+-- called with --remote-expr.
+function M.pick()
+  local script = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "scripts", "mux-preview.sh")
+  local items = {}
+  for name, def in pairs(defs()) do
+    local mark = name == vim.g.session_name and "▶" or alive(sock_path(name)) and "●" or " "
+    table.insert(items, { text = name, mark = mark, dir = vim.fn.expand(def.path) })
+  end
+  table.sort(items, function(a, b) return a.text < b.text end)
+  require("snacks").picker({
+    title = "Sessions",
+    items = items,
+    format = function(item) return { { item.mark .. " ", "Special" }, { item.text } } end,
+    preview = function(ctx) return require("snacks").picker.preview.cmd({ script, ctx.item.dir }, ctx) end,
+    layout = { preset = "select", preview = true },
+    -- Runs from the Enter keypress, so :connect has the UI to move.
+    confirm = function(picker, item)
+      picker:close()
+      if item then M.switch(item.text) end
+    end,
+  })
+  return ""
+end
+
 local function first_buf()
   local tab = vim.api.nvim_list_tabpages()[1]
   return vim.api.nvim_win_get_buf(vim.api.nvim_tabpage_list_wins(tab)[1])

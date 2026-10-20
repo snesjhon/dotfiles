@@ -426,6 +426,11 @@ mux() {
   [[ $1 == kill ]] && { _mux_kill; return }
   [[ $1 == restart ]] && { _mux_restart; return }
   local name=$1
+  # Inside a session, the picker opens in the session's own nvim, which then does the switch.
+  if [[ -z $name && $NVIM == $_mux_dir/*.sock ]]; then
+    command nvim --headless --server $NVIM --remote-expr "v:lua.require'mux'.pick()" </dev/null >/dev/null
+    return
+  fi
   [[ -z $name ]] && name=$(_mux_pick)
   [[ -z $name ]] && return
   if [[ -n $NVIM ]]; then
