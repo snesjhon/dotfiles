@@ -43,24 +43,3 @@ end
 
 vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
 vim.keymap.set({ "n", "t" }, "<C-S-y>", chooser, { desc = "Open yazi" })
-
-local function toggle_terminal() require("snacks").terminal.toggle(nil, {
-  win = {
-    position = "right",
-    wo = {
-      wrap = true,
-      sidescrolloff = 0
-    },
-    keys = {
-      ["<ScrollWheelLeft>"] = { "<Nop>", mode = { "n", "t" } },
-      ["<ScrollWheelRight>"] = { "<Nop>", mode = { "n", "t" } },
-      -- The mux forwards a single <C-\> to a nested nvim. Treat it as copy mode
-      -- here; the default <C-\><C-n> still works too.
-      ["<C-\\>"] = { function() vim.cmd.stopinsert() end, mode = "t" },
-    },
-  }
-}) end
-
-vim.keymap.set({ "n", "t" }, "<C-S-o>", toggle_terminal, { desc = "Toggle terminal" })
-
-

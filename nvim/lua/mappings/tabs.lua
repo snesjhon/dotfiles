@@ -3,7 +3,7 @@ local mux = require("mux")
 
 -- The outer nvim owns only these keys; everything else in a terminal must reach
 -- the shell or the nvim nested in it. So drop every global terminal-mode map
--- the rest of the config set (C-hjkl, <C-S-o>, <C-S-y>, ...).
+-- the rest of the config set (C-hjkl, <C-S-y>, ...).
 for _, map in ipairs(vim.api.nvim_get_keymap("t")) do
   vim.keymap.del("t", map.lhs)
 end
@@ -26,16 +26,8 @@ vim.keymap.set("t", "<C-\\>", function()
   end
 end, { desc = "Copy mode / pass to nested nvim" })
 
--- A nested nvim toggles its own terminal; otherwise the tab's sidebar shell.
--- The key is resent as CSI-u because the plain Ctrl encoding drops Shift
--- (<C-S-o> would arrive as <C-o>).
-vim.keymap.set({ "n", "t" }, "<C-S-o>", function()
-  if mux.fg_is_nvim() then
-    vim.api.nvim_chan_send(vim.bo.channel, "\27[111;6u")
-  else
-    mux.toggle_sidebar()
-  end
-end, { desc = "Toggle terminal" })
+-- The tab's sidebar shell, also over a nested nvim, so there is one terminal toggle.
+vim.keymap.set({ "n", "t" }, "<C-S-o>", mux.toggle_sidebar, { desc = "Toggle terminal" })
 
 -- C-hjkl move between panes. A nested nvim gets the key to move between its
 -- own splits; a shell gets it only when there's no pane that way, so C-l still
