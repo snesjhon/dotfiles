@@ -1,4 +1,4 @@
--- Sessions for mux (plugins/mux): name -> { path, tabs }. A session with
+-- Sessions for mux (plugins/mux), read from ~/.config/mux: name -> { path, tabs }. A session with
 -- `worktrees` also gets one session per git worktree of its repo, which is
 -- where wt (plugins/wt) creates them.
 local sessions = {

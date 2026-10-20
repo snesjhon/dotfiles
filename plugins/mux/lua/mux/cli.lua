@@ -6,8 +6,8 @@
 -- window is just a UI attached to one of them, so `:connect` moves the window to
 -- another session and closing the window leaves the session running.
 --
--- Sessions come from a `sessions` Lua module on the runtimepath (for example
--- ~/.config/nvim/lua/sessions.lua), returning name -> { path, tabs, ... }.
+-- Sessions come from $XDG_CONFIG_HOME/mux/sessions.lua (default
+-- ~/.config/mux/sessions.lua), a Lua file returning name -> { path, tabs, ... }.
 -- Messages go to stderr.
 local M = {}
 
@@ -15,10 +15,12 @@ function M.dir() return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp
 
 function M.sock(name) return vim.fs.joinpath(M.dir(), name .. ".sock") end
 
--- Loaded fresh each time: sessions can come and go while a server runs.
+-- Read fresh each time: sessions can come and go while a server runs.
 function M.sessions()
-  package.loaded["sessions"] = nil
-  return require("sessions")
+  local home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(vim.env.HOME, ".config")
+  local file = vim.fs.joinpath(home, "mux", "sessions.lua")
+  if not vim.uv.fs_stat(file) then return {} end
+  return dofile(file)
 end
 
 -- Socket files of every session started so far, running or not.
