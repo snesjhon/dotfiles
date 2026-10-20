@@ -8,7 +8,7 @@ _resolve_theme() {
   fi
 }
 
-# fzf's own UI colors (no auto:system equivalent like bat), re-resolved by fzf-pickers.zsh on every invocation so an already-open shell doesn't go stale when macOS's appearance changes.
+# fzf's own UI colors (no auto:system equivalent like bat), callers re-resolve it on every run so an already-open shell doesn't go stale when macOS's appearance changes.
 _fzf_theme_opts() {
   if [[ "$(_resolve_theme)" == dark ]]; then
     echo "--color=bg:#28262B,fg:#FFFFFF,hl:#7FB6ED,fg+:#FFFFFF,bg+:#312F35,hl+:#7FB6ED,info:#8B7AA0,prompt:#F57F6C,pointer:#F57F6C,marker:#52B87A,spinner:#52B87A,header:#8B7AA0,border:#5D5277,gutter:#28262B --layout=reverse --info=inline-right --border=rounded"

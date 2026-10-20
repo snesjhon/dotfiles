@@ -57,7 +57,7 @@ local function launcher(lhs, nvim_keys, shell_cmd, desc)
   vim.keymap.set("t", lhs, function() mux.launch(nvim_keys, shell_cmd) end, { desc = desc })
 end
 launcher("<C-S-y>", "\27[121;6u", "y", "Yazi") -- <C-S-y> as CSI-u
-launcher("<C-S-u>", "\27:Files\r", "ff", "Find files")
-launcher("<C-S-i>", "\27:RG\r", "fw", "Grep")
+launcher("<C-S-u>", "\27:Files\r", "nvim +Files", "Find files")
+launcher("<C-S-i>", "\27:RG\r", "nvim +RG", "Grep")
 launcher("<C-S-n>", "\27:LazyGit\r", "gg", "LazyGit")
 launcher("<C-M-S-s>", "", "mux", "Switch session")

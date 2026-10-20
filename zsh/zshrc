@@ -1,6 +1,9 @@
 export EDITOR=nvim
 export VISUAL=nvim
 
+# Base-branch resolution shared by nvim's :Review and the gitsigns PR-base toggle, so they treat "the PR" identically.
+export GIT_PR_BASE_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/git-pr-base.sh"
+
 HISTFILE=$HOME/.zhistory
 SAVEHIST=100
 HISTSIZE=100
