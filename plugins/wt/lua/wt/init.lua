@@ -1,6 +1,9 @@
 -- The wt command (bin/wt): git worktrees, each shown as its own mux session,
 -- and the /wt skill run in them. Uses mux's Lua (mux.cli) to start sessions and
--- type into them; the mux session list says which repos get worktrees.
+-- type into them; a mux session with `worktrees` set says where they go. Notes
+-- and plans live in each worktree's .ticket folder, kept out of git.
+--
+-- Needs mux on PATH, git, the claude CLI with the /wt skill, and gh for wt adopt.
 local mux = require("mux.cli")
 local M = {}
 

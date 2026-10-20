@@ -16,6 +16,9 @@
 --              path (wt creates them there), named after the worktree's folder,
 --              with the same tabs and status, and `parent` set to this session
 -- Messages go to stderr.
+--
+-- Needs nvim 0.12 or later. Opening a session window from a hotkey needs macOS
+-- and Ghostty. The session picker uses snacks.nvim when it is installed.
 local M = {}
 
 function M.dir() return vim.fs.joinpath(vim.fs.normalize(vim.env.TMPDIR or "/tmp"), "mux-sessions") end
