@@ -7,7 +7,13 @@
 -- another session and closing the window leaves the session running.
 --
 -- Sessions come from $XDG_CONFIG_HOME/mux/sessions.lua (default
--- ~/.config/mux/sessions.lua), a Lua file returning name -> { path, tabs, ... }.
+-- ~/.config/mux/sessions.lua), a Lua file returning name -> session:
+--   path       the session's folder
+--   tabs       one shell per tab: "name", or { "name", path = <folder> }
+--   default    true for what plain `mux` attaches to before any other session
+--   worktrees  a folder: also adds one session per git worktree of the repo at
+--              path (wt creates them there), named after the worktree's folder,
+--              with the same tabs and `parent` set to this session
 -- Messages go to stderr.
 local M = {}
 
@@ -20,7 +26,23 @@ function M.sessions()
   local home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(vim.env.HOME, ".config")
   local file = vim.fs.joinpath(home, "mux", "sessions.lua")
   if not vim.uv.fs_stat(file) then return {} end
-  return dofile(file)
+  local sessions = dofile(file)
+  local trees = {}
+  for parent, s in pairs(sessions) do
+    if s.worktrees then
+      local out = vim.system({ "git", "-C", vim.fn.expand(s.path), "worktree", "list", "--porcelain" }):wait().stdout
+      local first = true
+      for path in (out or ""):gmatch("worktree ([^\n]+)") do
+        -- The first entry is the repo itself, which is already this session.
+        -- A worktree whose folder was deleted by hand stays listed until pruned.
+        if not first and vim.uv.fs_stat(path) then
+          trees[vim.fs.basename(path)] = { path = path, tabs = s.tabs, parent = parent }
+        end
+        first = false
+      end
+    end
+  end
+  return vim.tbl_extend("keep", sessions, trees)
 end
 
 -- Socket files of every session started so far, running or not.
