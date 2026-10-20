@@ -204,16 +204,17 @@ local function alive(sock)
   return true
 end
 
--- Moves this window to session `name`, starting it first if needed. Must run
--- from the UI's own input (a keymap); :connect from an RPC call or autocmd has
--- no UI to move.
+-- Moves this window to session `name`, starting it first if needed. :connect
+-- moves the window that last attached to or focused this server, so a shell
+-- can call this too (`mux <name>`, hotkeys). Returns the error, or "" when it
+-- worked.
 function M.switch(name)
   local sock = sock_path(name)
-  if vim.fs.normalize(vim.v.servername) == sock then return end
+  if vim.fs.normalize(vim.v.servername) == sock then return "" end
   if not alive(sock) then
     if not defs()[name] then
       vim.notify("No session named " .. name, vim.log.levels.ERROR)
-      return
+      return "no session named " .. name
     end
     vim.fn.mkdir(sock_dir(), "p")
     vim.fn.jobstart(
@@ -222,7 +223,7 @@ function M.switch(name)
     )
     if not vim.wait(5000, function() return alive(sock) end, 50) then
       vim.notify("Session " .. name .. " did not start", vim.log.levels.ERROR)
-      return
+      return "session " .. name .. " did not start"
     end
   end
   -- Plain `mux` outside a session attaches to this one next.
@@ -232,6 +233,7 @@ function M.switch(name)
     f:close()
   end
   vim.cmd({ cmd = "connect", args = { sock } })
+  return ""
 end
 
 -- mux.sh (window-manager hotkeys, and `mux <name>` inside a session)

@@ -54,6 +54,18 @@ _mux_ensure() {
   return 1
 }
 
+# Moves the window showing the session on socket <sock> to session <name>
+# (see switch in nvim/lua/mux).
+_mux_switch() {
+  setopt local_options extended_glob
+  local sock=$1 name=$2 err
+  # The name goes into a quoted nvim expression, so it must be plain.
+  [[ $name == [A-Za-z0-9._-]## ]] || { print -u2 "mux: session name $name has characters mux can't pass on"; return 1 }
+  err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.switch('$name')" </dev/null 2>&1)
+  [[ -n $err ]] && { print -u2 "mux: $err"; return 1 }
+  return 0
+}
+
 # Re-run the nvim config in every running session (see reload in nvim/lua/mux).
 _mux_restart() {
   local sock err n=0
@@ -168,7 +180,7 @@ _mux_rm() {
   if [[ $NVIM == $sock ]]; then
     # Quitting the server a window is attached to closes the window, so move it
     # to the repo's session and wait until no window is left on this one.
-    "${ZSH_CONFIG_DIR:h}/scripts/mux.sh" $parent
+    _mux_switch $sock $parent || return 1
     for i in {1..200}; do
       [[ $(command nvim --headless --server $sock --remote-expr 'len(nvim_list_uis())' </dev/null 2>/dev/null) == 0 ]] && break
       sleep 0.05
@@ -420,10 +432,8 @@ mux() {
     name=$(<$_mux_dir/last) 2>/dev/null
     (( ${${(f)"$(_mux_names)"}[(Ie)$name]} )) || name=dev
   fi
-  if [[ -n $NVIM ]]; then
-    # Moving the window to another session has to run from the UI's own input,
-    # which a shell can't send. mux.sh presses a key that nvim maps to it.
-    "${ZSH_CONFIG_DIR:h}/scripts/mux.sh" $name
+  if [[ $NVIM == $_mux_dir/*.sock ]]; then
+    _mux_switch $NVIM $name
     return
   fi
   _mux_ensure $name || return 1
