@@ -30,7 +30,7 @@ dotfiles/
 ├── obsidian/      Vim keybindings and CSS for Obsidian
 ├── yazi/          Terminal file manager (GitLab themed)
 ├── bat/           Pager theme (follows macOS light/dark)
-└── scripts/       Helper scripts (PR base resolution, nvim session launcher and preview)
+└── scripts/       Helper scripts (PR base resolution, session picker preview)
 ```
 
 ## Architecture
