@@ -236,22 +236,9 @@ function M.switch(name)
   return ""
 end
 
--- mux.sh (window-manager hotkeys, and `mux <name>` inside a session)
--- leaves the wanted session name in a file and sends a key to the focused
--- window, so the switch runs from the UI's own input.
-function M.switch_wanted()
-  local file = vim.fs.joinpath(sock_dir(), "want")
-  local f = io.open(file)
-  if not f then return end
-  local name = vim.trim(f:read("*a"))
-  f:close()
-  os.remove(file)
-  if name ~= "" then M.switch(name) end
-end
-
 -- Snacks picker over the sessions in mux/defs.lua, for `mux` with no name run
 -- inside a session. ▶ marks this window's session and ● the other running ones.
--- The preview is the same script the fzf picker uses. Returns "" so it can be
+-- The preview shows the folder's git state. Returns "" so it can be
 -- called with --remote-expr.
 function M.pick()
   local script = vim.fs.joinpath(vim.fs.dirname(vim.fn.resolve(vim.fn.stdpath("config"))), "scripts", "mux-preview.sh")

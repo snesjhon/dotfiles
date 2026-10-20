@@ -4,6 +4,8 @@
 # switches that window to another session; with no argument it opens a picker
 # of the sessions in nvim/lua/mux/defs.lua. Outside one, no argument attaches to
 # the last session a window showed (dev the first time).
+# Run with no terminal (an aerospace hotkey), mux <name> moves the open
+# window to that session, or opens a Ghostty window on it.
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
@@ -64,6 +66,40 @@ _mux_switch() {
   err=$(command nvim --headless --server $sock --remote-expr "v:lua.require'mux'.switch('$name')" </dev/null 2>&1)
   [[ -n $err ]] && { print -u2 "mux: $err"; return 1 }
   return 0
+}
+
+# For hotkeys, which run mux with no terminal: moves the window showing a
+# session to <name>, or opens a new Ghostty window on it when none is open.
+_mux_show() {
+  local name=$1 sock
+  for sock in $_mux_dir/*.sock(N=); do
+    if [[ $(command nvim --headless --server $sock --remote-expr 'len(nvim_list_uis())' </dev/null 2>/dev/null) == <1-> ]]; then
+      _mux_switch $sock $name && open -a Ghostty
+      return
+    fi
+  done
+  # A cold-started Ghostty opens its own blank window. It is closed once the
+  # session window exists, so only one is left.
+  osascript - $name >/dev/null <<'APPLESCRIPT'
+on run argv
+  set wasRunning to application "Ghostty" is running
+  tell application "Ghostty"
+    activate
+    set blank to missing value
+    if not wasRunning then
+      repeat 50 times
+        if (count of windows) > 0 then exit repeat
+        delay 0.1
+      end repeat
+      if (count of windows) > 0 then set blank to window 1
+    end if
+    set cfg to new surface configuration
+    set command of cfg to "/bin/zsh -lic 'mux " & item 1 of argv & "'"
+    new window with configuration cfg
+    if blank is not missing value then close window blank
+  end tell
+end run
+APPLESCRIPT
 }
 
 # Re-run the nvim config in every running session (see reload in nvim/lua/mux).
@@ -436,6 +472,7 @@ mux() {
     _mux_switch $NVIM $name
     return
   fi
+  [[ -t 0 ]] || { _mux_show $name; return }
   _mux_ensure $name || return 1
   print -r -- $name > $_mux_dir/last
   command nvim --remote-ui --server $_mux_dir/$name.sock

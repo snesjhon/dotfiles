@@ -13,8 +13,6 @@ vim.keymap.set({ "n", "t" }, "<C-S-.>", "<cmd>tabnext<CR>", { desc = "Next tab" 
 vim.keymap.set({ "n", "t" }, "<C-M-S-n>", mux.new_tab, { desc = "New tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-q>", mux.close_tab, { desc = "Close tab" })
 vim.keymap.set({ "n", "t" }, "<C-M-S-v>", mux.vsplit, { desc = "Split with a new shell" })
--- Sent by scripts/mux.sh, not typed.
-vim.keymap.set({ "n", "t" }, "<C-M-S-F12>", mux.switch_wanted, { desc = "Switch to the session in the want file" })
 
 -- Smart C-\: a nested nvim gets the key; otherwise it
 -- drops into normal mode over the scrollback, i.e. copy mode.
