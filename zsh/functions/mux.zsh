@@ -1,7 +1,8 @@
 # mux [session] -- attach this terminal to an nvim session (see
 # nvim/lua/mux): every tab is a shell. Each session is a headless nvim
-# server, so it keeps running when the terminal closes. With no argument, pick a
-# session from nvim/lua/mux/defs.lua with fzf. Inside a session, mux switches that window to another session.
+# server, so it keeps running when the terminal closes. Inside a session, mux
+# switches that window to another session; with no argument it opens a picker
+# of the sessions in nvim/lua/mux/defs.lua.
 # mux restart -- reload the nvim config in every running session; shells keep running.
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
@@ -175,24 +176,6 @@ _mux_rm() {
   # Run inside that session, this ends this shell.
   _mux_quit $sock &>/dev/null
   return 0
-}
-
-# fzf list of the sessions in mux/defs.lua; ▶ marks the one this window is on
-# and ● the other running ones. The preview shows the folder's git state.
-_mux_pick() {
-  local name dir mark current=${NVIM:t:r}
-  _mux_sessions | sort | while IFS=$'\t' read -r name dir _; do
-    if [[ $name == $current ]]; then
-      mark=▶
-    elif [[ -S $_mux_dir/$name.sock ]] && _mux_alive $_mux_dir/$name.sock; then
-      mark=●
-    else
-      mark=' '
-    fi
-    print -r -- "$mark $name"$'\t'"$dir"
-  done | fzf --height 60% --border-label ' Sessions ' --border-label-pos 2 \
-    --delimiter $'\t' --with-nth 1 --preview "${ZSH_CONFIG_DIR:h}/scripts/mux-preview.sh {2}" \
-    | cut -f1 | awk '{print $NF}'
 }
 
 # Sets reply to the repo this shell is in, or the only repo with a worktree
@@ -431,8 +414,7 @@ mux() {
     command nvim --headless --server $NVIM --remote-expr "v:lua.require'mux'.pick()" </dev/null >/dev/null
     return
   fi
-  [[ -z $name ]] && name=$(_mux_pick)
-  [[ -z $name ]] && return
+  [[ -z $name ]] && { print -u2 "usage: mux <session>, or mux alone inside a session"; return 1 }
   if [[ -n $NVIM ]]; then
     # Moving the window to another session has to run from the UI's own input,
     # which a shell can't send. mux.sh presses a key that nvim maps to it.
