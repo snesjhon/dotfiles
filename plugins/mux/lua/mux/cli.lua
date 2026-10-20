@@ -238,7 +238,7 @@ on run argv
       if (count of windows) > 0 then set blank to window 1
     end if
     set cfg to new surface configuration
-    set command of cfg to "/bin/zsh -lic 'mux " & item 1 of argv & "'"
+    set command of cfg to item 2 of argv & " -l -i -c 'mux " & item 1 of argv & "'"
     new window with configuration cfg
     if blank is not missing value then close window blank
   end tell
@@ -256,7 +256,8 @@ local function show(name)
       return
     end
   end
-  vim.system({ "osascript", "-", name }, { stdin = new_window }):wait()
+  -- A login, interactive shell, so mux is on PATH the way it is in a terminal.
+  vim.system({ "osascript", "-", name, vim.env.SHELL or "/bin/zsh" }, { stdin = new_window }):wait()
 end
 
 -- Shows session `name`: inside a session, switches this window; from a
