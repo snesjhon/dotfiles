@@ -6,6 +6,7 @@
 # mux kill -- stop every process in the sessions' shells, then quit the sessions.
 # mux new <branch> [base] -- create a worktree and switch to its session (see _mux_new).
 # mux ticket <id or URL> [-n name | -b branch] [instructions...] -- create a worktree and run /ticket in its session (see _mux_ticket).
+# mux adopt <PR URL> [instructions...] -- create a worktree for one of your open PRs and run /ticket adopt in its session (see _mux_adopt).
 # mux plan [name] -- open a /ticket plan in nvim (see _mux_plan).
 # mux revise [name] -- run /ticket revise in a session once its draft PR is reviewed (see _mux_ticket_run).
 # mux respond [name] [PR URL] -- run /ticket respond in a session to triage a teammate's PR review (see _mux_ticket_run).
@@ -194,13 +195,10 @@ _mux_pick() {
     | cut -f1 | awk '{print $NF}'
 }
 
-# Creates a worktree for <branch> in the worktree folder of the repo this shell
-# is in, or of the only repo with one when the shell is in none. An existing
-# branch (local or on origin) is checked out; a new one starts from [base] on
-# upstream (or origin when there is no upstream), by default that remote's
-# default branch. Sets REPLY to the new session's name and reply to its folder.
-_mux_worktree() {
-  local branch=$1 base=$2 repo dir name line remote=origin
+# Sets reply to the repo this shell is in, or the only repo with a worktree
+# folder in mux/defs.lua when the shell is in none, and that worktree folder.
+_mux_repo() {
+  local repo line
   local -A dirs # repo folder -> its worktree folder
   for line in ${(f)"$(_mux_sessions)"}; do
     _mux_fields $line
@@ -215,7 +213,18 @@ _mux_worktree() {
     fi
     repo=${(k)dirs}
   fi
-  dir=${dirs[$repo]}
+  reply=($repo ${dirs[$repo]})
+}
+
+# Creates a worktree for <branch> in the worktree folder of the repo from
+# _mux_repo. An existing branch (local or on origin) is checked out; a new one
+# starts from [base] on upstream (or origin when there is no upstream), by
+# default that remote's default branch. Sets REPLY to the new session's name
+# and reply to its folder.
+_mux_worktree() {
+  local branch=$1 base=$2 repo dir name remote=origin
+  _mux_repo || return 1
+  repo=$reply[1] dir=$reply[2]
   name=${branch:t}
   [[ -e $dir/$name ]] && { print -u2 "mux: $dir/$name already exists"; return 1 }
   if git -C $repo show-ref -q --verify refs/heads/$branch ||
@@ -262,9 +271,8 @@ _mux_slug() {
 _mux_ticket() {
   setopt local_options extended_glob
   local usage="usage: mux ticket <id or URL> [-n name | -b branch] [instructions...]"
-  local id branch label name notes err
-  # Only the id and the session name go into the quoted nvim expression below,
-  # so both must be plain.
+  local id branch label notes
+  # The id goes into a quoted nvim expression (see _mux_ticket_start), so it must be plain.
   [[ ${(U)1} =~ '(^|/)([A-Z][A-Z0-9]*-[0-9]+)(/|$)' ]] && id=$match[2]
   [[ -z $id ]] && { print -u2 $usage; return 1 }
   shift
@@ -281,23 +289,62 @@ _mux_ticket() {
   fi
   [[ -z $branch ]] && branch=$id${label:+-$label}
   _mux_worktree $branch || return 1
-  name=$REPLY
+  _mux_ticket_start $REPLY $reply[1] "$id" "$notes"
+}
+
+# Starts session <name> for worktree <dir> without switching to it, saves
+# [notes] to .ticket/notes.md, and runs /ticket <args> with claude in its
+# first tab.
+_mux_ticket_start() {
+  setopt local_options extended_glob
+  local name=$1 dir=$2 args=$3 notes=$4 err
+  # name and args go into the quoted nvim expression below, so both must be plain.
   if [[ $name != [A-Za-z0-9._-]## ]]; then
-    print -u2 "mux: session name $name has characters mux ticket can't pass on"
+    print -u2 "mux: session name $name has characters mux can't pass on"
     return 1
   fi
   # info/exclude, not .gitignore: it keeps .ticket out of every worktree's
   # commits without changing a tracked file.
-  local exclude=$(git -C $reply[1] rev-parse --path-format=absolute --git-common-dir)/info/exclude
+  local exclude=$(git -C $dir rev-parse --path-format=absolute --git-common-dir)/info/exclude
   grep -qx '/.ticket/' $exclude 2>/dev/null || print '/.ticket/' >> $exclude
   if [[ -n $notes ]]; then
-    mkdir -p $reply[1]/.ticket && print -r -- $notes > $reply[1]/.ticket/notes.md || return 1
+    mkdir -p $dir/.ticket && print -r -- $notes > $dir/.ticket/notes.md || return 1
   fi
   _mux_ensure $name || return 1
   err=$(command nvim --headless --server $_mux_dir/$name.sock \
-    --remote-expr "v:lua.require'mux'.send('claude --permission-mode auto -n $name \"/ticket $id\"')" </dev/null 2>&1)
+    --remote-expr "v:lua.require'mux'.send('claude --permission-mode auto -n $name \"/ticket $args\"')" </dev/null 2>&1)
   [[ -n $err ]] && { print -u2 "mux: $name: $err"; return 1 }
-  print "mux: started /ticket $id in session $name"
+  print "mux: started /ticket $args in session $name"
+}
+
+# Creates a worktree for the branch of one of the user's open PRs, starts its
+# session without switching to it, and runs /ticket adopt <url> there, which
+# plans how to bring the PR in line with its ticket and its open review
+# comments. Words after the URL are instructions, saved like mux ticket's. The
+# session is named after the branch. The PR's branch must be on origin, since
+# /ticket pushes there.
+_mux_adopt() {
+  setopt local_options extended_glob
+  local url=$1 notes="${*:2}" host owner repo login head state origin
+  # The URL goes into a quoted nvim expression (see _mux_ticket_start), so it must be plain.
+  if [[ $url != https://[A-Za-z0-9./_-]## || $url != (#b)https://([^/]##)/[^/]##/[^/]##/pull/[0-9]##(/*|) ]]; then
+    print -u2 "usage: mux adopt <PR URL> [instructions...]"
+    return 1
+  fi
+  host=$match[1]
+  url=${url%%/pull/*}/pull/${${url#*/pull/}%%/*} # drop /files, /commits, ...
+  _mux_repo || return 1
+  repo=$reply[1]
+  IFS=$'\t' read -r head owner state login < <(gh pr view $url \
+    --json headRefName,headRepositoryOwner,state,author \
+    -q '[.headRefName, .headRepositoryOwner.login, .state, .author.login] | @tsv') || return 1
+  [[ $state == OPEN ]] || { print -u2 "mux: $url is ${(L)state}"; return 1 }
+  [[ $login == $(gh api --hostname $host user -q .login) ]] || { print -u2 "mux: $url is $login's PR, not yours"; return 1 }
+  origin=$(git -C $repo remote get-url origin) || return 1
+  [[ $origin == *[/:]$owner/* ]] || { print -u2 "mux: $url's branch is on $owner's repo, not origin ($origin)"; return 1 }
+  git -C $repo fetch -q origin $head || return 1
+  _mux_worktree $head || return 1
+  _mux_ticket_start $REPLY $reply[1] "adopt $url" "$notes"
 }
 
 # Opens the /ticket plan of session <name>'s folder in nvim, by default the
@@ -373,6 +420,7 @@ mux() {
   [[ $1 == respond ]] && { _mux_ticket_run respond $2 $3; return }
   [[ $1 == test ]] && { _mux_ticket_run test $2; return }
   [[ $1 == ticket ]] && { _mux_ticket "${@:2}"; return }
+  [[ $1 == adopt ]] && { _mux_adopt "${@:2}"; return }
   [[ $1 == plan ]] && { _mux_plan $2; return }
   [[ $1 == rm ]] && { _mux_rm $2; return }
   [[ $1 == kill ]] && { _mux_kill; return }
@@ -390,5 +438,5 @@ mux() {
   command nvim --remote-ui --server $_mux_dir/$name.sock
 }
 
-_mux() { compadd -- kill new plan respond restart revise rm test ticket $(_mux_names) }
+_mux() { compadd -- adopt kill new plan respond restart revise rm test ticket $(_mux_names) }
 compdef _mux mux

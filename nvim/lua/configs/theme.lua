@@ -19,6 +19,12 @@ local function apply(appearance)
   end
   M.name = name
   vim.cmd.colorscheme(name)
+  -- nvim reads these only when a terminal opens, so open shells would keep the
+  -- old scheme's colors after a switch. Unset, nvim sends the plain ANSI color
+  -- to Ghostty, whose GitLab palette follows the system appearance on its own.
+  for i = 0, 15 do
+    vim.g["terminal_color_" .. i] = nil
+  end
 end
 
 local function read_cache()
