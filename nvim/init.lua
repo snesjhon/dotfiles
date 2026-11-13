@@ -3,7 +3,6 @@ vim.g.mapleader = " "
 
 require("options")
 require("plugins")
-require("mux")
 require("mappings")
 require("lsp")
 

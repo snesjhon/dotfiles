@@ -1,4 +1,4 @@
-require("snacks").setup({
+local opts = {
   styles = {
     float = { backdrop = false },
   },
@@ -21,7 +21,7 @@ require("snacks").setup({
       },
     },
   dashboard = {
-    enabled = not vim.g.mux, -- no dashboard in the mux (plugins/mux)
+    enabled = not vim.g.rig_session, -- no dashboard in rig sessions
     preset = {
       header = [[
 ██╗   ██╗
@@ -36,4 +36,6 @@ require("snacks").setup({
       { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
     },
   },
-})
+}
+
+require("snacks").setup(opts)

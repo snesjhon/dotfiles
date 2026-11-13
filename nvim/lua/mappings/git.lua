@@ -14,6 +14,7 @@ vim.keymap.set("n", "<leader>gp", function() require("snacks").picker.git_diff()
 vim.env.LG_CONFIG_FILE = vim.fs.joinpath(vim.fn.resolve(vim.fn.stdpath("config")), "..", "lazygit", "nvim.yml")
 vim.api.nvim_create_user_command("LazyGit", function() require("snacks").lazygit() end, { desc = "Open LazyGit" })
 vim.keymap.set("n", "<leader>gg", function() require("snacks").lazygit() end, { desc = "LazyGit" })
+vim.keymap.set("n", "<leader>gi", function() require("trackit").toggle() end, { desc = "Trackit (issues)" })
 
 local pr_base_active = false
 vim.keymap.set("n", "<leader>gtp", function()
@@ -31,11 +32,6 @@ vim.keymap.set("n", "<leader>gtp", function()
   pr_base_active = true
   vim.notify("Gitsigns base set to " .. base)
 end, { desc = "Toggle inline diff against PR base" })
-
-vim.api.nvim_create_user_command("Review", function(opts) require("review").open(opts.args) end, {
-  nargs = "?",
-  desc = "Review a PR number, or the branch against its PR base or a given ref",
-})
 
 -- Passed to gitsigns.setup({ on_attach = ... }) by configs/gitsigns.lua.
 function M.on_attach(bufnr)

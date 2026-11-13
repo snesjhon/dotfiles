@@ -1,6 +1,0 @@
-#compdef wt
-if (( CURRENT == 2 )); then
-  compadd -- adopt new plan respond revise rm test ticket
-else
-  compadd -- $(wt names 2>/dev/null)
-fi

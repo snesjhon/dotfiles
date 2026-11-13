@@ -1,5 +1,5 @@
--- The mux (plugins/mux) has its own bottom bar instead.
-if vim.g.mux then return end
+-- rig sessions have their own bottom bar instead.
+if vim.g.rig_session then return end
 
 require("bufferline").setup({
   options = {

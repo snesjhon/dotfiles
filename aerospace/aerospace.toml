@@ -48,14 +48,6 @@ run = 'move-node-to-workspace 5'
 if.app-id = 'com.azul.zulu.java'
 run = 'move-node-to-workspace 5'
 
-[[on-window-detected]]
-if.window-title-regex-substring = 'Trackit'
-run = 'move-node-to-workspace 6'
-
-[[on-window-detected]]
-if.app-id = 'com.apple.Music'
-run = 'move-node-to-workspace 7'
-
 # ──────────────────────────────────────────────────────────────────────────────
 # App rules — always float these
 # ──────────────────────────────────────────────────────────────────────────────
@@ -69,6 +61,14 @@ run = 'layout floating'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.iCal'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.reminders'
 run = 'layout floating'
 
 [[on-window-detected]]
@@ -107,6 +107,7 @@ alt-shift-equal = 'balance-sizes'                   # make all splits equal
 alt-slash = 'layout tiles horizontal vertical'     # toggle split direction
 alt-comma = 'layout accordion horizontal vertical' # accordion (stack) mode
 alt-period = 'layout floating tiling'              # toggle float
+alt-shift-f = 'fullscreen'                         # toggle maximize within the workspace
 
 # Back-and-forth between last two workspaces
 alt-m = 'workspace-back-and-forth'
@@ -117,8 +118,6 @@ alt-2 = 'workspace 2'
 alt-3 = 'workspace 3'
 alt-4 = 'workspace 4'
 alt-5 = 'workspace 5'
-alt-6 = 'workspace 6'
-alt-7 = 'workspace 7'
 
 # Move window to workspace and follow it
 alt-a = ['move-node-to-workspace 1', 'workspace 1']
@@ -126,8 +125,6 @@ alt-s = ['move-node-to-workspace 2', 'workspace 2']
 alt-d = ['move-node-to-workspace 3', 'workspace 3']
 alt-f = ['move-node-to-workspace 4', 'workspace 4']
 alt-g = ['move-node-to-workspace 5', 'workspace 5']
-alt-c = ['move-node-to-workspace 6', 'workspace 6']
-alt-z = ['move-node-to-workspace 7', 'workspace 7']
 
 # App workspaces — launch app first, then switch to its workspace
 shift-ctrl-alt-a = [
@@ -150,23 +147,14 @@ shift-ctrl-alt-g = [
   'exec-and-forget open -a "Ignition Designer"',
   'workspace 5',
 ]
-
-shift-ctrl-alt-c = [
-  'exec-and-forget open -a "Trackit"',
-  'workspace 6',
-]
-
 shift-ctrl-alt-z = [
   'exec-and-forget open -a "Music"',
-  'workspace 7',
 ]
 
-# mux <name> moves the open terminal window to that nvim session (nvim/lua/sessions.lua), or opens one on it
-shift-ctrl-alt-k = 'exec-and-forget zsh -lc "~/.local/bin/mux dev"'
-
-shift-ctrl-alt-j = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-j.local.sh"'
-shift-ctrl-alt-u = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-u.local.sh"'
-shift-ctrl-alt-i = 'exec-and-forget zsh -lc "$HOME/Developer/dotfiles/scripts/meh-i.local.sh"'
+# rig <name> moves the open terminal window to that rig session, or opens one on it
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/.local/bin/rig dev"'
+# Runs ~/.local/bin/meh-j when this machine has one.
+shift-ctrl-alt-j = 'exec-and-forget zsh -lc "[ -x $HOME/.local/bin/meh-j ] && $HOME/.local/bin/meh-j"'
 
 # Reload config
 alt-shift-semicolon = 'reload-config'

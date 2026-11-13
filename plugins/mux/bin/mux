@@ -1,5 +1,0 @@
-#!/usr/bin/env -S nvim -l
--- `mux --help` lists the commands (see lua/mux/cli.lua). Link this file onto
--- PATH; it finds the plugin's Lua through the link.
-vim.opt.rtp:prepend(vim.fs.dirname(vim.fs.dirname(vim.uv.fs_realpath(_G.arg[0]))))
-require("mux.cli").main(vim.list_slice(_G.arg, 1))

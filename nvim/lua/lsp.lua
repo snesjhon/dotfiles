@@ -65,6 +65,3 @@ vim.api.nvim_create_autocmd("LspProgress", {
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = require("mappings.lsp").on_attach,
 })
-
-local local_lsp = vim.fn.stdpath("config") .. "/lua/lsp.local.lua"
-if vim.uv.fs_stat(local_lsp) then dofile(local_lsp) end

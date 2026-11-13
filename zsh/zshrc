@@ -1,9 +1,6 @@
 export EDITOR=nvim
 export VISUAL=nvim
 
-# Base-branch resolution shared by nvim's :Review and the gitsigns PR-base toggle, so they treat "the PR" identically.
-export GIT_PR_BASE_SCRIPT="${ZSH_CONFIG_DIR:h}/scripts/git-pr-base.sh"
-
 HISTFILE=$HOME/.zhistory
 SAVEHIST=100
 HISTSIZE=100
@@ -24,8 +21,8 @@ PROMPT_EOL_MARK=''
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"
 
-# Completions shipped with the dotfiles' plugins (plugins/*/zsh).
-fpath=(${ZSH_CONFIG_DIR:h}/plugins/*/zsh(N) $fpath)
+# rig's completion, found through the rig link on PATH.
+(( $+commands[rig] )) && fpath=(${commands[rig]:A:h:h}/zsh $fpath)
 autoload -Uz compinit
 compinit
 
@@ -38,5 +35,5 @@ done
 
 export PATH="$HOME/.local/bin:$PATH"
 
-# Machine/company-specific overrides (gitignored)
-[[ -f "$ZSH_CONFIG_DIR/zshrc.local" ]] && source "$ZSH_CONFIG_DIR/zshrc.local"
+# Settings for this machine only, when it has any.
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

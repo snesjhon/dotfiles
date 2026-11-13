@@ -1,2 +1,0 @@
-#compdef mux
-compadd -- kill restart $(mux names 2>/dev/null)

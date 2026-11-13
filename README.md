@@ -18,19 +18,21 @@ git clone https://github.com/snesjhon/dotfiles.git ~/Developer/dotfiles
 
 Then symlink the configs you want into place.
 
+Terminal sessions, worktrees, and the agent board come from [rig](https://github.com/snesjhon/rig.nvim), which the nvim config loads from `~/Developer/rig.nvim`. After cloning it, link `rig/config.lua` to `~/.config/rig/config.lua` and run `~/Developer/rig.nvim/bin/rig setup`.
+
 ## What's Inside
 
 ```
 dotfiles/
 ├── nvim/          Neovim config (native vim.pack, built-in LSP, snacks pickers, terminal sessions)
-├── zsh/           Shell config, vi mode, mux session launcher
+├── zsh/           Shell config, vi mode
+├── rig/           Sessions and settings for rig (terminal sessions, worktrees, agents)
 ├── ghostty/       Terminal emulator (GitLab theme, ligatures, no titlebar)
 ├── aerospace/     Tiling window manager + app/session hotkeys
 ├── starship/      Minimal cross-shell prompt
 ├── obsidian/      Vim keybindings and CSS for Obsidian
 ├── yazi/          Terminal file manager (GitLab themed)
-├── bat/           Pager theme (follows macOS light/dark)
-└── scripts/       Helper scripts (PR base resolution, session picker preview)
+└── bat/           Pager theme (follows macOS light/dark)
 ```
 
 ## Architecture
@@ -38,7 +40,7 @@ dotfiles/
 ```mermaid
 graph LR
     subgraph Terminal["🖥 Terminal"]
-        Ghostty --> Sessions["mux sessions (nvim)"]
+        Ghostty --> Sessions["rig sessions (nvim)"]
         Sessions --> Zsh
     end
 
