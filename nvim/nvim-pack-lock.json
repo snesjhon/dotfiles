@@ -17,6 +17,10 @@
       "rev": "4516612fe98ff56ae0415a259ff6361a89419b0a",
       "src": "https://github.com/sindrets/diffview.nvim"
     },
+    "flash.nvim": {
+      "rev": "5f0f270fdc7c5b0c21d903ee85b9cb06f2ac636a",
+      "src": "https://github.com/folke/flash.nvim"
+    },
     "gitlab-nvim-theme": {
       "rev": "722a8ab8d8638a3e94fddbf0e8a9aa93ddbccc3d",
       "src": "https://github.com/snesjhon/gitlab-nvim-theme"

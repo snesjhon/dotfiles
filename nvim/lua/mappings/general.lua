@@ -17,3 +17,4 @@ vim.keymap.set("n", "<C-S-h>", function() splits.resize("h") end, { desc = "Resi
 vim.keymap.set("n", "<C-S-l>", function() splits.resize("l") end, { desc = "Resize split right" })
 
 vim.keymap.set("n", "<leader>z", "<cmd>NoNeckPain<CR>", { desc = "Toggle zen mode" })
+vim.keymap.set("n", "+", function() require("snacks").zen.zoom() end, { desc = "Zoom window" })

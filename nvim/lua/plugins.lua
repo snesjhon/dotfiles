@@ -15,6 +15,7 @@ vim.pack.add({
   "https://github.com/stevearc/conform.nvim",
   "https://github.com/shortcuts/no-neck-pain.nvim",
   "https://github.com/MeanderingProgrammer/render-markdown.nvim",
+  "https://github.com/folke/flash.nvim",
   { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range("1") },
 })
 
