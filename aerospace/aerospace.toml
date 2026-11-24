@@ -151,8 +151,8 @@ shift-ctrl-alt-z = [
   'exec-and-forget open -a "Music"',
 ]
 
-# rig <name> moves the open terminal window to that rig session, or opens one on it
-shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/.local/bin/rig dev"'
+# mux <name> moves the open terminal window to that mux session, or opens one on it
+shift-ctrl-alt-k = 'exec-and-forget zsh -lc "$HOME/.local/bin/mux dev"'
 # Runs ~/.local/bin/meh-j when this machine has one.
 shift-ctrl-alt-j = 'exec-and-forget zsh -lc "[ -x $HOME/.local/bin/meh-j ] && $HOME/.local/bin/meh-j"'
 

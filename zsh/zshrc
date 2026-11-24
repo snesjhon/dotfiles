@@ -21,7 +21,8 @@ PROMPT_EOL_MARK=''
 source "$ZSH_CONFIG_DIR/plugins.zsh"
 source "$ZSH_CONFIG_DIR/mappings.zsh"
 
-# rig's completion, found through the rig link on PATH.
+# mux's and rig's completion, found through their links on PATH.
+(( $+commands[mux] )) && fpath=(${commands[mux]:A:h:h}/zsh $fpath)
 (( $+commands[rig] )) && fpath=(${commands[rig]:A:h:h}/zsh $fpath)
 autoload -Uz compinit
 compinit

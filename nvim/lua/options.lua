@@ -16,7 +16,7 @@ vim.opt.scrolloff = 999
 vim.opt.wrap = false
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-vim.opt.fillchars = { eob = " " }
+vim.opt.fillchars = { eob = " ", lastline = " ", vert = " " }
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldlevel = 99 -- start with everything unfolded

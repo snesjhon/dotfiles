@@ -1,7 +1,7 @@
--- Keys for rig sessions (~/Developer/rig.nvim). They only apply inside a
+-- Keys for mux sessions (~/Developer/mux.nvim). They only apply inside a
 -- session, and the move keys in an nvim opened from one. Loaded last, so these
 -- win over the same keys set elsewhere in the config.
-require("rig").keys({
+require("mux").keys({
   ["<C-S-,>"] = "prev_tab",
   ["<C-S-.>"] = "next_tab",
   ["<C-M-S-n>"] = "new_tab",
@@ -14,8 +14,8 @@ require("rig").keys({
   ["<C-S-h>"] = "resize_left",
   ["<C-S-l>"] = "resize_right",
   ["<C-\\>"] = "copy_mode",
-  ["<C-S-o>"] = "sidebar",
-  ["<C-S-d>"] = "dash",
+  -- ["<C-S-o>"] = "sidebar", -- key used by the snacks terminal toggle
+  ["<C-S-d>"] = "float", -- rig's board (float in ~/.config/mux)
 }, {
   launch = {
     ["<C-S-y>"] = { nvim = "\27[121;6u", shell = "y" }, -- <C-S-y> as CSI-u, for the nvim's own Yazi key

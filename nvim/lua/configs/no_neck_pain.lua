@@ -1,8 +1,9 @@
--- No padding in rig sessions, which are all terminals, or in rig's board,
+-- No padding in mux sessions, which are all terminals, or in rig's board,
 -- which lays out its own full-width views.
-local pad = not (vim.g.rig_session or vim.g.rig_dash)
+local pad = not (vim.g.mux_session or vim.g.rig_dash)
 
 require("no-neck-pain").setup({
+  width = 120,
   autocmds = {
     skipEnteringNoNeckPainBuffer = true,
     enableOnVimEnter = pad,
@@ -14,10 +15,4 @@ require("no-neck-pain").setup({
       filetypes = { "snacks_dashboard" },
     }
   },
-  buffers = {
-    right = {
-      enabled = false
-    },
-    wo = { fillchars = "eob: ,vert: " }
-  }
 })

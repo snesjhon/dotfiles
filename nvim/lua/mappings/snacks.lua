@@ -43,3 +43,8 @@ end
 
 vim.api.nvim_create_user_command("YaziChooser", chooser, { desc = "Open yazi to pick a file" })
 vim.keymap.set({ "n", "t" }, "<C-S-y>", chooser, { desc = "Open yazi" })
+
+-- Works from inside the terminal too, so the same key hides it.
+vim.keymap.set({ "n", "t" }, "<C-S-o>", function()
+  require("snacks").terminal.toggle(nil, { win = { position = "right" } })
+end, { desc = "Toggle terminal" })

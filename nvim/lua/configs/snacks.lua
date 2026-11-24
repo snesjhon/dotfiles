@@ -28,10 +28,12 @@ local opts = {
         wo = {
           winbar = "",
         },
+        -- Same key as mux's copy mode, which hands it to the nvim in front.
+        keys = { copy_mode = { "<C-\\>", function() vim.cmd.stopinsert() end, mode = "t" } },
       },
     },
   dashboard = {
-    enabled = not vim.g.rig_session, -- no dashboard in rig sessions
+    enabled = not vim.g.mux_session, -- no dashboard in mux sessions
     preset = {
       header = [[
 ██╗   ██╗
